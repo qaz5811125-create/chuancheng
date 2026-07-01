@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuan-cheng-beta-0-5-1-combat-update";
+const CACHE_NAME = "chuan-cheng-beta-0-5-2-monster-formation";
 const ASSETS = [
   "./",
   "index.html",
