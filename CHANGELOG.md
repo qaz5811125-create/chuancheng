@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## Beta 0.4.3 Hotfix 1
+## Beta 0.4.4 PWA 修正版
 
-- 修正 manifest.json JSON 語法錯誤。
-- 修正 PWA Splash Screen 卡住。
-- 修正遊戲初始化失敗導致無法進入遊戲。
-- 保留 PWA 安裝提示與 Netlify 部署結構。
+- 修正 PWA manifest 路徑。
+- 修正 App Icon 與 Splash 路徑。
+- 修正 Service Worker 註冊與快取路徑。
+- 改為手機 GitHub 友善的根目錄平鋪版。
+- 保留 0.4.3 遊戲內容與既有存檔相容。

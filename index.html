@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.4.3</title>
+<title>傳承 Beta 0.4.4 PWA 修正版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -11,11 +11,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="manifest.json">
-<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512.png">
-<link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
-<link rel="apple-touch-icon" sizes="512x512" href="assets/icons/icon-512.png">
-<link rel="apple-touch-startup-image" href="assets/splash.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-startup-image" href="splash.png">
 
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -38,7 +38,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .float{position:absolute;left:50%;top:45%;font-weight:900;animation:float .8s ease-out forwards;text-shadow:0 2px 4px #000;pointer-events:none}@keyframes float{to{opacity:0;transform:translate(var(--x),-70px) scale(1.2)}}
 .flash{animation:hit .1s ease}@keyframes hit{50%{transform:scale(.97)}}.notice{background:#172554;border-color:#3b82f6}
 
-#pwaSplash{position:fixed;inset:0;z-index:9999;background:#020617 url("assets/cover.png") center/cover no-repeat;display:flex;align-items:end;justify-content:center;padding:22px;transition:opacity .45s ease}
+#pwaSplash{position:fixed;inset:0;z-index:9999;background:#020617 url("cover.png") center/cover no-repeat;display:flex;align-items:end;justify-content:center;padding:22px;transition:opacity .45s ease}
 #pwaSplash:after{content:"傳承";font-weight:900;letter-spacing:10px;font-size:22px;color:#fff;text-shadow:0 3px 16px #000;background:rgba(2,6,23,.48);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:10px 22px;backdrop-filter:blur(6px)}
 #pwaSplash.hide{opacity:0;pointer-events:none}
 
@@ -129,7 +129,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.4.3</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.4.3 Hotfix 2</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -137,7 +137,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.4.3";
+const GAME_VERSION="0.4.4";
 const SAVE_KEY="chuan_cheng_beta_043_pwa_install";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -368,7 +368,7 @@ window.addEventListener("load",()=>{
     if(typeof setupPwaInstall==="function")setupPwaInstall();
   }catch(e){console.warn("PWA install setup failed",e);}
   setTimeout(hidePwaSplash,700);
-  if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+  if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js", { scope: "./" }).catch(()=>{});}
 });
 setTimeout(hidePwaSplash,2500);
 </script>

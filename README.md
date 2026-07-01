@@ -1,21 +1,25 @@
-# 傳承
+# 傳承 Beta 0.4.4 PWA 修正版
 
-《傳承》Beta 0.4.3 Hotfix 1。
+這是手機 GitHub + Netlify 自動部署用的根目錄平鋪版。
 
-這份資料夾是 GitHub + Netlify 自動部署用版本。
+## 上傳方式
 
-## Netlify 設定
+請解壓縮後，把裡面的檔案全部上傳到 GitHub Repository 根目錄。
+不要直接上傳 ZIP。
 
-- Build command：留空
-- Publish directory：`.` 或 `/`
-- Branch：`main`
+## 主要檔案
 
-之後只要 push 到 GitHub，Netlify 會自動部署到同一個網站網址。
+- `index.html`：遊戲本體
+- `manifest.json`：PWA 安裝設定
+- `sw.js`：Service Worker 快取與離線支援
+- `icon-192.png` / `icon-512.png`：桌面圖示
+- `maskable-192.png` / `maskable-512.png`：Android maskable 圖示
+- `cover.png` / `splash.png`：封面與啟動畫面
 
-## 檔案
+## Beta 0.4.4 修正
 
-- `index.html`：遊戲主程式
-- `manifest.json`：PWA 設定
-- `sw.js`：Service Worker
-- `assets/`：封面與啟動畫面素材
-- `netlify.toml`：Netlify 部署設定
+- 修正 manifest icon 路徑。
+- 修正 index.html icon、splash、cover 路徑。
+- 修正 Service Worker 註冊 scope。
+- 使用根目錄平鋪結構，方便手機上傳 GitHub。
+- 保留 Save Version 自動升級。
