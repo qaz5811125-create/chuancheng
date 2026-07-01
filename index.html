@@ -356,8 +356,32 @@ function beep(f=440,d=.05,type="square",v=.18){if(!p.sound)return;try{audioInit(
 function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTimeout(()=>beep(120,.04,"sawtooth",.08),18)}if(k==="crit"){beep(780,.07,"triangle",.20);setTimeout(()=>beep(1080,.06,"triangle",.16),45);setTimeout(()=>beep(150,.055,"sawtooth",.13),25)}if(k==="boss"){beep(85,.11,"sawtooth",.22);setTimeout(()=>beep(140,.08,"square",.16),35)}if(k==="drop"){beep(880,.07,"sine",.18);setTimeout(()=>beep(1320,.09,"sine",.16),55)}if(k==="skill"){beep(520,.08,"triangle",.19);setTimeout(()=>beep(760,.09,"triangle",.16),60)}if(k==="success"){beep(660,.07,"sine",.18);setTimeout(()=>beep(990,.09,"sine",.16),70)}}
 function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");render()}
 function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","poison","freeze","break","bleed","shatter","prison"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
-function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;let name=w&&w.name?w.name:"木劍";let emoji="🪵",kind="slash",asset="assets/weapons/wood_sword.png";if(/戰天斧|斧/.test(name)){emoji="🪓";kind="axe";asset="assets/weapons/axe.png"}else if(/破雲槍|槍|矛/.test(name)){emoji="🔱";kind="thrust";asset="assets/weapons/spear.png"}else if(/鐮/.test(name)){emoji="🌙";kind="scythe";asset="assets/weapons/scythe.png"}else if(/巨劍|大劍|重|滅世/.test(name)){emoji="🗡️";kind="heavy";asset="assets/weapons/great_sword.png"}else if(/鐵劍|鐵/.test(name)){emoji="⚔️";kind="slash";asset="assets/weapons/iron_sword.png"}else if(/木劍|木裂|木/.test(name)){emoji="🪵";kind="slash";asset="assets/weapons/wood_sword.png"}else if(/劍|刃|刀/.test(name)){emoji="⚔️";kind="slash";asset="assets/weapons/iron_sword.png"}else if(!w){name="木劍"}return{name,emoji,kind,asset}}
-function renderWeapon(){const v=weaponVisual(),img=$("weaponImg"),fb=$("weaponEmojiFallback");if(img){img.src=v.asset;img.classList.remove("hidden");img.onerror=()=>{img.classList.add("hidden");if(fb){fb.textContent=v.emoji;fb.classList.remove("hidden")}}}if(fb)fb.textContent=v.emoji;if($("weaponNameTag"))$("weaponNameTag").textContent="武器："+v.name;if($("playerHand"))$("playerHand").className="playerHand "+v.kind}
+function cleanEquipName(name){return String(name||"").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:\-\s]*/,"").trim()}
+function weaponVisual(){
+ const w=p.equips&&p.equips.weapon?p.equips.weapon:(p.equip&&(!p.equip.slot||p.equip.slot==="weapon")?p.equip:null);
+ let raw=w&&w.name?w.name:"木劍", name=cleanEquipName(raw);
+ let emoji="🪵",kind="slash",asset="wood_sword.png";
+ if(/戰天斧|斧/.test(name)){emoji="🪓";kind="axe";asset="axe.png"}
+ else if(/破雲槍|槍|矛/.test(name)){emoji="🔱";kind="thrust";asset="spear.png"}
+ else if(/鐮/.test(name)){emoji="🌙";kind="scythe";asset="scythe.png"}
+ else if(/巨劍|大劍|重|滅世/.test(name)){emoji="🗡️";kind="heavy";asset="great_sword.png"}
+ else if(/鐵劍|鐵/.test(name)){emoji="⚔️";kind="slash";asset="iron_sword.png"}
+ else if(/木劍|木裂|木/.test(name)){emoji="🪵";kind="slash";asset="wood_sword.png"}
+ else if(/劍|刃|刀/.test(name)){emoji="⚔️";kind="slash";asset="iron_sword.png"}
+ else if(!w){name="木劍"}
+ return{name,emoji,kind,asset,altAsset:"assets/weapons/"+asset}
+}
+function renderWeapon(){
+ const v=weaponVisual(),img=$("weaponImg"),fb=$("weaponEmojiFallback");
+ if(img){
+  img.onerror=null;img.onload=()=>{img.classList.remove("hidden");if(fb)fb.classList.add("hidden")};
+  img.onerror=()=>{if(img.src.indexOf('/assets/weapons/')<0){img.onerror=()=>{img.classList.add("hidden");if(fb){fb.textContent=v.emoji;fb.classList.remove("hidden")}};img.src=v.altAsset}else{img.classList.add("hidden");if(fb){fb.textContent=v.emoji;fb.classList.remove("hidden")}}};
+  img.classList.remove("hidden");img.src=v.asset;
+ }
+ if(fb)fb.textContent=v.emoji;
+ if($("weaponNameTag"))$("weaponNameTag").textContent="武器："+v.name;
+ if($("playerHand"))$("playerHand").className="playerHand "+v.kind
+}
 function playAttackAnim(kind){renderWeapon();const hand=$("playerHand"),arc=$("slashArc"),card=$("enemyCard");if(!hand)return;const v=weaponVisual();kind=kind||v.kind;hand.className="playerHand "+kind;void hand.offsetWidth;hand.classList.add("swing",kind);if(arc){arc.classList.remove("show");void arc.offsetWidth;if(kind!=="bow"&&kind!=="thrust")arc.classList.add("show")}if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),120)}setTimeout(()=>{if(hand)hand.className="playerHand "+v.kind},430)}
 function statusHtml(){
  if(!fight)return "<span class='small'>無狀態</span>";
