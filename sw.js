@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuan-cheng-beta-0-5-3";
+const CACHE_NAME = "chuan-cheng-beta-0-5-5-weapon-renderer";
 const ASSETS = [
   "./",
   "index.html",
@@ -11,7 +11,13 @@ const ASSETS = [
   "icon-512.png",
   "icon-1024.png",
   "maskable-192.png",
-  "maskable-512.png"
+  "maskable-512.png",
+  "assets/weapons/wood_sword.png",
+  "assets/weapons/iron_sword.png",
+  "assets/weapons/great_sword.png",
+  "assets/weapons/scythe.png",
+  "assets/weapons/spear.png",
+  "assets/weapons/axe.png"
 ];
 
 self.addEventListener("install", event => {
