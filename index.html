@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>傳承 Beta 0.4.3</title>
+<meta name="theme-color" content="#0f172a">
+<meta name="application-name" content="傳承">
+<meta name="apple-mobile-web-app-title" content="傳承">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icons/icon-512.png">
+<link rel="apple-touch-icon" sizes="192x192" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/icons/icon-512.png">
+<link rel="apple-touch-startup-image" href="assets/splash.png">
+
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:radial-gradient(circle at top left,#334155,#0f172a 45%,#020617);color:#fff;font-family:system-ui,"Noto Sans TC",sans-serif}
+.app{max-width:720px;margin:auto;min-height:100vh;padding:14px}.topLogo{text-align:center;margin:6px 0 12px}.topLogo h1{font-size:34px;letter-spacing:8px;text-shadow:0 4px 18px rgba(250,204,21,.32)}.topLogo .ver{opacity:.86;font-size:13px}.saveLine{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bagTabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.bagTabs button{padding:7px 9px;font-size:12px;margin:2px}.slot.active{border-color:#facc15;box-shadow:0 0 0 2px rgba(250,204,21,.2)}
+.app:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 20% 10%,rgba(250,204,21,.16),transparent 28%),radial-gradient(circle at 85% 15%,rgba(147,197,253,.12),transparent 30%);pointer-events:none}
+h1,h2,h3,p{margin:6px 0}.small{font-size:13px;opacity:.82}
+.card{background:linear-gradient(180deg,rgba(30,41,59,.96),rgba(15,23,42,.96));border:1px solid rgba(148,163,184,.28);border-radius:20px;padding:13px;margin-top:10px;box-shadow:0 12px 35px rgba(0,0,0,.22);backdrop-filter:blur(8px)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.equipGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}.slot{min-height:98px;background:#0f172a;border:1px dashed #64748b;border-radius:15px;padding:8px;text-align:center}.slot b{display:block}.slot .emoji{font-size:26px}.hud{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.hud div{background:rgba(15,23,42,.65);border-radius:14px;padding:8px}
+button{border:0;border-radius:13px;padding:11px;font-weight:900;background:#ffd166;color:#111;margin:4px;box-shadow:0 4px 0 #9f6b18;touch-action:manipulation;user-select:none}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabled{opacity:.45;filter:grayscale(1);box-shadow:none}.big{font-size:22px;width:100%;padding:18px}
+.green{background:#80ed99;box-shadow:0 4px 0 #2d8f4d}.blue{background:#93c5fd;box-shadow:0 4px 0 #2563eb}.red{background:#ff8fab;box-shadow:0 4px 0 #b7355c}.purple{background:#c4b5fd;box-shadow:0 4px 0 #7c3aed}
+.tab{background:#475569;color:#fff;box-shadow:0 4px 0 #1e293b}.active{background:#ffd166;color:#111;box-shadow:0 4px 0 #9f6b18}
+.enemy{text-align:center;position:relative;overflow:hidden}.emoji{font-size:74px}.bar{height:22px;background:#020617;border-radius:99px;overflow:hidden}.hp{height:100%;background:linear-gradient(90deg,#fb7185,#facc15);width:100%;transition:width .08s linear}
+.hidden{display:none!important}.pill{display:inline-block;border-radius:99px;background:#475569;padding:3px 10px;font-size:12px}.timer{color:#ffd166;font-weight:900}
+.log{font-size:14px;max-height:170px;overflow:auto}.log div{border-bottom:1px solid #334155;padding:4px}
+.item{background:#111827;border:1px solid #334155;border-radius:13px;padding:9px;margin-top:8px}.row{display:flex;justify-content:space-between;gap:8px;align-items:center}.lock{opacity:.45}
+.common{color:#e5e7eb}.rare{color:#60a5fa}.epic{color:#c084fc}.legendary{color:#f59e0b}.mythic{color:#fb7185}
+.badge{display:inline-block;padding:3px 8px;border-radius:99px;margin:2px;font-size:12px}.burn{background:#dc2626}.poison{background:#16a34a}.freeze{background:#2563eb}.break{background:#ca8a04}.bleed{background:#b91c1c}
+.float{position:absolute;left:50%;top:45%;font-weight:900;animation:float .8s ease-out forwards;text-shadow:0 2px 4px #000;pointer-events:none}@keyframes float{to{opacity:0;transform:translate(var(--x),-70px) scale(1.2)}}
+.flash{animation:hit .1s ease}@keyframes hit{50%{transform:scale(.97)}}.notice{background:#172554;border-color:#3b82f6}
+
+#pwaSplash{position:fixed;inset:0;z-index:9999;background:#020617 url("assets/cover.png") center/cover no-repeat;display:flex;align-items:end;justify-content:center;padding:22px;transition:opacity .45s ease}
+#pwaSplash:after{content:"傳承";font-weight:900;letter-spacing:10px;font-size:22px;color:#fff;text-shadow:0 3px 16px #000;background:rgba(2,6,23,.48);border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:10px 22px;backdrop-filter:blur(6px)}
+#pwaSplash.hide{opacity:0;pointer-events:none}
+
+.installCard{position:sticky;top:8px;z-index:30;background:linear-gradient(135deg,rgba(127,29,29,.96),rgba(15,23,42,.96) 58%,rgba(30,64,175,.92));border:1px solid rgba(250,204,21,.38)}
+.installTitle{display:flex;justify-content:space-between;gap:8px;align-items:center}.installActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.installActions button{margin:0}.ghostBtn{background:#e5e7eb;box-shadow:0 4px 0 #64748b;color:#111}.installHint{line-height:1.55}.iosSteps{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.28);border-radius:14px;padding:9px;margin-top:8px}
+@media (display-mode: standalone){#installBox{display:none!important}}
+</style>
+</head>
+<body>
+<div id="pwaSplash" aria-label="傳承啟動畫面"></div>
+<div class="app">
+<div class="topLogo">
+  <h1>傳承</h1>
+  <div class="small">五裝備欄・技能自動施放・UI 2.0</div>
+</div>
+
+
+<div id="installBox" class="card installCard hidden">
+  <div class="installTitle"><b>📱 安裝《傳承》到主畫面</b><span id="installState" class="pill">偵測中</span></div>
+  <div id="installHint" class="small installHint">正在確認你的瀏覽器是否支援安裝。</div>
+  <div class="installActions">
+    <button id="installBtn" class="green">安裝《傳承》</button>
+    <button id="iosHelpBtn" class="blue">iPhone 教學</button>
+    <button id="installCloseBtn" class="ghostBtn">先不要</button>
+  </div>
+  <div id="iosSteps" class="small iosSteps hidden">iPhone 請用 Safari 開啟本頁 → 按下方分享按鈕 → 選「加入主畫面」→ 名稱輸入「傳承」→ 新增。</div>
+</div>
+
+<div class="card tabs">
+<button id="tabMain" class="tab active">主線</button>
+<button id="tabDungeon" class="tab">副本</button>
+<button id="tabSkill" class="tab">技能</button>
+</div>
+
+<section id="mainView">
+<div class="card hud">
+<div>關卡 <b id="stage">1</b></div><div>戰力 <b id="power">0</b></div>
+<div>Lv <b id="level">1</b></div><div>點數 <b id="points">0</b></div>
+<div>金幣 <b id="gold">0</b></div><div>傳承之魂 <b id="soul">0</b></div><div>背包 <b id="bagCap">0/12</b></div>
+<div>攻擊 <b id="atk">50</b></div><div>攻速 <b id="aspd">1</b>/秒</div>
+<div>暴擊 <b id="crit">5</b>%</div><div>破甲 <b id="pen">0</b>%</div>
+<div>點擊 <b id="clickPower">1</b>x</div><div>佇列 <b id="queue">0</b></div>
+</div>
+
+<div class="card enemy" id="enemyCard">
+<div id="enemyEmoji" class="emoji">🪵</div>
+<h2 id="enemyName">木偶</h2>
+<div id="enemyType" class="pill">普通</div>
+<div class="bar"><div id="hpBar" class="hp"></div></div>
+<p><b id="enemyHp">100</b>/<span id="enemyMaxHp">100</span> HP</p>
+<div class="small">防禦 <b id="enemyDef">0</b>｜破甲後 <b id="effDef">0</b>｜回血 <b id="regen">0</b>/秒｜掉寶 <b id="drop">0</b>%</div>
+<div id="timerBox" class="timer hidden">倒數：<b id="timer">90</b>秒</div>
+<div id="status"></div>
+</div>
+
+<div id="mainDungeonInfo" class="card hidden"></div><button id="attackBtn" class="big">攻擊 / 長按 ⚔️</button>
+<button id="autoBtn" class="big green">自動：關</button>
+<button id="challengeBtn" class="big blue hidden">繼續挑戰 Boss</button>
+
+<div class="card"><b>能力點</b><br>
+<button data-point="atk">攻擊+2</button><button data-point="aspd">攻速+0.05/秒</button><button data-point="crit">暴擊+0.5%</button>
+<button data-point="pen">破甲+0.5%</button><button data-point="gold">金幣+2%</button><button data-point="drop">掉寶+0.5%</button>
+</div>
+
+<div class="card"><b>養成</b><br>
+<button data-up="atk">攻擊 <span id="costAtk">10</span></button>
+<button data-up="aspd">攻速 <span id="costAspd">25</span></button>
+<button data-up="crit">暴擊 <span id="costCrit">50</span></button>
+<button data-up="pen" class="blue">破甲 <span id="costPen">80</span></button>
+<button data-up="click" class="blue">強化點擊 <span id="costClick">120</span></button>
+<button data-up="bag" class="blue">背包+6 <span id="costBag">150</span></button>
+</div>
+
+<div class="card"><div class="row"><b>五裝備欄</b><span class="pill">武器｜頭盔｜盔甲｜戒指｜鞋子</span></div><div id="equipBox" class="equipGrid small">無</div><button id="enhanceBtn" class="blue">強化目前選中裝備</button><div id="forge" class="small"></div></div>
+<div class="card"><div class="row"><b>背包</b><span class="pill">依裝備部位分類</span></div><div id="bagFilter" class="bagTabs"></div><div id="bagBox"></div></div>
+</section>
+
+<section id="dungeonView" class="hidden">
+<div class="card notice"><h2>🏰 副本大廳</h2><p class="small">金幣副本25關解鎖，經驗副本50關解鎖。怪物會逐隻變強。</p></div>
+<div id="dungeonInfo" class="card hidden"></div><div id="dungeonList"></div>
+</section>
+
+<section id="skillView" class="hidden">
+<div class="card notice"><h2>⚔️ 技能中樞</h2><p class="small">技能可手動施放，也可開啟自動施放。技能等級會提升效果、持續或冷卻。</p><button id="autoSkillBtn" class="green">技能自動：關</button></div>
+<div class="card"><b>🕯️ 傳承祭壇</b><div class="small">傳承之魂：<b id="soulSkill">0</b>｜召喚消耗：<b id="summonCost">100</b><br>普通70%：碎片1～9｜稀有20%：碎片10～20｜史詩8%：完整技能1本｜傳說1.8%：3本｜神話0.2%：5本</div><button id="summonBtn" class="purple">召喚技能</button></div>
+<div id="skillList"></div>
+</section>
+
+<div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
+<button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.4.3</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<button id="resetBtn" class="red">重置</button>
+<div id="log" class="card log"></div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const GAME_VERSION="0.4.3";
+const SAVE_KEY="chuan_cheng_beta_043_pwa_install";
+const OLD_SAVE_KEYS=["chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
+const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
+const itemPools={weapon:["滅世之刃","木裂短劍","鍵盤之刃","祖傳鐮刀","燃燒木槍"],head:["戰神之冠","木紋戰盔","祖靈髮冠","破防頭巾"],armor:["黑龍鎧甲","木甲戰袍","祖傳胸甲","數據外套"],ring:["狂風之戒","破甲戒指","傳家指環","暴富金戒"],shoes:["疾風戰靴","老祖長靴","木紋戰靴","逐風靴"]};
+const slots=Object.keys(slotMeta);
+const rarities=[["common","普通",1,.55],["rare","稀有",1.8,.28],["epic","史詩",3.2,.12],["legendary","傳說",5.5,.04],["mythic","神話",9,.01]];
+const skillMeta={
+ slash:{icon:"🗡️",name:"劈砍",desc:"造成技能傷害",baseCd:10,free:true},
+ shatter:{icon:"🛡️",name:"破碎",desc:"目標防禦歸0",baseCd:20,free:true,lvReq:60},
+ gale:{icon:"🌪️",name:"疾風",desc:"攻速提升50%",baseCd:30,free:false}
+};
+const skillIds=Object.keys(skillMeta),SUMMON_COST=100;
+let p,fight,dungeon=null,view="main",hold=false,budget=0,last=performance.now(),renderClock=0,audioCtx=null;
+
+function newPlayer(){return{saveVersion:GAME_VERSION,lv:1,exp:0,points:0,gold:0,soul:0,baseAtk:50,aspd:1,crit:.05,pen:.0,click:1,bonus:{atk:0,aspd:0,crit:0,pen:0,gold:0,drop:0,exp:0,cdr:0,critDmg:0,def:0,regen:0},stage:1,high:1,kills:0,boss:0,retryBoss:0,auto:false,queue:0,cost:{atk:10,aspd:25,crit:50,pen:80,click:120,bag:150},bagCap:12,bag:[],equip:null,equips:{weapon:null,head:null,armor:null,ring:null,shoes:null},selectedSlot:"weapon",bagFilter:"all",autoSkill:false,nextId:1,cd:{slash:0,shatter:0,gale:0},buff:{gale:0},skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false}},fragments:{slash:0,shatter:0,gale:0},sound:true,vol:1,dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0},j:{fail:0,gold:0,boss:0,high:1}}}
+function log(x){const d=document.createElement("div");d.textContent="› "+x;$("log").prepend(d);while($("log").children.length>70)$("log").lastChild.remove()}
+function save(manual=false){try{p.saveVersion=GAME_VERSION;localStorage.setItem(SAVE_KEY,JSON.stringify(p));$("saveStatus").textContent=(manual?"已手動存檔 ":"已自動存檔 ")+new Date().toLocaleTimeString();if(manual)log("已存檔")}catch(e){log("存檔失敗")}}
+function migrateItem(it){if(!it)return it;if(it.slot==="chest")it.slot="armor";if(it.slot==="legs")it.slot="shoes";if(it.slot==="acc")it.slot="ring";if(!slotMeta[it.slot])it.slot="weapon";const sc=p?(p.lv+p.stage*2):10,rar=rarities.find(x=>x[0]===it.rar)||rarities[0],mul=rar[2];if(it.critDmg==null)it.critDmg=it.slot==="weapon"?+(0.25*mul).toFixed(2):0;if(it.cdr==null)it.cdr=it.slot==="head"?+(0.015*mul).toFixed(3):0;if(it.def==null)it.def=it.slot==="armor"?Math.floor((20+sc*6)*mul):0;if(it.regen==null)it.regen=it.slot==="armor"?Math.floor((2+sc*.8)*mul):0;if(it.gold==null)it.gold=it.slot==="ring"?+(0.04*mul).toFixed(2):0;if(it.exp==null)it.exp=it.slot==="shoes"?+(0.04*mul).toFixed(2):0;if(!["ring","shoes"].includes(it.slot))it.aspd=0;return it}
+function normalizeSpeed(){/* Beta 0.4.2 修正：不再重置金幣/技能點攻速，只移除攻擊命中永久加攻速 */}
+function versionParts(v){return String(v||"0.0.0").replace(/^Beta\s*/i,"").split(".").map(x=>parseInt(x,10)||0)}
+function versionLess(a,b){const A=versionParts(a),B=versionParts(b);for(let i=0;i<3;i++){if((A[i]||0)<(B[i]||0))return true;if((A[i]||0)>(B[i]||0))return false}return false}
+function migrateSave(){
+ const fresh=newPlayer(),from=p.saveVersion||"0.3.7";
+ // 永遠只補缺少欄位，不覆蓋玩家既有進度。
+ p=Object.assign(fresh,p);
+ p.bonus=Object.assign(fresh.bonus,p.bonus||{});
+ p.cost=Object.assign(fresh.cost,p.cost||{});
+ p.cd=Object.assign(fresh.cd,p.cd||{});
+ p.buff=Object.assign(fresh.buff,p.buff||{});
+ p.skills=Object.assign(fresh.skills,p.skills||{});
+ for(const id of skillIds)p.skills[id]=Object.assign(fresh.skills[id],p.skills[id]||{});
+ p.fragments=Object.assign(fresh.fragments,p.fragments||{});
+ p.soul=Number(p.soul||0);
+ p.dun=Object.assign(fresh.dun,p.dun||{});
+ p.j=Object.assign(fresh.j,p.j||{});
+ const oldEquips=p.equips||{};
+ p.equips=Object.assign(fresh.equips,oldEquips);
+ if(oldEquips.chest&&!p.equips.armor)p.equips.armor=oldEquips.chest;
+ if(oldEquips.legs&&!p.equips.shoes)p.equips.shoes=oldEquips.legs;
+ if(oldEquips.acc&&!p.equips.ring)p.equips.ring=oldEquips.acc;
+ delete p.equips.chest;delete p.equips.legs;delete p.equips.acc;
+ if(p.equip&&!p.equips.weapon){p.equips.weapon=p.equip;p.equip=null}
+ p.bag=(p.bag||[]).map(migrateItem);
+ for(const k of slots)p.equips[k]=migrateItem(p.equips[k]);
+ normalizeSpeed();
+ p.selectedSlot=slotMeta[p.selectedSlot]?p.selectedSlot:"weapon";
+ p.bagFilter=p.bagFilter||"all";
+ p.autoSkill=!!p.autoSkill;
+ if(!p.nextId||p.nextId<1)p.nextId=1;
+ p.saveVersion=GAME_VERSION;
+ if(versionLess(from,GAME_VERSION))log("存檔版本 "+from+" 已升級至 "+GAME_VERSION+"，進度保留");
+ return from;
+}
+function load(){try{let x=localStorage.getItem(SAVE_KEY);if(!x){for(const k of OLD_SAVE_KEYS){x=localStorage.getItem(k);if(x)break}}if(!x)return false;p=JSON.parse(x);migrateSave();save(false);return true}catch(e){console.error(e);return false}}
+function reset(){if(confirm("確定重置存檔？")){localStorage.removeItem(SAVE_KEY);location.reload()}}
+function equippedItems(){return slots.map(k=>p.equips&&p.equips[k]).filter(Boolean)}
+function equipAtk(){return Math.floor(equipStat("atk"))}
+function equipStat(k){return equippedItems().reduce((a,it)=>a+(it[k]||0)*(1+(it.enh||0)*.08),0)}
+function atk(){return p.baseAtk+p.bonus.atk+equipAtk()}
+function asp(){return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()))}
+function crit(){return Math.min(.95,p.crit+p.bonus.crit+equipStat("crit"))}
+function critDmg(){return 2+equipStat("critDmg")}
+function cdr(){return Math.min(.5,p.bonus.cdr+equipStat("cdr"))}
+function goldBonus(){return p.bonus.gold+equipStat("gold")}
+function expBonus(){return (p.bonus.exp||0)+equipStat("exp")}
+function playerDef(){return (p.bonus.def||0)+equipStat("def")}
+function playerRegen(){return (p.bonus.regen||0)+equipStat("regen")}
+function pen(){return Math.min(.9,p.pen+p.bonus.pen+equipStat("pen"))}
+function skillLv(id){return Math.max(1,(p.skills&&p.skills[id]&&p.skills[id].lv)||1)}
+function hasSkill(id){const sk=p.skills&&p.skills[id];return !!(sk&&sk.unlocked)}
+function galeAspdBonus(){return p.buff&&p.buff.gale>0?.5+.03*(skillLv("gale")-1):0}
+function skillNeed(id){return 25+skillLv(id)*15}
+function gainSkillExp(id,amt){const sk=p.skills[id];if(!sk)return;if(!sk.unlocked){sk.unlocked=true;sk.lv=Math.max(1,sk.lv||1);log("解鎖技能："+skillMeta[id].name)}sk.exp=(sk.exp||0)+amt;let up=false;while(sk.exp>=skillNeed(id)){sk.exp-=skillNeed(id);sk.lv++;up=true}if(up)log(skillMeta[id].name+" 提升至 Lv"+sk.lv)}
+function power(){return Math.floor(atk()*2+asp()*65+crit()*300+critDmg()*120+pen()*350+cdr()*500+goldBonus()*120+expBonus()*120+playerDef()*0.4+playerRegen()*3+equippedItems().reduce((a,it)=>a+80+it.enh*25,0))}
+function expNeed(){return 40+p.lv*25}
+function typeOf(st){return st%10===0?"boss":st%5===0?"elite":"normal"}
+function isDungeon(){return dungeon&&dungeon.running}
+function recPower(st){const t=typeOf(st);if(t==="boss")return Math.floor(450+st*95+Math.pow(st,1.25)*16);if(t==="elite")return Math.floor(260+st*55+Math.pow(st,1.18)*10);return Math.floor(80+st*22+Math.pow(st,1.12)*6)}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function createMainEnemy(){const st=p.stage,t=typeOf(st);const baseHp=Math.floor(100*Math.pow(1.18,st-1)+st*45);const baseDef=Math.floor(8+st*10+Math.pow(st,1.18)*4);const baseReg=Math.floor(1+st*1.4+Math.pow(st,1.08));let hp,def,reg,gold,xp,drop,emoji,name;
+if(t==="boss"){
+  let tier=st<=50?0:st<=100?1:st<=200?2:3;
+  let hpMul=[8,10,12,15][tier], defMul=[4,5,6,8][tier], regMul=[4,6,8,10][tier];
+  hp=Math.floor(baseHp*hpMul);
+  def=Math.floor(baseDef*defMul);
+  reg=Math.floor(baseReg*regMul);
+  gold=2500+st*140;xp=300+st*30;drop=1;emoji="🌳";name="木偶王";
+}else if(t==="elite"){
+  let tier=st<=50?0:st<=100?1:st<=200?2:3;
+  let hpMul=[3,4,5,6][tier], defMul=[2,3,4,5][tier], regMul=[2,3,4,5][tier];
+  hp=Math.floor(baseHp*hpMul);
+  def=Math.floor(baseDef*defMul);
+  reg=Math.floor(baseReg*regMul);
+  gold=600+st*70;xp=150+st*18;drop=.65;emoji="👹";name="精英木偶";
+}else{
+  hp=baseHp;
+  def=baseDef;
+  reg=baseReg;
+  gold=rand(35+st*12,60+st*18);
+  xp=25+st*7;
+  drop=.22+Math.min(.18,st*.004);
+  emoji="🪵";name="木偶";
+}
+return enemy({mode:"main",type:t,name,emoji,hp,def,reg,gold,xp,drop,timer:t==="boss"?90:0})}
+function createDungeonEnemy(kind,count){let hp,def,name,emoji;if(kind==="gold"){hp=10000+count*10000;def=count===0?100:200+(count-1)*200;name="金幣哥布林";emoji="🪙"}else if(kind==="exp"){hp=50000+count*15000;def=5000+count*1500;name="經驗史萊姆";emoji="📖"}else{hp=80000+count*25000;def=8000+count*2500;name=count%5===4?"裝備副本Boss":"裝備魔偶";emoji=count%5===4?"🎁":"⚔️"}return enemy({mode:"dungeon",dungeonType:kind,type:"dungeon",name,emoji,hp,def,reg:0,gold:0,xp:0,drop:0,timer:0})}
+function enemy(o){return{...o,max:o.hp,e:{burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0},kills:0,gain:0}}
+function spawnMain(){fight=createMainEnemy();p.queue=0;hold=false;budget=0;render()}
+function startDungeon(kind){if(isDungeon()){log("副本進行中，不能重複進入");return}if(kind==="gold"&&p.high<25)return log("25關解鎖金幣副本");if(kind==="exp"&&p.high<50)return log("50關解鎖經驗副本");if(kind==="eq"&&p.high<100)return log("100關解鎖裝備副本");if(kind==="gold"&&p.dun.goldRuns<=0)return log("金幣副本次數不足");if(kind==="exp"&&p.dun.expRuns<=0)return log("經驗副本次數不足");if(kind==="gold")p.dun.goldRuns--;else if(kind==="exp")p.dun.expRuns--;dungeon={type:kind,timer:kind==="gold"?60:(kind==="exp"?120:90),kills:0,gain:0,running:true};fight=createDungeonEnemy(kind,0);p.queue=0;hold=false;budget=0;show("main");log((kind==="gold"?"金幣":kind==="exp"?"經驗":"裝備")+"副本開始");save(false);render()}
+function endDungeon(){if(!dungeon)return;p.queue=0;hold=false;budget=0;dungeon.running=false;const kind=dungeon.type,bestKey=kind==="gold"?"goldBest":kind==="exp"?"expBest":"eqBest";const old=p.dun[bestKey]||0;if(dungeon.kills>old){p.dun[bestKey]=dungeon.kills;log("🎉 NEW RECORD！"+dungeon.kills+"隻")}log((kind==="gold"?"金幣":kind==="exp"?"經驗":"裝備")+"副本結束，擊殺 "+dungeon.kills+"，收益 "+dungeon.gain);dungeon=null;save(false);spawnMain()}
+function effDef(){if(fight.e.shatter>0)return 0;return Math.floor(fight.def*(1-Math.min(.9,pen()+fight.e.break)))}
+function effReg(){return fight.reg*(fight.e.freeze>0?.45:1)}
+function request(n=1){p.queue=Math.min(160,p.queue+n)}
+function floatText(x){const d=document.createElement("div");d.className="float";d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),850)}
+function damage(mult=1,label=""){if(!fight)return;const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));fight.hp-=d;p.baseAtk+=.1;floatText(label+(c?"💥":"")+d);sfx(c?"crit":(fight.type==="boss"?"boss":"hit"));rollEffects();if(fight.hp<=0)killEnemy()}
+function rollEffects(){const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",.1,.08,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")fight.e.break=Math.min(.8,fight.e.break+v);else if(k==="bleed")fight.e.bleed=Math.min(20,fight.e.bleed+v);else fight.e[k]=Math.max(fight.e[k],v);log(msg)}}}
+function tickEffects(dt){const e=fight.e;if(e.burn>0){fight.hp-=55*dt;e.burn-=dt}if(e.poison>0){fight.hp-=fight.max*.001*dt;e.poison-=dt}if(e.bleed>0){fight.hp-=e.bleed*18*dt;e.bleed=Math.max(0,e.bleed-dt*.7)}if(e.freeze>0)e.freeze-=dt;if(e.shatter>0)e.shatter-=dt;if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
+function gainSoul(n){p.soul=(p.soul||0)+n;log("獲得傳承之魂 +"+n)}
+function killEnemy(){if(isDungeon())return dungeonKill();const gold=Math.floor(fight.gold*(1+goldBonus()));p.gold+=gold;p.j.gold+=gold;p.exp+=Math.floor(fight.xp*(1+expBonus()));p.kills++;log("擊敗 "+fight.name+"，金幣+"+gold);if(fight.type==="elite")gainSoul(rand(3,7));rollDrop();levelUp();if(fight.type==="boss"){p.boss++;p.j.boss++;gainSoul(rand(20,35));log("Boss通關！")}p.retryBoss=0;p.stage++;p.high=Math.max(p.high,p.stage);p.j.high=p.high;save(false);spawnMain()}
+function dungeonKill(){if(!dungeon)return;dungeon.kills++;if(dungeon.type==="gold"){const g=Math.floor(700+dungeon.kills*260+Math.pow(dungeon.kills,1.18)*60);p.gold+=g;p.j.gold+=g;dungeon.gain+=g;log("金幣副本 第"+dungeon.kills+"隻 +"+g)}else if(dungeon.type==="exp"){const xp=Math.floor(260+dungeon.kills*120+Math.pow(dungeon.kills,1.22)*90);p.exp+=Math.floor(xp*(1+expBonus()));dungeon.gain+=xp;levelUp();log("經驗副本 第"+dungeon.kills+"隻 +"+xp+"EXP")}else{const isBoss=dungeon.kills%5===0;let got=false;if(isBoss||Math.random()<.4){const oldType=fight.type,oldDrop=fight.drop;fight.type=isBoss?"boss":"elite";fight.drop=1;rollDrop();if(isBoss)gainSoul(rand(8,15));else if(Math.random()<.35)gainSoul(rand(1,3));fight.type=oldType;fight.drop=oldDrop;got=true}dungeon.gain+=got?1:0;log("裝備副本 第"+dungeon.kills+"隻"+(got?" 掉落裝備":" 未掉落"))}save(false);fight=createDungeonEnemy(dungeon.type,dungeon.kills)}
+function levelUp(){let up=false;while(p.exp>=expNeed()){p.exp-=expNeed();p.lv++;p.points+=3;p.baseAtk+=3;up=true;log("升到Lv."+p.lv+"，能力點+3")}if(up)save(false)}
+function pickRarity(){if(fight.type==="boss"){const a=rarities.filter(x=>["epic","legendary","mythic"].includes(x[0]));return a[Math.floor(Math.random()*a.length)]}let r=Math.random(),s=0;for(const x of rarities){s+=x[3];if(r<=s)return x}return rarities[0]}
+function makeItemStats(slot,sc,mul){const it={atk:0,aspd:0,crit:0,pen:0,critDmg:0,cdr:0,def:0,regen:0,gold:0,exp:0};if(slot==="weapon"){it.atk=Math.floor((12+sc*4+Math.random()*sc*5)*mul);it.critDmg=+(0.18+Math.random()*.08*mul).toFixed(2)}else if(slot==="head"){it.atk=Math.floor((4+sc*1.4)*mul);it.crit=+((.012+Math.random()*.016)*mul).toFixed(3);it.cdr=+((.008+Math.random()*.012)*mul).toFixed(3)}else if(slot==="armor"){it.def=Math.floor((25+sc*7+Math.random()*sc*3)*mul);it.regen=Math.floor((3+sc*.9+Math.random()*sc*.5)*mul)}else if(slot==="ring"){it.aspd=+((Math.random()*.045+.025)*mul).toFixed(2);it.gold=+((.025+Math.random()*.025)*mul).toFixed(2);it.pen=+((Math.random()*.008)*mul).toFixed(3)}else if(slot==="shoes"){it.aspd=+((Math.random()*.04+.02)*mul).toFixed(2);it.exp=+((.025+Math.random()*.025)*mul).toFixed(2);it.crit=+((Math.random()*.008)*mul).toFixed(3)}return it}
+function rollDrop(){if(Math.random()>Math.min(.95,fight.drop+p.bonus.drop))return;if(p.bag.length>=p.bagCap)return log("掉裝但背包滿了");const r=pickRarity(),sc=p.lv+p.stage*2,slot=slots[Math.floor(Math.random()*slots.length)],pool=itemPools[slot],n=pool[Math.floor(Math.random()*pool.length)],stats=makeItemStats(slot,sc,r[2]);const it={id:p.nextId++,slot,rar:r[0],rn:r[1],name:slotMeta[slot][1]+"－"+n,price:Math.floor((20+sc*10)*r[2]),enh:0,pity:0,...stats};p.bag.push(it);sfx("drop");log("掉落："+slotMeta[slot][0]+it.name);save(false)}
+function equipItem(id){const i=p.bag.findIndex(x=>x.id===id);if(i<0)return;const it=p.bag.splice(i,1)[0];it.slot=it.slot||"weapon";const old=p.equips[it.slot];if(old)p.bag.push(old);p.equips[it.slot]=it;p.selectedSlot=it.slot;log("穿上 "+slotMeta[it.slot][1]+"："+it.name);save(false);render()}
+function sellItem(id){const i=p.bag.findIndex(x=>x.id===id);if(i<0)return;const it=p.bag.splice(i,1)[0];p.gold+=it.price;log("賣掉 "+it.name);save(false);render()}
+function unequip(slot){slot=slot||p.selectedSlot||"weapon";if(!p.equips[slot])return;if(p.bag.length>=p.bagCap)return log("背包滿了");p.bag.push(p.equips[slot]);p.equips[slot]=null;save(false);render()}
+function selectSlot(slot){p.selectedSlot=slot;render()}
+function enhanceChance(l){if(l<5)return 1;if(l<10)return .9-(l-5)*.05;if(l<15)return .65-(l-10)*.05;return Math.max(.2,.4-(l-15)*.05)}
+function enhance(){const it=p.equips[p.selectedSlot||"weapon"];if(!it)return log("這格沒有裝備");const cost=30*(it.enh+1)*(it.enh+1);if(p.gold<cost)return log("強化要"+cost+"金");p.gold-=cost;const ch=Math.min(1,enhanceChance(it.enh)+it.pity);if(Math.random()<ch){it.enh++;it.pity=0;sfx("success");log("強化成功 +"+it.enh)}else{it.pity=Math.min(1,it.pity+.1);if(it.enh>=10)it.enh--;log("失敗，保底+"+Math.round(it.pity*100)+"%")}save(false);render()}
+function spendPoint(k){if(p.points<=0)return log("沒點數");p.points--;if(k==="atk")p.bonus.atk+=2;if(k==="aspd")p.bonus.aspd+=.05;if(k==="crit")p.bonus.crit+=.005;if(k==="pen")p.bonus.pen+=.005;if(k==="gold")p.bonus.gold+=.02;if(k==="drop")p.bonus.drop+=.005;save(false);render()}
+function upgrade(k){const c=p.cost[k];if(p.gold<c)return log("金幣不夠");p.gold-=c;if(k==="atk"){p.baseAtk+=10;p.cost.atk=Math.floor(c*1.45)}if(k==="aspd"){p.aspd+=.2;p.cost.aspd=Math.floor(c*1.6)}if(k==="crit"){p.crit=Math.min(.75,p.crit+.03);p.cost.crit=Math.floor(c*1.7)}if(k==="pen"){p.pen=Math.min(.65,p.pen+.01);p.cost.pen=Math.floor(c*1.75)}if(k==="click"){p.click++;p.cost.click=Math.floor(c*2.15);log("強化點擊："+p.click+"x")}if(k==="bag"){p.bagCap+=6;p.cost.bag=Math.floor(c*1.9)}save(false);render()}
+function slash(){if(!hasSkill("slash"))return log("尚未解鎖劈砍");if(p.cd.slash>0)return log("劈砍冷卻中");const lv=skillLv("slash"),mult=1.5+.05*(lv-1);damage(mult,"劈砍Lv"+lv+" ");p.cd.slash=Math.max(2,(10-.15*(lv-1))*(1-cdr()));sfx("skill");log("使用劈砍 Lv"+lv)}
+function shatter(){if(p.lv<60)return log("Lv60開啟破碎");if(!hasSkill("shatter"))return log("尚未解鎖破碎");if(p.cd.shatter>0)return log("破碎冷卻中");if(!fight)return;const lv=skillLv("shatter"),dur=10+.35*(lv-1);fight.e.shatter=dur;p.cd.shatter=Math.max(5,(20-.25*(lv-1))*(1-cdr()));sfx("skill");log("使用破碎 Lv"+lv+"！目標防禦歸0 "+dur.toFixed(1)+"秒");save(false);render()}
+function gale(){if(!hasSkill("gale"))return log("尚未解鎖疾風");if(p.cd.gale>0)return log("疾風冷卻中");const lv=skillLv("gale"),dur=15+.5*(lv-1);p.buff.gale=dur;p.cd.gale=Math.max(8,(30-.35*(lv-1))*(1-cdr()));sfx("skill");log("使用疾風 Lv"+lv+"！攻速+"+Math.round(galeAspdBonus()*100)+"%，持續 "+dur.toFixed(1)+"秒");save(false);render()}
+function autoCastSkills(){if(!p.autoSkill||!fight)return;if(hasSkill("gale")&&p.cd.gale<=0&&(!p.buff.gale||p.buff.gale<=0))gale();if(p.cd.shatter<=0&&p.lv>=60&&fight.hp>fight.max*.45)shatter();if(p.cd.slash<=0)slash()}
+function summonSkill(){if((p.soul||0)<SUMMON_COST)return log("傳承之魂不足，召喚需要 "+SUMMON_COST);p.soul-=SUMMON_COST;const r=Math.random();let grade,count,book=false;if(r<.70){grade="普通";count=rand(1,9)}else if(r<.90){grade="稀有";count=rand(10,20)}else if(r<.98){grade="史詩";count=1;book=true}else if(r<.998){grade="傳說";count=3;book=true}else{grade="神話";count=5;book=true}const id=skillIds[Math.floor(Math.random()*skillIds.length)],nm=skillMeta[id].name;if(book){for(let i=0;i<count;i++)gainSkillExp(id,25);log("祭壇召喚【"+grade+"】：完整技能「"+nm+"」x"+count)}else{p.fragments[id]=(p.fragments[id]||0)+count;log("祭壇召喚【"+grade+"】："+nm+"碎片 +"+count)}save(false);render()}
+function upgradeSkill(id){const need=skillNeed(id),have=p.fragments[id]||0;if(!hasSkill(id)&&have>=30){p.fragments[id]-=30;p.skills[id].unlocked=true;p.skills[id].lv=1;log("碎片解鎖技能："+skillMeta[id].name);save(false);render();return}if(!hasSkill(id))return log("尚未解鎖，需30片碎片解鎖");if(have<need)return log("碎片不足，升級需要 "+need+" 片");p.fragments[id]-=need;gainSkillExp(id,need);save(false);render()}
+function bossFail(){if(fight.mode!=="main"||fight.type!=="boss")return;let failed=p.stage;log("Boss失敗，退回第"+(p.stage-1)+"關");p.j.fail++;p.retryBoss=failed;p.stage=Math.max(1,p.stage-1);save(false);spawnMain()}
+function continueBoss(){if(!p.retryBoss)return;log("繼續挑戰第 "+p.retryBoss+" 關 Boss");p.stage=p.retryBoss;p.retryBoss=0;save(false);spawnMain()}
+function audioInit(){if(!p.sound)return;if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume()}
+function beep(f=440,d=.05,type="square",v=.18){if(!p.sound)return;try{audioInit();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v*(p.vol||1),audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
+function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTimeout(()=>beep(120,.04,"sawtooth",.08),18)}if(k==="crit"){beep(780,.07,"triangle",.20);setTimeout(()=>beep(1080,.06,"triangle",.16),45);setTimeout(()=>beep(150,.055,"sawtooth",.13),25)}if(k==="boss"){beep(85,.11,"sawtooth",.22);setTimeout(()=>beep(140,.08,"square",.16),35)}if(k==="drop"){beep(880,.07,"sine",.18);setTimeout(()=>beep(1320,.09,"sine",.16),55)}if(k==="skill"){beep(520,.08,"triangle",.19);setTimeout(()=>beep(760,.09,"triangle",.16),60)}if(k==="success"){beep(660,.07,"sine",.18);setTimeout(()=>beep(990,.09,"sine",.16),70)}}
+function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");render()}
+function statusHtml(){const e=fight.e;let h="";if(e.burn>0)h+="<span class='badge burn'>🔥燃燒</span>";if(e.poison>0)h+="<span class='badge poison'>☠️中毒</span>";if(e.freeze>0)h+="<span class='badge freeze'>❄️凍結</span>";if(e.break>0)h+="<span class='badge break'>🛡️"+Math.round(e.break*100)+"%</span>";if(e.bleed>0)h+="<span class='badge bleed'>🩸"+Math.round(e.bleed)+"</span>";return h||"<span class='small'>無狀態</span>"}
+function itemStatsHtml(it){const a=Math.floor((it.atk||0)*(1+it.enh*.08));let out=[];if(a)out.push("攻擊+"+a);if(it.critDmg)out.push("暴傷+"+Math.round(it.critDmg*100)+"%");if(it.crit)out.push("暴擊+"+(it.crit*100).toFixed(1)+"%");if(it.cdr)out.push("冷卻-"+(it.cdr*100).toFixed(1)+"%");if(it.def)out.push("防禦+"+Math.floor(it.def*(1+it.enh*.08)));if(it.regen)out.push("回血+"+Math.floor(it.regen*(1+it.enh*.08)));if(it.aspd)out.push("攻速+"+it.aspd);if(it.gold)out.push("金幣+"+Math.round(it.gold*100)+"%");if(it.exp)out.push("經驗+"+Math.round(it.exp*100)+"%");if(it.pen)out.push("破甲+"+(it.pen*100).toFixed(1)+"%");return out.join(" ｜ ")||"特殊裝備"}
+function itemHtml(it,equipped=false){it=migrateItem(it);return `<div class="item"><div class="row"><b class="${it.rar}">+${it.enh} ${slotMeta[it.slot][0]} ${it.name}</b><span>${slotMeta[it.slot][1]}・${it.rn}</span></div><div class="small">${itemStatsHtml(it)}｜保底${Math.round(it.pity*100)}%</div>${equipped?`<button onclick="window.unequip('${it.slot}')">卸下</button>`:`<button onclick="window.equipItem(${it.id})">穿戴</button><button onclick="window.sellItem(${it.id})">賣${it.price}</button>`}</div>`}
+function equipSlotsHtml(){return slots.map(k=>{const it=p.equips[k],m=slotMeta[k],sel=p.selectedSlot===k?" active":"";return `<div class="slot${sel}" onclick="window.selectSlot('${k}')"><div class="emoji">${m[0]}</div><b>${m[1]}</b>${it?`<div class="${it.rar}">+${it.enh} ${it.name.replace(/^.*－/,"")}</div><div class="small">${itemStatsHtml(it)}</div><button onclick="event.stopPropagation();window.unequip('${k}')">卸下</button>`:`<div class="small">空槽</div>`}</div>`}).join("")}
+function renderBagTabs(){const tabs=[["all","全部"],...slots.map(k=>[k,slotMeta[k][0]+slotMeta[k][1]])];$("bagFilter").innerHTML=tabs.map(([k,n])=>`<button class="${p.bagFilter===k?"active":"tab"}" onclick="window.setBagFilter('${k}')">${n}</button>`).join("")}
+function setBagFilter(k){p.bagFilter=k;render()}
+function skillCardHtml(id){const m=skillMeta[id],sk=p.skills[id]||{lv:0,exp:0,unlocked:false},lv=sk.lv||0,frag=p.fragments[id]||0,locked=!sk.unlocked,cd=Math.ceil(p.cd[id]||0);let effect="";if(id==="slash")effect=`傷害倍率 ${(1.5+.05*(Math.max(1,lv)-1)).toFixed(2)}x｜CD ${Math.max(2,(10-.15*(Math.max(1,lv)-1))*(1-cdr())).toFixed(1)}秒`;if(id==="shatter")effect=`防禦歸0 ${(10+.35*(Math.max(1,lv)-1)).toFixed(1)}秒｜CD ${Math.max(5,(20-.25*(Math.max(1,lv)-1))*(1-cdr())).toFixed(1)}秒｜Lv60可用`;if(id==="gale")effect=`攻速+${Math.round((.5+.03*(Math.max(1,lv)-1))*100)}%｜持續 ${(15+.5*(Math.max(1,lv)-1)).toFixed(1)}秒｜CD ${Math.max(8,(30-.35*(Math.max(1,lv)-1))*(1-cdr())).toFixed(1)}秒`;let btn="";if(id==="slash")btn=`<button id="skillSlash" class="purple" onclick="window.slash()" ${cd>0||locked?"disabled":""}>${locked?"未解鎖":(cd>0?"冷卻 "+cd+"s":"使用")}</button>`;if(id==="shatter")btn=`<button id="skillShatter" class="purple" onclick="window.shatter()" ${p.lv<60||cd>0||locked?"disabled":""}>${p.lv<60?"Lv60開啟":(locked?"未解鎖":(cd>0?"冷卻 "+cd+"s":"使用"))}</button>`;if(id==="gale")btn=`<button id="skillGale" class="purple" onclick="window.gale()" ${cd>0||locked?"disabled":""}>${locked?"未解鎖":(cd>0?"冷卻 "+cd+"s":"使用")}</button>`;return `<div class="card row"><div><b>${m.icon} ${m.name} Lv${lv||0}</b><div class="small">${locked?"尚未解鎖｜30片碎片可解鎖":"EXP "+(sk.exp||0)+"/"+skillNeed(id)}｜碎片 ${frag}<br>${effect}</div></div><div>${btn}<button onclick="window.upgradeSkill('${id}')">${locked?"碎片解鎖":"碎片升級"}</button></div></div>`}
+function renderSkills(){if($("soulSkill"))$("soulSkill").textContent=Math.floor(p.soul||0);if($("summonCost"))$("summonCost").textContent=SUMMON_COST;if($("skillList"))$("skillList").innerHTML=skillIds.map(skillCardHtml).join("")}
+function renderDungeon(){
+const running=isDungeon();
+const runningText=running?`<div class="card notice"><b>🏰 副本進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>目前擊殺：${dungeon.kills} 隻<br>本次收益：${dungeon.gain}<br>狀態：挑戰中</div></div>`:"";
+$("dungeonInfo").classList.toggle("hidden",!running);
+$("dungeonInfo").innerHTML=runningText;
+const list=[
+["gold","🪙 金幣副本",25,`次數 ${p.dun.goldRuns}/3｜60秒｜最高 ${p.dun.goldBest||0} 隻`],
+["exp","📖 經驗副本",50,`次數 ${p.dun.expRuns}/3｜120秒｜最高 ${p.dun.expBest||0} 隻`],
+["eq","⚔️ 裝備副本",100,`90秒｜普通怪40%掉裝｜每5隻Boss必掉｜最高 ${p.dun.eqBest||0} 隻`],
+["stone","💎 強化石副本",150,"之後開放"],
+["abyss","🌌 深淵",250,"之後開放"]
+];
+$("dungeonList").innerHTML=list.map(x=>{
+const unlocked=p.high>=x[2];
+const open=unlocked&&(x[0]==="gold"||x[0]==="exp"||x[0]==="eq")&&!running;
+const btnText=running?"副本進行中":(open?"進入":"鎖定");
+return `<div class="card ${!unlocked||running?'lock':''}"><div class="row"><div><b>${x[1]}</b><div class="small">${x[3]}</div><div class="small">解鎖：${x[2]}關</div></div><button ${open?`onclick="window.startDungeon('${x[0]}')"`:"disabled"}>${btnText}</button></div></div>`
+}).join("")
+}
+function render(){if(!fight)return;if($("saveVer"))$("saveVer").textContent=p.saveVersion||GAME_VERSION;$("stage").textContent=p.stage;$("power").textContent=power();$("level").textContent=p.lv;$("points").textContent=p.points;$("gold").textContent=Math.floor(p.gold);if($("soul"))$("soul").textContent=Math.floor(p.soul||0);$("bagCap").textContent=p.bag.length+"/"+p.bagCap;$("atk").textContent=atk().toFixed(1);$("aspd").textContent=asp().toFixed(2);$("crit").textContent=(crit()*100).toFixed(1);$("pen").textContent=(pen()*100).toFixed(1);$("clickPower").textContent=p.click;$("queue").textContent=Math.floor(p.queue);$("enemyEmoji").textContent=fight.emoji;$("enemyName").textContent=fight.name;$("enemyType").textContent=isDungeon()?(dungeon.type==="gold"?"金幣副本":dungeon.type==="exp"?"經驗副本":"裝備副本"):(fight.type==="boss"?"Boss":fight.type==="elite"?"精英":"普通")+"｜建議戰力 "+recPower(p.stage);$("enemyHp").textContent=Math.max(0,Math.floor(fight.hp)).toLocaleString();$("enemyMaxHp").textContent=fight.max.toLocaleString();$("enemyDef").textContent=fight.def;$("effDef").textContent=effDef();$("regen").textContent=Math.floor(effReg());$("drop").textContent=Math.round(Math.min(.95,fight.drop+p.bonus.drop)*100);$("hpBar").style.width=Math.max(0,Math.min(100,fight.hp/fight.max*100))+"%";$("timerBox").classList.toggle("hidden",!(fight.type==="boss"||isDungeon()));$("timer").textContent=Math.max(0,Math.ceil(isDungeon()?dungeon.timer:(fight.timer||0)));if($("mainDungeonInfo")){$("mainDungeonInfo").classList.toggle("hidden",!isDungeon());$("mainDungeonInfo").innerHTML=isDungeon()?`<b>${dungeon.type==="gold"?"🪙 金幣副本":dungeon.type==="exp"?"📖 經驗副本":"⚔️ 裝備副本"}</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜擊殺：${dungeon.kills}｜收益：${dungeon.gain}</div>`:"";}$("challengeBtn").classList.toggle("hidden",!(p.retryBoss&&fight.mode==="main"));if(p.retryBoss)$("challengeBtn").textContent="繼續挑戰第 "+p.retryBoss+" 關 Boss";$("autoBtn").textContent="自動："+(p.auto?"開":"關");$("status").innerHTML=statusHtml();$("costAtk").textContent=p.cost.atk;if($("costAspd"))$("costAspd").textContent=p.cost.aspd;$("costCrit").textContent=p.cost.crit;$("costPen").textContent=p.cost.pen;$("costClick").textContent=p.cost.click;$("costBag").textContent=p.cost.bag;$("equipBox").innerHTML=equipSlotsHtml();renderBagTabs();const shown=p.bagFilter==="all"?p.bag:p.bag.filter(x=>(x.slot||"weapon")===p.bagFilter);$("bagBox").innerHTML=shown.length?shown.map(x=>itemHtml(x,false)).join(""):"<div class='small'>這個分類目前空空</div>";$("forge").textContent=p.equips[p.selectedSlot]?`目前選中：${slotMeta[p.selectedSlot][1]}｜成功率 ${Math.round(Math.min(1,enhanceChance(p.equips[p.selectedSlot].enh)+p.equips[p.selectedSlot].pity)*100)}%，費用 ${30*(p.equips[p.selectedSlot].enh+1)*(p.equips[p.selectedSlot].enh+1)} 金幣`:"點擊裝備格可選擇強化目標";$("journal").innerHTML=`最高關卡：${p.j.high}<br>Boss擊敗：${p.j.boss}<br>累積金幣：${Math.floor(p.j.gold)}<br>挑戰失敗：${p.j.fail}<br>副本擊殺：${isDungeon()?dungeon.kills:0}｜收益：${isDungeon()?dungeon.gain:0}`;renderSkills();if($("autoSkillBtn"))$("autoSkillBtn").textContent="技能自動："+(p.autoSkill?"開":"關");$("soundBtn").textContent="音效："+(p.sound?"開":"關");$("volumeBtn").textContent="音量："+Math.round((p.vol||1)*100)+"%";renderDungeon()}
+function tick(dt){if(!fight)return;tickEffects(dt);fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(hold)request(dt*asp()*p.click);if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
+function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;tick(dt);requestAnimationFrame(loop)}
+function bind(){document.addEventListener("pointerdown",audioInit,{once:true});$("attackBtn").onclick=()=>request(p.click);$("attackBtn").onpointerdown=()=>{hold=true;request(p.click)};$("attackBtn").onpointerup=()=>hold=false;$("attackBtn").onpointercancel=()=>hold=false;$("autoBtn").onclick=()=>{p.auto=!p.auto;p.queue=0;hold=false;save(false);render()};$("challengeBtn").onclick=continueBoss;$("tabMain").onclick=()=>show("main");$("tabDungeon").onclick=()=>show("dungeon");$("tabSkill").onclick=()=>show("skill");document.querySelectorAll("[data-point]").forEach(b=>b.onclick=()=>spendPoint(b.dataset.point));document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>upgrade(b.dataset.up));if($("summonBtn"))$("summonBtn").onclick=summonSkill;if($("autoSkillBtn"))$("autoSkillBtn").onclick=()=>{p.autoSkill=!p.autoSkill;save(false);render()};$("enhanceBtn").onclick=enhance;$("saveBtn").onclick=()=>save(true);$("resetBtn").onclick=reset;$("soundBtn").onclick=()=>{p.sound=!p.sound;if(p.sound)audioInit();save(false);render()};$("volumeBtn").onclick=()=>{const lv=[.5,.75,1,1.25,1.5,2],i=lv.indexOf(p.vol||1);p.vol=lv[(i+1)%lv.length];sfx("hit");save(false);render()}}
+
+function isStandaloneMode(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true}
+function isIOSDevice(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function setupPwaInstall(){
+  const box=$("installBox"),btn=$("installBtn"),hint=$("installHint"),state=$("installState"),ios=$("iosSteps"),iosBtn=$("iosHelpBtn"),close=$("installCloseBtn");
+  if(!box||isStandaloneMode())return;
+  let deferredPrompt=null;
+  const dismissed=localStorage.getItem("chuan_cheng_install_dismissed")==="1";
+  const show=()=>{if(!dismissed)box.classList.remove("hidden")};
+  const iosText="iPhone 不會跳出自動安裝視窗，請用 Safari 的分享按鈕加入主畫面。";
+  if(isIOSDevice()){show();state.textContent="iPhone";hint.textContent=iosText;btn.textContent="顯示加入主畫面教學";ios.classList.remove("hidden");}
+  else{show();state.textContent="等待瀏覽器";hint.textContent="Android Chrome 若支援安裝，這裡會出現安裝按鈕。也可以從右上角選單選「安裝應用程式」。";btn.disabled=true;}
+  window.addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    show();
+    state.textContent="可安裝";
+    hint.textContent="可以把《傳承》安裝到手機主畫面，開啟後會像 App 一樣全螢幕執行。";
+    btn.disabled=false;
+    btn.textContent="安裝《傳承》";
+  });
+  window.addEventListener("appinstalled",()=>{
+    localStorage.removeItem("chuan_cheng_install_dismissed");
+    state.textContent="已安裝";
+    hint.textContent="安裝完成，回到手機主畫面就能看到《傳承》。";
+    setTimeout(()=>box.classList.add("hidden"),1200);
+  });
+  btn.onclick=async()=>{
+    if(isIOSDevice()&&!deferredPrompt){ios.classList.remove("hidden");return;}
+    if(!deferredPrompt){ios.classList.toggle("hidden");return;}
+    deferredPrompt.prompt();
+    const choice=await deferredPrompt.userChoice.catch(()=>null);
+    if(choice&&choice.outcome==="accepted")log("已送出安裝《傳承》請求");
+    deferredPrompt=null;
+  };
+  iosBtn.onclick=()=>ios.classList.toggle("hidden");
+  close.onclick=()=>{localStorage.setItem("chuan_cheng_install_dismissed","1");box.classList.add("hidden")};
+}
+
+window.slash=slash;window.shatter=shatter;window.gale=gale;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;
+if(!load())p=newPlayer();normalizeSpeed();bind();spawnMain();setInterval(()=>save(false),10000);window.addEventListener("pagehide",()=>save(false));requestAnimationFrame(loop);
+</script>
+
+<script>
+function hidePwaSplash(){
+  const splash=document.getElementById("pwaSplash");
+  if(splash){
+    splash.classList.add("hide");
+    setTimeout(()=>splash.remove(),500);
+  }
+}
+window.addEventListener("load",()=>{
+  try{
+    if(typeof setupPwaInstall==="function")setupPwaInstall();
+  }catch(e){console.warn("PWA install setup failed",e);}
+  setTimeout(hidePwaSplash,700);
+  if("serviceWorker" in navigator){navigator.serviceWorker.register("sw.js").catch(()=>{});}
+});
+setTimeout(hidePwaSplash,2500);
+</script>
+</body>
+</html>
