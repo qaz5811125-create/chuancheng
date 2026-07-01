@@ -1,7 +1,9 @@
-const CACHE_NAME = "chuan-cheng-beta-0-4-4-pwa-fix";
+const CACHE_NAME = "chuan-cheng-beta-0-5-0-offline-test";
 const ASSETS = [
   "./",
   "index.html",
+  "CHANGELOG.md",
+  "README.md",
   "manifest.json",
   "cover.png",
   "splash.png",

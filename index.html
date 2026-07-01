@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.4.4 PWA 修正版</title>
+<title>傳承 Beta 0.5.0 Test</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -45,6 +45,10 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .installCard{position:sticky;top:8px;z-index:30;background:linear-gradient(135deg,rgba(127,29,29,.96),rgba(15,23,42,.96) 58%,rgba(30,64,175,.92));border:1px solid rgba(250,204,21,.38)}
 .installTitle{display:flex;justify-content:space-between;gap:8px;align-items:center}.installActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.installActions button{margin:0}.ghostBtn{background:#e5e7eb;box-shadow:0 4px 0 #64748b;color:#111}.installHint{line-height:1.55}.iosSteps{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.28);border-radius:14px;padding:9px;margin-top:8px}
 @media (display-mode: standalone){#installBox{display:none!important}}
+
+.offlineOverlay{position:fixed;inset:0;z-index:9998;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(8px)}
+.offlinePanel{width:min(520px,100%);background:linear-gradient(180deg,rgba(30,41,59,.98),rgba(15,23,42,.98));border:1px solid rgba(250,204,21,.42);border-radius:24px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
+.offlinePanel h2{text-align:center;letter-spacing:3px}.offlineRewards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.offlineRewards div{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:10px}.offlineNote{font-size:13px;opacity:.86;line-height:1.55}
 </style>
 </head>
 <body>
@@ -52,9 +56,27 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div class="app">
 <div class="topLogo">
   <h1>傳承</h1>
-  <div class="small">五裝備欄・技能自動施放・UI 2.0</div>
+  <div class="small">五裝備欄・技能祭壇・離線掛機</div>
 </div>
 
+<div id="offlineModal" class="offlineOverlay hidden">
+  <div class="offlinePanel">
+    <h2>🌙 歡迎回來</h2>
+    <p class="small" style="text-align:center">角色在你離開時仍持續傳承修行。</p>
+    <div class="card" style="margin-top:10px">
+      <div>離線時間：<b id="offlineTime">0分</b></div>
+      <div>離線關卡：<b id="offlineStage">1</b></div>
+    </div>
+    <div class="offlineRewards">
+      <div>💰 金幣<br><b id="offlineGold">+0</b></div>
+      <div>⭐ 經驗<br><b id="offlineExp">+0</b></div>
+      <div>🔥 傳承之魂<br><b id="offlineSoul">+0</b></div>
+      <div>⚔️ 裝備<br><b id="offlineItems">+0</b></div>
+    </div>
+    <div id="offlineNote" class="offlineNote"></div>
+    <button id="claimOfflineBtn" class="big green">領取收益</button>
+  </div>
+</div>
 
 <div id="installBox" class="card installCard hidden">
   <div class="installTitle"><b>📱 安裝《傳承》到主畫面</b><span id="installState" class="pill">偵測中</span></div>
@@ -129,7 +151,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.4.3 Hotfix 2</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.5.0 Test</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -137,9 +159,9 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.4.4";
-const SAVE_KEY="chuan_cheng_beta_043_pwa_install";
-const OLD_SAVE_KEYS=["chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
+const GAME_VERSION="0.5.0";
+const SAVE_KEY="chuan_cheng_beta_050_offline_test";
+const OLD_SAVE_KEYS=["chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
 const itemPools={weapon:["滅世之刃","木裂短劍","鍵盤之刃","祖傳鐮刀","燃燒木槍"],head:["戰神之冠","木紋戰盔","祖靈髮冠","破防頭巾"],armor:["黑龍鎧甲","木甲戰袍","祖傳胸甲","數據外套"],ring:["狂風之戒","破甲戒指","傳家指環","暴富金戒"],shoes:["疾風戰靴","老祖長靴","木紋戰靴","逐風靴"]};
 const slots=Object.keys(slotMeta);
@@ -152,7 +174,7 @@ const skillMeta={
 const skillIds=Object.keys(skillMeta),SUMMON_COST=100;
 let p,fight,dungeon=null,view="main",hold=false,budget=0,last=performance.now(),renderClock=0,audioCtx=null;
 
-function newPlayer(){return{saveVersion:GAME_VERSION,lv:1,exp:0,points:0,gold:0,soul:0,baseAtk:50,aspd:1,crit:.05,pen:.0,click:1,bonus:{atk:0,aspd:0,crit:0,pen:0,gold:0,drop:0,exp:0,cdr:0,critDmg:0,def:0,regen:0},stage:1,high:1,kills:0,boss:0,retryBoss:0,auto:false,queue:0,cost:{atk:10,aspd:25,crit:50,pen:80,click:120,bag:150},bagCap:12,bag:[],equip:null,equips:{weapon:null,head:null,armor:null,ring:null,shoes:null},selectedSlot:"weapon",bagFilter:"all",autoSkill:false,nextId:1,cd:{slash:0,shatter:0,gale:0},buff:{gale:0},skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false}},fragments:{slash:0,shatter:0,gale:0},sound:true,vol:1,dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0},j:{fail:0,gold:0,boss:0,high:1}}}
+function newPlayer(){return{saveVersion:GAME_VERSION,lv:1,exp:0,points:0,gold:0,soul:0,baseAtk:50,aspd:1,crit:.05,pen:.0,click:1,bonus:{atk:0,aspd:0,crit:0,pen:0,gold:0,drop:0,exp:0,cdr:0,critDmg:0,def:0,regen:0},stage:1,high:1,kills:0,boss:0,retryBoss:0,auto:false,queue:0,cost:{atk:10,aspd:25,crit:50,pen:80,click:120,bag:150},bagCap:12,bag:[],equip:null,equips:{weapon:null,head:null,armor:null,ring:null,shoes:null},selectedSlot:"weapon",bagFilter:"all",autoSkill:false,nextId:1,cd:{slash:0,shatter:0,gale:0},buff:{gale:0},skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false}},fragments:{slash:0,shatter:0,gale:0},sound:true,vol:1,dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0},offline:{lastTime:Date.now(),stage:1,pending:null},j:{fail:0,gold:0,boss:0,high:1}}}
 function log(x){const d=document.createElement("div");d.textContent="› "+x;$("log").prepend(d);while($("log").children.length>70)$("log").lastChild.remove()}
 function save(manual=false){try{p.saveVersion=GAME_VERSION;localStorage.setItem(SAVE_KEY,JSON.stringify(p));$("saveStatus").textContent=(manual?"已手動存檔 ":"已自動存檔 ")+new Date().toLocaleTimeString();if(manual)log("已存檔")}catch(e){log("存檔失敗")}}
 function migrateItem(it){if(!it)return it;if(it.slot==="chest")it.slot="armor";if(it.slot==="legs")it.slot="shoes";if(it.slot==="acc")it.slot="ring";if(!slotMeta[it.slot])it.slot="weapon";const sc=p?(p.lv+p.stage*2):10,rar=rarities.find(x=>x[0]===it.rar)||rarities[0],mul=rar[2];if(it.critDmg==null)it.critDmg=it.slot==="weapon"?+(0.25*mul).toFixed(2):0;if(it.cdr==null)it.cdr=it.slot==="head"?+(0.015*mul).toFixed(3):0;if(it.def==null)it.def=it.slot==="armor"?Math.floor((20+sc*6)*mul):0;if(it.regen==null)it.regen=it.slot==="armor"?Math.floor((2+sc*.8)*mul):0;if(it.gold==null)it.gold=it.slot==="ring"?+(0.04*mul).toFixed(2):0;if(it.exp==null)it.exp=it.slot==="shoes"?+(0.04*mul).toFixed(2):0;if(!["ring","shoes"].includes(it.slot))it.aspd=0;return it}
@@ -172,6 +194,9 @@ function migrateSave(){
  p.fragments=Object.assign(fresh.fragments,p.fragments||{});
  p.soul=Number(p.soul||0);
  p.dun=Object.assign(fresh.dun,p.dun||{});
+ p.offline=Object.assign(fresh.offline,p.offline||{});
+ if(!p.offline.lastTime)p.offline.lastTime=Date.now();
+ if(!p.offline.stage)p.offline.stage=p.stage||1;
  p.j=Object.assign(fresh.j,p.j||{});
  const oldEquips=p.equips||{};
  p.equips=Object.assign(fresh.equips,oldEquips);
@@ -261,6 +286,16 @@ function levelUp(){let up=false;while(p.exp>=expNeed()){p.exp-=expNeed();p.lv++;
 function pickRarity(){if(fight.type==="boss"){const a=rarities.filter(x=>["epic","legendary","mythic"].includes(x[0]));return a[Math.floor(Math.random()*a.length)]}let r=Math.random(),s=0;for(const x of rarities){s+=x[3];if(r<=s)return x}return rarities[0]}
 function makeItemStats(slot,sc,mul){const it={atk:0,aspd:0,crit:0,pen:0,critDmg:0,cdr:0,def:0,regen:0,gold:0,exp:0};if(slot==="weapon"){it.atk=Math.floor((12+sc*4+Math.random()*sc*5)*mul);it.critDmg=+(0.18+Math.random()*.08*mul).toFixed(2)}else if(slot==="head"){it.atk=Math.floor((4+sc*1.4)*mul);it.crit=+((.012+Math.random()*.016)*mul).toFixed(3);it.cdr=+((.008+Math.random()*.012)*mul).toFixed(3)}else if(slot==="armor"){it.def=Math.floor((25+sc*7+Math.random()*sc*3)*mul);it.regen=Math.floor((3+sc*.9+Math.random()*sc*.5)*mul)}else if(slot==="ring"){it.aspd=+((Math.random()*.045+.025)*mul).toFixed(2);it.gold=+((.025+Math.random()*.025)*mul).toFixed(2);it.pen=+((Math.random()*.008)*mul).toFixed(3)}else if(slot==="shoes"){it.aspd=+((Math.random()*.04+.02)*mul).toFixed(2);it.exp=+((.025+Math.random()*.025)*mul).toFixed(2);it.crit=+((Math.random()*.008)*mul).toFixed(3)}return it}
 function rollDrop(){if(Math.random()>Math.min(.95,fight.drop+p.bonus.drop))return;if(p.bag.length>=p.bagCap)return log("掉裝但背包滿了");const r=pickRarity(),sc=p.lv+p.stage*2,slot=slots[Math.floor(Math.random()*slots.length)],pool=itemPools[slot],n=pool[Math.floor(Math.random()*pool.length)],stats=makeItemStats(slot,sc,r[2]);const it={id:p.nextId++,slot,rar:r[0],rn:r[1],name:slotMeta[slot][1]+"－"+n,price:Math.floor((20+sc*10)*r[2]),enh:0,pity:0,...stats};p.bag.push(it);sfx("drop");log("掉落："+slotMeta[slot][0]+it.name);save(false)}
+
+function makeOfflineItem(stage){const r=offlineRarity(),sc=p.lv+stage*2,slot=slots[Math.floor(Math.random()*slots.length)],pool=itemPools[slot],n=pool[Math.floor(Math.random()*pool.length)],stats=makeItemStats(slot,sc,r[2]);return{id:p.nextId++,slot,rar:r[0],rn:r[1],name:slotMeta[slot][1]+"－"+n,price:Math.floor((20+sc*10)*r[2]),enh:0,pity:0,...stats}}
+function offlineRarity(){let r=Math.random(),s=0;for(const x of rarities){s+=x[3];if(r<=s)return x}return rarities[0]}
+function formatOfflineTime(sec){sec=Math.floor(sec);const h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60);return (h? h+" 小時 ":"")+(m? m+" 分":"未滿1分")}
+function offlineEnemyAt(stage){const old=p.stage;p.stage=stage;const e=createMainEnemy();p.stage=old;return e}
+function calculateOfflineRewards(){if(!p.offline)p.offline={lastTime:Date.now(),stage:p.stage,pending:null};if(p.offline.pending)return p.offline.pending;const now=Date.now(),last=Number(p.offline.lastTime||now);let sec=Math.floor((now-last)/1000);if(sec<60){p.offline.lastTime=now;p.offline.stage=p.stage;return null}sec=Math.min(sec,28800);const stage=Math.max(1,Number(p.offline.stage||p.stage||1));const e=offlineEnemyAt(stage);const avgDmg=Math.max(1,atk()*(1+crit()*(critDmg()-1))-e.def*(1-pen()));const dps=Math.max(1,avgDmg*asp());const killTime=Math.max(1.5,e.max/dps);const kills=Math.min(50000,Math.floor(sec/killTime));if(kills<=0){p.offline.lastTime=now;p.offline.stage=p.stage;return null}const gold=Math.floor(kills*e.gold*(1+goldBonus()));const exp=Math.floor(kills*e.xp*(1+expBonus()));let soul=0;if(e.type==="elite")soul=kills*5;else if(e.type==="boss")soul=kills*27;const dropRate=Math.min(.95,(e.drop||0)+(p.bonus.drop||0));const equipCount=Math.min(60,Math.floor(kills*dropRate*.18));const items=[];for(let i=0;i<equipCount;i++)items.push(makeOfflineItem(stage));const pending={sec,stage,kills,gold,exp,soul,items,createdAt:now};p.offline.pending=pending;save(false);return pending}
+function showOfflineRewards(){const o=p.offline&&p.offline.pending;if(!o||!$("offlineModal"))return;$("offlineTime").textContent=formatOfflineTime(o.sec);$("offlineStage").textContent=o.stage;$("offlineGold").textContent="+"+Math.floor(o.gold).toLocaleString();$("offlineExp").textContent="+"+Math.floor(o.exp).toLocaleString();$("offlineSoul").textContent="+"+Math.floor(o.soul).toLocaleString();$("offlineItems").textContent="+"+o.items.length;const space=Math.max(0,p.bagCap-p.bag.length),discard=Math.max(0,o.items.length-space);$("offlineNote").textContent="離線期間不推進主線，只重複刷第 "+o.stage+" 關，共模擬擊敗 "+o.kills+" 隻。"+(discard?" 背包空位不足，領取時將捨棄 "+discard+" 件裝備。":"");$("offlineModal").classList.remove("hidden")}
+function claimOfflineRewards(){const o=p.offline&&p.offline.pending;if(!o)return;if(o.gold)p.gold+=o.gold;if(o.exp)p.exp+=o.exp;if(o.soul)p.soul=(p.soul||0)+o.soul;let add=0,discard=0;for(const it of o.items||[]){if(p.bag.length<p.bagCap){p.bag.push(it);add++}else discard++}p.j.gold=(p.j.gold||0)+(o.gold||0);p.exp=Math.floor(p.exp);levelUp();p.offline.pending=null;p.offline.lastTime=Date.now();p.offline.stage=p.stage;save(false);if($("offlineModal"))$("offlineModal").classList.add("hidden");log("領取離線收益：金幣+"+Math.floor(o.gold)+" EXP+"+Math.floor(o.exp)+" 傳承之魂+"+Math.floor(o.soul)+" 裝備+"+add+(discard?"，捨棄"+discard:""));render()}
+function touchOfflineTime(){if(!p.offline)p.offline={lastTime:Date.now(),stage:p.stage,pending:null};if(!p.offline.pending){p.offline.lastTime=Date.now();p.offline.stage=p.stage}}
+
 function equipItem(id){const i=p.bag.findIndex(x=>x.id===id);if(i<0)return;const it=p.bag.splice(i,1)[0];it.slot=it.slot||"weapon";const old=p.equips[it.slot];if(old)p.bag.push(old);p.equips[it.slot]=it;p.selectedSlot=it.slot;log("穿上 "+slotMeta[it.slot][1]+"："+it.name);save(false);render()}
 function sellItem(id){const i=p.bag.findIndex(x=>x.id===id);if(i<0)return;const it=p.bag.splice(i,1)[0];p.gold+=it.price;log("賣掉 "+it.name);save(false);render()}
 function unequip(slot){slot=slot||p.selectedSlot||"weapon";if(!p.equips[slot])return;if(p.bag.length>=p.bagCap)return log("背包滿了");p.bag.push(p.equips[slot]);p.equips[slot]=null;save(false);render()}
@@ -311,7 +346,7 @@ return `<div class="card ${!unlocked||running?'lock':''}"><div class="row"><div>
 function render(){if(!fight)return;if($("saveVer"))$("saveVer").textContent=p.saveVersion||GAME_VERSION;$("stage").textContent=p.stage;$("power").textContent=power();$("level").textContent=p.lv;$("points").textContent=p.points;$("gold").textContent=Math.floor(p.gold);if($("soul"))$("soul").textContent=Math.floor(p.soul||0);$("bagCap").textContent=p.bag.length+"/"+p.bagCap;$("atk").textContent=atk().toFixed(1);$("aspd").textContent=asp().toFixed(2);$("crit").textContent=(crit()*100).toFixed(1);$("pen").textContent=(pen()*100).toFixed(1);$("clickPower").textContent=p.click;$("queue").textContent=Math.floor(p.queue);$("enemyEmoji").textContent=fight.emoji;$("enemyName").textContent=fight.name;$("enemyType").textContent=isDungeon()?(dungeon.type==="gold"?"金幣副本":dungeon.type==="exp"?"經驗副本":"裝備副本"):(fight.type==="boss"?"Boss":fight.type==="elite"?"精英":"普通")+"｜建議戰力 "+recPower(p.stage);$("enemyHp").textContent=Math.max(0,Math.floor(fight.hp)).toLocaleString();$("enemyMaxHp").textContent=fight.max.toLocaleString();$("enemyDef").textContent=fight.def;$("effDef").textContent=effDef();$("regen").textContent=Math.floor(effReg());$("drop").textContent=Math.round(Math.min(.95,fight.drop+p.bonus.drop)*100);$("hpBar").style.width=Math.max(0,Math.min(100,fight.hp/fight.max*100))+"%";$("timerBox").classList.toggle("hidden",!(fight.type==="boss"||isDungeon()));$("timer").textContent=Math.max(0,Math.ceil(isDungeon()?dungeon.timer:(fight.timer||0)));if($("mainDungeonInfo")){$("mainDungeonInfo").classList.toggle("hidden",!isDungeon());$("mainDungeonInfo").innerHTML=isDungeon()?`<b>${dungeon.type==="gold"?"🪙 金幣副本":dungeon.type==="exp"?"📖 經驗副本":"⚔️ 裝備副本"}</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜擊殺：${dungeon.kills}｜收益：${dungeon.gain}</div>`:"";}$("challengeBtn").classList.toggle("hidden",!(p.retryBoss&&fight.mode==="main"));if(p.retryBoss)$("challengeBtn").textContent="繼續挑戰第 "+p.retryBoss+" 關 Boss";$("autoBtn").textContent="自動："+(p.auto?"開":"關");$("status").innerHTML=statusHtml();$("costAtk").textContent=p.cost.atk;if($("costAspd"))$("costAspd").textContent=p.cost.aspd;$("costCrit").textContent=p.cost.crit;$("costPen").textContent=p.cost.pen;$("costClick").textContent=p.cost.click;$("costBag").textContent=p.cost.bag;$("equipBox").innerHTML=equipSlotsHtml();renderBagTabs();const shown=p.bagFilter==="all"?p.bag:p.bag.filter(x=>(x.slot||"weapon")===p.bagFilter);$("bagBox").innerHTML=shown.length?shown.map(x=>itemHtml(x,false)).join(""):"<div class='small'>這個分類目前空空</div>";$("forge").textContent=p.equips[p.selectedSlot]?`目前選中：${slotMeta[p.selectedSlot][1]}｜成功率 ${Math.round(Math.min(1,enhanceChance(p.equips[p.selectedSlot].enh)+p.equips[p.selectedSlot].pity)*100)}%，費用 ${30*(p.equips[p.selectedSlot].enh+1)*(p.equips[p.selectedSlot].enh+1)} 金幣`:"點擊裝備格可選擇強化目標";$("journal").innerHTML=`最高關卡：${p.j.high}<br>Boss擊敗：${p.j.boss}<br>累積金幣：${Math.floor(p.j.gold)}<br>挑戰失敗：${p.j.fail}<br>副本擊殺：${isDungeon()?dungeon.kills:0}｜收益：${isDungeon()?dungeon.gain:0}`;renderSkills();if($("autoSkillBtn"))$("autoSkillBtn").textContent="技能自動："+(p.autoSkill?"開":"關");$("soundBtn").textContent="音效："+(p.sound?"開":"關");$("volumeBtn").textContent="音量："+Math.round((p.vol||1)*100)+"%";renderDungeon()}
 function tick(dt){if(!fight)return;tickEffects(dt);fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(hold)request(dt*asp()*p.click);if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
 function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;tick(dt);requestAnimationFrame(loop)}
-function bind(){document.addEventListener("pointerdown",audioInit,{once:true});$("attackBtn").onclick=()=>request(p.click);$("attackBtn").onpointerdown=()=>{hold=true;request(p.click)};$("attackBtn").onpointerup=()=>hold=false;$("attackBtn").onpointercancel=()=>hold=false;$("autoBtn").onclick=()=>{p.auto=!p.auto;p.queue=0;hold=false;save(false);render()};$("challengeBtn").onclick=continueBoss;$("tabMain").onclick=()=>show("main");$("tabDungeon").onclick=()=>show("dungeon");$("tabSkill").onclick=()=>show("skill");document.querySelectorAll("[data-point]").forEach(b=>b.onclick=()=>spendPoint(b.dataset.point));document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>upgrade(b.dataset.up));if($("summonBtn"))$("summonBtn").onclick=summonSkill;if($("autoSkillBtn"))$("autoSkillBtn").onclick=()=>{p.autoSkill=!p.autoSkill;save(false);render()};$("enhanceBtn").onclick=enhance;$("saveBtn").onclick=()=>save(true);$("resetBtn").onclick=reset;$("soundBtn").onclick=()=>{p.sound=!p.sound;if(p.sound)audioInit();save(false);render()};$("volumeBtn").onclick=()=>{const lv=[.5,.75,1,1.25,1.5,2],i=lv.indexOf(p.vol||1);p.vol=lv[(i+1)%lv.length];sfx("hit");save(false);render()}}
+function bind(){document.addEventListener("pointerdown",audioInit,{once:true});$("attackBtn").onclick=()=>request(p.click);$("attackBtn").onpointerdown=()=>{hold=true;request(p.click)};$("attackBtn").onpointerup=()=>hold=false;$("attackBtn").onpointercancel=()=>hold=false;$("autoBtn").onclick=()=>{p.auto=!p.auto;p.queue=0;hold=false;save(false);render()};$("challengeBtn").onclick=continueBoss;$("tabMain").onclick=()=>show("main");$("tabDungeon").onclick=()=>show("dungeon");$("tabSkill").onclick=()=>show("skill");document.querySelectorAll("[data-point]").forEach(b=>b.onclick=()=>spendPoint(b.dataset.point));document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>upgrade(b.dataset.up));if($("summonBtn"))$("summonBtn").onclick=summonSkill;if($("autoSkillBtn"))$("autoSkillBtn").onclick=()=>{p.autoSkill=!p.autoSkill;save(false);render()};$("enhanceBtn").onclick=enhance;if($("claimOfflineBtn"))$("claimOfflineBtn").onclick=claimOfflineRewards;$("saveBtn").onclick=()=>{touchOfflineTime();save(true)};$("resetBtn").onclick=reset;$("soundBtn").onclick=()=>{p.sound=!p.sound;if(p.sound)audioInit();save(false);render()};$("volumeBtn").onclick=()=>{const lv=[.5,.75,1,1.25,1.5,2],i=lv.indexOf(p.vol||1);p.vol=lv[(i+1)%lv.length];sfx("hit");save(false);render()}}
 
 function isStandaloneMode(){return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true}
 function isIOSDevice(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
@@ -352,7 +387,7 @@ function setupPwaInstall(){
 }
 
 window.slash=slash;window.shatter=shatter;window.gale=gale;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;
-if(!load())p=newPlayer();normalizeSpeed();bind();spawnMain();setInterval(()=>save(false),10000);window.addEventListener("pagehide",()=>save(false));requestAnimationFrame(loop);
+if(!load())p=newPlayer();normalizeSpeed();const pendingOffline=calculateOfflineRewards();bind();spawnMain();if(pendingOffline)showOfflineRewards();setInterval(()=>{touchOfflineTime();save(false)},10000);window.addEventListener("pagehide",()=>{touchOfflineTime();save(false)});window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){touchOfflineTime();save(false)}});requestAnimationFrame(loop);
 </script>
 
 <script>

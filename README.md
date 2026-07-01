@@ -1,25 +1,22 @@
-# 傳承 Beta 0.4.4 PWA 修正版
+# 傳承 Beta 0.5.0 Test
 
-這是手機 GitHub + Netlify 自動部署用的根目錄平鋪版。
+手機 GitHub + Netlify 自動部署版本。
 
-## 上傳方式
+## 本版新增
 
-請解壓縮後，把裡面的檔案全部上傳到 GitHub Repository 根目錄。
-不要直接上傳 ZIP。
+- 離線掛機系統
+- 離線時間最高累積 8 小時
+- 離線收益包含金幣、經驗、傳承之魂、裝備
+- 離線期間不推進主線，只重複刷離線前所在關卡
+- 領取收益視窗
+- 背包不足時自動捨棄超出裝備並提示
+- Save Version 升級至 0.5.0
 
-## 主要檔案
+## 更新方式
 
-- `index.html`：遊戲本體
-- `manifest.json`：PWA 安裝設定
-- `sw.js`：Service Worker 快取與離線支援
-- `icon-192.png` / `icon-512.png`：桌面圖示
-- `maskable-192.png` / `maskable-512.png`：Android maskable 圖示
-- `cover.png` / `splash.png`：封面與啟動畫面
+1. 解壓縮 ZIP。
+2. 將裡面的檔案全部上傳到 GitHub Repository 根目錄。
+3. Commit changes。
+4. Netlify 會自動部署同一個網址。
 
-## Beta 0.4.4 修正
-
-- 修正 manifest icon 路徑。
-- 修正 index.html icon、splash、cover 路徑。
-- 修正 Service Worker 註冊 scope。
-- 使用根目錄平鋪結構，方便手機上傳 GitHub。
-- 保留 Save Version 自動升級。
+請不要直接上傳 ZIP 本體。
