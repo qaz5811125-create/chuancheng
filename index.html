@@ -160,7 +160,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.5.2";
+const GAME_VERSION="0.5.2-status-v3";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -330,9 +330,23 @@ function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTi
 function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");render()}
 function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","poison","freeze","break","bleed","shatter"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
 function statusHtml(){
- const targets=(fight&&fight.monsters?fight.monsters.filter(m=>m.hp>0):[fight]).filter(Boolean);
+ if(!fight)return "<span class='small'>無狀態</span>";
+ const pool=[];
+ if(fight)pool.push(fight);
+ if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);
+ const target=activeMonster();
+ if(target&&!pool.includes(target))pool.push(target);
  const sum={burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0};
- for(const t of targets){const e=ensureEffectBag(t);sum.burn=Math.max(sum.burn,e.burn);sum.poison=Math.max(sum.poison,e.poison);sum.freeze=Math.max(sum.freeze,e.freeze);sum.break=Math.max(sum.break,e.break);sum.bleed=Math.max(sum.bleed,e.bleed);sum.shatter=Math.max(sum.shatter,e.shatter)}
+ for(const t of pool.filter(Boolean)){
+  if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;
+  const e=ensureEffectBag(t);
+  sum.burn=Math.max(sum.burn,Math.max(0,e.burn));
+  sum.poison=Math.max(sum.poison,Math.max(0,e.poison));
+  sum.freeze=Math.max(sum.freeze,Math.max(0,e.freeze));
+  sum.break=Math.max(sum.break,Math.max(0,e.break));
+  sum.bleed=Math.max(sum.bleed,Math.max(0,e.bleed));
+  sum.shatter=Math.max(sum.shatter,Math.max(0,e.shatter));
+ }
  let h="";
  if(sum.burn>0)h+="<span class='badge burn'>🔥 燃燒 "+sum.burn.toFixed(1)+"秒</span>";
  if(sum.poison>0)h+="<span class='badge poison'>☠️ 中毒 "+sum.poison.toFixed(1)+"秒</span>";
