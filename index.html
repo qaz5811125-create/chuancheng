@@ -207,6 +207,7 @@ const skillMeta={
 };
 const skillIds=Object.keys(skillMeta),SUMMON_COST=100;
 const COMBO_TIMEOUT=3;
+const ARMOR_BREAK_RESET_INTERVAL=10;
 const MONSTER_AFFIXES=[
  {id:"berserk",name:"狂暴",desc:"怪物攻速提升，擊殺金幣增加",apply:m=>{m.mAspd=(m.mAspd||0)*1.35;m.gold=Math.floor(m.gold*1.20)}},
  {id:"hard",name:"硬皮",desc:"最大生命提升，擊殺經驗增加",apply:m=>{m.hp=Math.floor(m.hp*1.35);m.max=m.hp;m.xp=Math.floor(m.xp*1.20)}},
@@ -317,6 +318,8 @@ function effectivePlayerDef(){const st=playerStatus();const down=st.defDown>0?.5
 function playerRegen(){return Math.max(0,Math.floor((p.baseRegen||500)+(p.bonus.regen||0)+equipStat("regen")))}
 function isPlayerStunned(){return playerStatus().stun>0}
 function clearPlayerStatus(){p.playerStatus={stun:0,defDown:0,armorBreak:0,bleed:0,bleedTick:.5}}
+function isArmorBreakResetStage(stage=p.stage){return stage>1&&(stage-1)%ARMOR_BREAK_RESET_INTERVAL===0}
+function resetPlayerArmorBreakForStage(stage=p.stage){const st=playerStatus();if(!isArmorBreakResetStage(stage))return false;if((st.armorBreak||0)<=0)return false;st.armorBreak=0;log("🛡️ 破甲重置！");return true}
 function pen(){return Math.min(.9,p.pen+p.bonus.pen+equipStat("pen"))}
 function skillLv(id){return Math.max(1,(p.skills&&p.skills[id]&&p.skills[id].lv)||1)}
 function hasSkill(id){const sk=p.skills&&p.skills[id];return !!(sk&&sk.unlocked)}
@@ -340,7 +343,27 @@ function enterWorldMap(id){const map=WORLD_MAPS.find(m=>m.id===id);if(!map)retur
 function returnOriginMap(){p.world.current="origin";resetCombo();clearPlayerStatus();log("回到起源主線");save(false);spawnMain();show("main")}
 function monsterGrowth(st){return{atk:1+st*.035+Math.pow(st,1.05)*.003,br:1+st*.02,spd:1+Math.min(.8,st*.004)}}
 function finalizeMonster(m){m.mAtk=Math.max(0,Math.floor(m.mAtk||0));m.armorBreak=Math.max(0,Math.floor(m.armorBreak||0));m.mAspd=Math.max(0,Number(m.mAspd||0));m.attackTimer=m.mAspd>0?Math.max(.25,1/m.mAspd)*(0.65+Math.random()*.5):999999;m.skillTimer=m.skillCd?m.skillCd*(.65+Math.random()*.3):0;return m}
-function forestMonsterTemplate(st,type){const baseHp=Math.floor(130*Math.pow(1.17,st-1)+st*55),baseDef=Math.floor(12+st*12+Math.pow(st,1.12)*5),baseReg=Math.floor(2+st*1.6+Math.pow(st,1.05));const g=monsterGrowth(st);let hp,def,reg,gold,xp,drop,emoji,name,mAtk,armorBreak,mAspd,skill=null,skillCd=0,statusRes=1;if(type==="boss"){const rex=Math.random()<.5;if(rex){emoji="🦖";name="森林暴龍";hp=Math.floor(baseHp*10);def=Math.floor(baseDef*3.2);reg=Math.floor(baseReg*4);gold=3200+st*180;xp=420+st*38;drop=1;mAtk=100*g.atk;armorBreak=100*g.br;mAspd=.10*g.spd;skill="bite";skillCd=15}else{emoji="🦕";name="森林古龍";hp=Math.floor(baseHp*13);def=Math.floor(baseDef*8);reg=Math.floor(baseReg*20);gold=3400+st*170;xp=440+st*42;drop=1;mAtk=50*g.atk;armorBreak=200*g.br;mAspd=.01*g.spd;skill="invincible";skillCd=40;statusRes=.55}}else if(type==="elite"){emoji="🐂";name="森林蠻牛";hp=Math.floor(baseHp*3.8);def=Math.floor(baseDef*2.4);reg=Math.floor(baseReg*2);gold=760+st*82;xp=190+st*21;drop=.68;mAtk=50*g.atk;armorBreak=26*g.br;mAspd=.01*g.spd;skill="launch";skillCd=30}else{emoji="🐇";name="森林野兔";hp=Math.floor(baseHp*1.15);def=Math.floor(baseDef*.75);reg=baseReg;gold=55+st*16;xp=35+st*8;drop=.24+Math.min(.2,st*.004);mAtk=25*g.atk;armorBreak=8*g.br;mAspd=.001*g.spd;skill="berserk";skillCd=15}
+function forestMonsterTemplate(st,type){
+ const baseHp=Math.floor(130*Math.pow(1.17,st-1)+st*55),baseDef=Math.floor(12+st*12+Math.pow(st,1.12)*5),baseReg=Math.floor(2+st*1.6+Math.pow(st,1.05));
+ const g=monsterGrowth(st);
+ let hp,def,reg,gold,xp,drop,emoji,name,mAtk,armorBreak,mAspd,skill=null,skillCd=0,statusRes=1;
+ // mAspd 是「每秒攻擊次數」。森林怪物改用固定基準攻速，避免 .001/.01 造成幾乎不攻擊。
+ if(type==="boss"){
+  const rex=Math.random()<.5;
+  if(rex){
+   emoji="🦖";name="森林暴龍";hp=Math.floor(baseHp*10);def=Math.floor(baseDef*3.2);reg=Math.floor(baseReg*4);gold=3200+st*180;xp=420+st*38;drop=1;
+   mAtk=100*g.atk;armorBreak=100*g.br;mAspd=1.00;skill="bite";skillCd=15;
+  }else{
+   emoji="🦕";name="森林古龍";hp=Math.floor(baseHp*13);def=Math.floor(baseDef*8);reg=Math.floor(baseReg*20);gold=3400+st*170;xp=440+st*42;drop=1;
+   mAtk=50*g.atk;armorBreak=200*g.br;mAspd=.67;skill="invincible";skillCd=40;statusRes=.55;
+  }
+ }else if(type==="elite"){
+  emoji="🐂";name="森林蠻牛";hp=Math.floor(baseHp*3.8);def=Math.floor(baseDef*2.4);reg=Math.floor(baseReg*2);gold=760+st*82;xp=190+st*21;drop=.68;
+  mAtk=50*g.atk;armorBreak=26*g.br;mAspd=.83;skill="launch";skillCd=30;
+ }else{
+  emoji="🐇";name="森林野兔";hp=Math.floor(baseHp*1.15);def=Math.floor(baseDef*.75);reg=baseReg;gold=55+st*16;xp=35+st*8;drop=.24+Math.min(.2,st*.004);
+  mAtk=25*g.atk;armorBreak=8*g.br;mAspd=1.67;skill="berserk";skillCd=15;
+ }
  return finalizeMonster(applyMonsterAffixes(enemy({mode:"main",map:"forest",type,name,emoji,hp,def,reg,gold,xp,drop,timer:type==="boss"?90:0,mAtk,armorBreak,mAspd,skill,skillCd,statusRes}),st))}
 function mainMonsterTemplate(st,type){if(currentMapId()==="forest")return forestMonsterTemplate(st,type);const baseHp=Math.floor(100*Math.pow(1.18,st-1)+st*45);const baseDef=Math.floor(8+st*10+Math.pow(st,1.18)*4);const baseReg=Math.floor(1+st*1.4+Math.pow(st,1.08));let hp,def,reg,gold,xp,drop,emoji,name,mAtk,armorBreak,mAspd;const g=monsterGrowth(st);
 if(type==="boss"){
@@ -365,7 +388,7 @@ function activeMonster(){const a=aliveMonsters();return a[0]||fight}
 function formationDropState(){if(!fight.dropState)fight.dropState={items:0};return fight.dropState}
 function settleFormationDeaths(){if(!fight||!fight.monsters)return;let gained=false;for(const m of fight.monsters){if(m.hp<=0&&!m.rewarded){rewardMonster(m,formationDropState());gained=true}}if(gained)levelUp()}
 function refreshTotalHp(){if(fight&&fight.monsters)fight.hp=fight.monsters.reduce((a,m)=>a+Math.max(0,m.hp),0)}
-function spawnMain(){fight=createMainEnemy();p.queue=0;hold=false;budget=0;resetCombo();render()}
+function spawnMain(){resetPlayerArmorBreakForStage();fight=createMainEnemy();p.queue=0;hold=false;budget=0;resetCombo();render()}
 function dungeonName(kind){return kind==="gold"?"金幣":kind==="exp"?"經驗":kind==="stone"?"強化石":"裝備"}
 function startDungeon(kind){resetCombo();if(isDungeon()){log("副本進行中，不能重複進入");return}if(kind==="gold"&&p.high<25)return log("25關解鎖金幣副本");if(kind==="exp"&&p.high<50)return log("50關解鎖經驗副本");if(kind==="eq"&&p.high<100)return log("100關解鎖裝備副本");if(kind==="stone"&&p.high<150)return log("150關解鎖強化石礦坑");if(kind==="gold"&&p.dun.goldRuns<=0)return log("金幣副本次數不足");if(kind==="exp"&&p.dun.expRuns<=0)return log("經驗副本次數不足");if(kind==="gold")p.dun.goldRuns--;else if(kind==="exp")p.dun.expRuns--;dungeon={type:kind,timer:kind==="gold"?60:(kind==="exp"?120:90),kills:0,gain:0,running:true};fight=createDungeonEnemy(kind,0);p.queue=0;hold=false;budget=0;show("main");log(dungeonName(kind)+"副本開始");save(false);render()}
 function endDungeon(){if(!dungeon)return;resetCombo();p.queue=0;hold=false;budget=0;dungeon.running=false;const kind=dungeon.type,bestKey=kind==="gold"?"goldBest":kind==="exp"?"expBest":kind==="stone"?"stoneBest":"eqBest";const old=p.dun[bestKey]||0;if(dungeon.kills>old){p.dun[bestKey]=dungeon.kills;log("🎉 NEW RECORD！"+dungeon.kills+"隻")}log(dungeonName(kind)+"副本結束，擊殺 "+dungeon.kills+"，收益 "+dungeon.gain);dungeon=null;save(false);spawnMain()}
@@ -402,7 +425,7 @@ function tickMonsterAI(dt){if(!fight||isDungeon())return;for(const m of aliveMon
 function playerDeath(){p.j.fail=(p.j.fail||0)+1;p.queue=0;hold=false;budget=0;resetCombo();clearPlayerStatus();p.hp=playerMaxHp();log("玩家血量歸零，戰鬥失敗，本關重新開始");save(false);spawnMain()}
 function gainSoul(n){p.soul=(p.soul||0)+n;log("獲得傳承之魂 +"+n)}
 function rewardMonster(m,dropState){if(m.rewarded)return;m.rewarded=true;const gold=Math.floor(m.gold*(1+goldBonus()));p.gold+=gold;p.j.gold+=gold;p.exp+=Math.floor(m.xp*(1+expBonus()));p.kills++;const af=affixLabel(m);log("擊敗 "+(af?"【"+af+"】 ":"")+m.emoji+" "+m.name+"，金幣+"+gold);if(m.stoneBonus&&Math.random()<m.stoneBonus.chance){const st=rand(m.stoneBonus.min,m.stoneBonus.max);p.stone=(p.stone||0)+st;log("寶藏詞綴：強化石+"+st)}if(m.soulBonus)gainSoul(m.soulBonus);if(m.curseChance&&Math.random()<m.curseChance){battleDebuff.slow=5;log("詛咒爆發：攻速短暫下降")}if(m.type==="elite")gainSoul(rand(3,7));if(m.type==="boss"){p.boss++;p.j.boss++;gainSoul(rand(20,35));log("Boss擊破！")}rollDrop(m,dropState)}
-function killEnemy(){if(isDungeon())return dungeonKill();const dropState=formationDropState();const ms=fight.monsters||[fight];for(const m of ms)rewardMonster(m,dropState);levelUp();if((fight.type==="boss")||(ms.some(m=>m.type==="boss")&&typeOf(p.stage)==="boss"))log("Boss通關！");p.retryBoss=0;p.stage++;p.high=Math.max(p.high,p.stage);p.j.high=p.high;save(false);spawnMain()}
+function killEnemy(){if(isDungeon())return dungeonKill();const dropState=formationDropState();const ms=fight.monsters||[fight];for(const m of ms)rewardMonster(m,dropState);levelUp();if((fight.type==="boss")||(ms.some(m=>m.type==="boss")&&typeOf(p.stage)==="boss"))log("Boss通關！");p.retryBoss=0;p.stage++;p.high=Math.max(p.high,p.stage);p.j.high=p.high;resetPlayerArmorBreakForStage();save(false);spawnMain()}
 function dungeonKill(){if(!dungeon)return;dungeon.kills++;if(dungeon.type==="gold"){const g=Math.floor(700+dungeon.kills*260+Math.pow(dungeon.kills,1.18)*60);p.gold+=g;p.j.gold+=g;dungeon.gain+=g;log("金幣副本 第"+dungeon.kills+"隻 +"+g)}else if(dungeon.type==="exp"){const xp=Math.floor(260+dungeon.kills*120+Math.pow(dungeon.kills,1.22)*90);p.exp+=Math.floor(xp*(1+expBonus()));dungeon.gain+=xp;levelUp();log("經驗副本 第"+dungeon.kills+"隻 +"+xp+"EXP")}else if(dungeon.type==="stone"){const isBoss=dungeon.kills%5===0;const st=isBoss?rand(45,90):rand(6,14)+Math.floor(dungeon.kills*.8);p.stone=(p.stone||0)+st;dungeon.gain+=st;log("強化石礦坑 第"+dungeon.kills+"隻 +"+st+"強化石")}else{const isBoss=dungeon.kills%5===0;let got=false;if(isBoss||Math.random()<.4){const oldType=fight.type,oldDrop=fight.drop;fight.type=isBoss?"boss":"elite";fight.drop=1;rollDrop();if(isBoss)gainSoul(rand(8,15));else if(Math.random()<.35)gainSoul(rand(1,3));fight.type=oldType;fight.drop=oldDrop;got=true}dungeon.gain+=got?1:0;log("裝備副本 第"+dungeon.kills+"隻"+(got?" 掉落裝備":" 未掉落"))}save(false);fight=createDungeonEnemy(dungeon.type,dungeon.kills)}
 function levelUp(){let up=false;while(p.exp>=expNeed()){p.exp-=expNeed();p.lv++;p.points+=3;p.baseAtk+=3;up=true;log("升到Lv."+p.lv+"，能力點+3")}if(up)save(false)}
 function pickRarity(source=fight){if(source.type==="boss"){const a=rarities.filter(x=>["epic","legendary","mythic"].includes(x[0]));return a[Math.floor(Math.random()*a.length)]}let r=Math.random(),s=0;for(const x of rarities){s+=x[3];if(r<=s)return x}return rarities[0]}

@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.5.8-world-forest-survival-v1";
+const CACHE_NAME = "chuancheng-cache-v0.5.8-world-forest-survival-v2";
 const ASSETS = [
   "./",
   "index.html",
