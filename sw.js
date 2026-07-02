@@ -1,9 +1,10 @@
-const CACHE_NAME = "chuancheng-cache-v0.5.7-hit-combo-affix-v1";
+const CACHE_NAME = "chuancheng-cache-v0.5.8-world-forest-survival-v1";
 const ASSETS = [
   "./",
   "index.html",
   "CHANGELOG.md",
   "README.md",
+  "README_Netlify.txt",
   "manifest.json",
   "cover.png",
   "splash.png",
@@ -12,12 +13,12 @@ const ASSETS = [
   "icon-1024.png",
   "maskable-192.png",
   "maskable-512.png",
-  "assets/weapons/wood_sword.png",
-  "assets/weapons/iron_sword.png",
-  "assets/weapons/great_sword.png",
-  "assets/weapons/scythe.png",
-  "assets/weapons/spear.png",
-  "assets/weapons/axe.png"
+  "wood_sword.png",
+  "iron_sword.png",
+  "great_sword.png",
+  "scythe.png",
+  "spear.png",
+  "axe.png"
 ];
 
 self.addEventListener("install", event => {
