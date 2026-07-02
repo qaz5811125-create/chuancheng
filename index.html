@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.5.9</title>
+<title>傳承 Beta 0.7.0</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -122,6 +122,11 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div id="playerStatusBox" class="small playerStatusBox">玩家狀態：無</div>
 </div>
 
+<div class="card" id="jobPanel">
+<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.7.0</span></div>
+<div class="small">職業系統載入中...</div>
+</div>
+
 <div class="card enemy" id="enemyCard">
 <div class="combatStage" id="combatStage">
   <div id="enemyEmoji" class="emoji">🪵</div>
@@ -185,7 +190,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.6.0 森林狀態壓迫與優先目標</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.7.0 職業與專武系統</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -193,7 +198,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.6.0";
+const GAME_VERSION="0.7.0";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -210,7 +215,26 @@ const skillIds=Object.keys(skillMeta),SUMMON_COST=100;
 const COMBO_TIMEOUT=3;
 const ARMOR_BREAK_RESET_INTERVAL=10;
 const BULL_STUN_CHANCE=.15,BULL_STUN_DURATION=3,BULL_STUN_COOLDOWN=8;
-const TARGET_OPTIONS={auto:["⚔️","自動"],rabbit:["🐇","森林兔"],bull:["🐂","森林蠻牛"],rex:["🦖","森林暴龍"],ancient:["🦕","森林古龍"]};
+const TARGET_OPTIONS={
+ auto:["⚔️","自動"],
+ wood:["🪵","木偶"],
+ eliteWood:["👹","精英木偶"],
+ treeBoss:["🌳","木偶王"],
+ rabbit:["🐇","森林兔"],
+ bull:["🐂","森林蠻牛"],
+ rex:["🦖","森林暴龍"],
+ ancient:["🦕","森林古龍"]
+};
+const MAP_TARGET_KEYS={
+ origin:["auto","wood","eliteWood","treeBoss"],
+ forest:["auto","rabbit","bull","rex","ancient"]
+};
+const JOBS={
+ warrior:{icon:"⚔️",name:"戰士",lv:1,weapon:null,weaponName:"無",desc:"基礎職業，無專武與被動。"},
+ berserker:{icon:"🪓",name:"狂戰士",lv:50,weapon:"axe",weaponName:"戰斧專武",desc:"燃燒與撕裂傷害強化，撕裂可無限疊加。"},
+ lancer:{icon:"🐎",name:"戰騎",lv:100,weapon:"spear",weaponName:"長槍專武",desc:"破甲強化，普攻 50% 無視防禦，秒殺率提升至 10%。"},
+ reaper:{icon:"🩸",name:"戰鐮",lv:150,weapon:"scythe",weaponName:"鐮刀專武",desc:"普攻必定攻擊最多 3 個目標，撕裂傷害強化且無限疊加。"}
+};
 const MONSTER_AFFIXES=[
  {id:"berserk",name:"狂暴",desc:"怪物攻速提升，擊殺金幣增加",apply:m=>{m.mAspd=(m.mAspd||0)*1.35;m.gold=Math.floor(m.gold*1.20)}},
  {id:"hard",name:"硬皮",desc:"最大生命提升，擊殺經驗增加",apply:m=>{m.hp=Math.floor(m.hp*1.35);m.max=m.hp;m.xp=Math.floor(m.xp*1.20)}},
@@ -245,7 +269,7 @@ function newPlayer(){return{
  skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false},force:{lv:1,exp:0,unlocked:true}},
  fragments:{slash:0,shatter:0,gale:0,force:0},sound:true,vol:1,
  dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0,stoneBest:0},offline:{lastTime:Date.now(),stage:1,pending:null},
- world:{current:"origin"},preferredTarget:"auto",playerStatus:{stun:0,defDown:0,armorBreak:0,bleed:0,bleedStacks:0,bleedTick:.5,weak:0,chaos:0,regenDown:0,terror:0},
+ world:{current:"origin"},preferredTarget:"auto",preferredTargetByMap:{origin:"auto",forest:"auto"},job:"warrior",specialWeapons:{axe:0,spear:0,scythe:0},playerStatus:{stun:0,defDown:0,armorBreak:0,bleed:0,bleedStacks:0,bleedTick:.5,weak:0,chaos:0,regenDown:0,terror:0},
  j:{fail:0,gold:0,boss:0,high:1}
 }}
 function log(x){const d=document.createElement("div");d.textContent="› "+x;$("log").prepend(d);while($("log").children.length>70)$("log").lastChild.remove()}
@@ -278,6 +302,16 @@ function migrateSave(){
  p.offline=Object.assign(fresh.offline,p.offline||{});
  p.world=Object.assign(fresh.world,p.world||{});
  if(!["origin","forest"].includes(p.world.current))p.world.current="origin";
+ p.preferredTargetByMap=Object.assign(fresh.preferredTargetByMap,p.preferredTargetByMap||{});
+ if(p.preferredTarget&&TARGET_OPTIONS[p.preferredTarget]){
+  const oldMap=targetMapOf(p.preferredTarget);
+  if(oldMap)p.preferredTargetByMap[oldMap]=p.preferredTarget;
+ }
+ for(const mid in p.preferredTargetByMap){const keys=MAP_TARGET_KEYS[mid]||["auto"];if(!keys.includes(p.preferredTargetByMap[mid]))p.preferredTargetByMap[mid]="auto";}
+ p.job=JOBS[p.job]?p.job:"warrior";
+ if(!canUseJob(p.job))p.job="warrior";
+ p.specialWeapons=Object.assign(fresh.specialWeapons,p.specialWeapons||{});
+ for(const k of ["axe","spear","scythe"])p.specialWeapons[k]=Math.max(0,Math.floor(Number(p.specialWeapons[k]||0)));
  p.playerStatus=Object.assign(fresh.playerStatus,p.playerStatus||{});
  if(!TARGET_OPTIONS[p.preferredTarget])p.preferredTarget="auto";
  p.hp=Math.max(1,Math.min(playerMaxHp(),p.hp||playerMaxHp()));
@@ -307,7 +341,7 @@ function reset(){if(confirm("確定重置存檔？")){localStorage.removeItem(SA
 function equippedItems(){return slots.map(k=>p.equips&&p.equips[k]).filter(Boolean)}
 function equipAtk(){return Math.floor(equipStat("atk"))}
 function equipStat(k){return equippedItems().reduce((a,it)=>a+(it[k]||0)*(1+(it.enh||0)*.08),0)}
-function atk(){return (p.baseAtk+p.bonus.atk+equipAtk())*(1+comboDamageBonus())}
+function atk(){return (p.baseAtk+p.bonus.atk+equipAtk())*(1+comboDamageBonus()+jobAtkBonus())}
 function asp(){const st=playerStatus();return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()+comboAspdBonus())*(battleDebuff.slow>0?.85:1)*(st.weak>0?.85:1))}
 function crit(){return Math.min(.95,p.crit+p.bonus.crit+equipStat("crit")+comboCritBonus())}
 function critDmg(){return 2+equipStat("critDmg")}
@@ -325,14 +359,14 @@ function isPlayerStunned(){return playerStatus().stun>0}
 function clearPlayerStatus(){p.playerStatus={stun:0,defDown:0,armorBreak:0,bleed:0,bleedStacks:0,bleedTick:.5,weak:0,chaos:0,regenDown:0,terror:0}}
 function isArmorBreakResetStage(stage=p.stage){return stage>1&&(stage-1)%ARMOR_BREAK_RESET_INTERVAL===0}
 function resetPlayerArmorBreakForStage(stage=p.stage){const st=playerStatus();if(!isArmorBreakResetStage(stage))return false;if((st.armorBreak||0)<=0)return false;st.armorBreak=0;log("🛡️ 破甲重置！");return true}
-function pen(){return Math.min(.9,p.pen+p.bonus.pen+equipStat("pen"))}
+function pen(){return Math.min(.95,p.pen+p.bonus.pen+equipStat("pen")+jobPenBonus())}
 function skillLv(id){return Math.max(1,(p.skills&&p.skills[id]&&p.skills[id].lv)||1)}
 function hasSkill(id){const sk=p.skills&&p.skills[id];return !!(sk&&sk.unlocked)}
 function galeAspdBonus(){return p.buff&&p.buff.gale>0?.5+.03*(skillLv("gale")-1):0}
 function skillNeed(id){return 25+skillLv(id)*15}
 function gainSkillExp(id,amt){const sk=p.skills[id];if(!sk)return;if(!sk.unlocked){sk.unlocked=true;sk.lv=Math.max(1,sk.lv||1);log("解鎖技能："+skillMeta[id].name)}sk.exp=(sk.exp||0)+amt;let up=false;while(sk.exp>=skillNeed(id)){sk.exp-=skillNeed(id);sk.lv++;up=true}if(up)log(skillMeta[id].name+" 提升至 Lv"+sk.lv)}
-function executeRate(){return Math.max(0,Math.min(.05,(p.execute||.000001)+(p.bonus.execute||0)))}
-function power(){return Math.floor(atk()*2+asp()*65+crit()*300+critDmg()*120+pen()*350+executeRate()*120000+cdr()*500+goldBonus()*120+expBonus()*120+playerMaxHp()*0.02+playerDef()*0.4+playerRegen()*3+equippedItems().reduce((a,it)=>a+80+it.enh*25,0))}
+function executeRate(){let v=Math.max(0,(p.execute||.000001)+(p.bonus.execute||0));if(currentJobKey()==="lancer")v=Math.max(v,.10);return Math.min(currentJobKey()==="lancer"?.10:.05,v)}
+function power(){return Math.floor(atk()*2+asp()*65+crit()*300+critDmg()*120+pen()*350+executeRate()*120000+cdr()*500+goldBonus()*120+expBonus()*120+playerMaxHp()*0.02+playerDef()*0.4+playerRegen()*3+specialWeaponLevel()*120+equippedItems().reduce((a,it)=>a+80+it.enh*25,0))}
 function expNeed(){return 40+p.lv*25}
 function typeOf(st){return st%10===0?"boss":st%5===0?"elite":"normal"}
 function isDungeon(){return dungeon&&dungeon.running}
@@ -343,6 +377,23 @@ function pickAffixes(type,st){let count=affixCountFor(type,st),pool=[...MONSTER_
 function applyMonsterAffixes(m,st=p.stage){const picked=pickAffixes(m.type,st);m.affixes=picked.map(a=>({id:a.id,name:a.name,desc:a.desc}));for(const a of picked){if(typeof a.apply==="function")a.apply(m)}m.hp=Math.max(1,Math.floor(m.hp));m.max=Math.max(1,Math.floor(m.max||m.hp));m.def=Math.max(0,Math.floor(m.def||0));m.reg=Math.max(0,Math.floor(m.reg||0));m.gold=Math.max(0,Math.floor(m.gold||0));m.xp=Math.max(0,Math.floor(m.xp||0));m.drop=Math.max(0,Math.min(.95,m.drop||0));return m}
 function currentMapId(){return p&&p.world&&p.world.current?p.world.current:"origin"}
 function currentMapName(){return currentMapId()==="forest"?"森林":"起源主線"}
+
+function currentTargetKeys(){return MAP_TARGET_KEYS[currentMapId()]||["auto"]}
+function targetMapOf(key){for(const mid in MAP_TARGET_KEYS){if(MAP_TARGET_KEYS[mid].includes(key))return mid}return null}
+function preferredTargetKey(mapId=currentMapId()){if(!p.preferredTargetByMap)p.preferredTargetByMap={origin:p.preferredTarget||"auto",forest:"auto"};const keys=MAP_TARGET_KEYS[mapId]||["auto"];let key=p.preferredTargetByMap[mapId]||"auto";if(!keys.includes(key))key="auto";return key}
+function currentJobKey(){if(!p||!JOBS[p.job]||!canUseJob(p.job))return"warrior";return p.job}
+function canUseJob(key){const j=JOBS[key];return !!j&&(!p||p.lv>=j.lv)}
+function specialWeaponKey(job=currentJobKey()){return JOBS[job]&&JOBS[job].weapon}
+function specialWeaponLevel(job=currentJobKey()){const w=specialWeaponKey(job);return w?Math.max(0,Math.floor((p.specialWeapons&&p.specialWeapons[w])||0)):0}
+function specialWeaponCost(job=currentJobKey()){const lv=specialWeaponLevel(job);return {gold:Math.floor(1000*Math.pow(1.35,lv)),stone:Math.floor(10+lv*5)}}
+function jobStatusDamageBonus(kind){const job=currentJobKey(),lv=specialWeaponLevel();if(job==="berserker"&&(kind==="burn"||kind==="bleed"))return .25+lv*.02;if(job==="reaper"&&kind==="bleed")return .35+lv*.025;return 0}
+function jobPenBonus(){return currentJobKey()==="lancer"?.10+specialWeaponLevel()*0.002:0}
+function jobAtkBonus(){const lv=specialWeaponLevel();if(currentJobKey()==="berserker")return .10+lv*.01;if(currentJobKey()==="lancer")return .05+lv*.008;if(currentJobKey()==="reaper")return .03+lv*.006;return 0}
+function canInfiniteBleed(){const job=currentJobKey();return job==="berserker"||job==="reaper"}
+function setJob(key){if(!JOBS[key])return;if(!canUseJob(key))return log(JOBS[key].name+" 需要 Lv."+JOBS[key].lv+" 才能解鎖");p.job=key;resetCombo();save(false);log("切換職業："+JOBS[key].icon+" "+JOBS[key].name);render()}
+function upgradeSpecialWeapon(){const job=currentJobKey(),w=specialWeaponKey(job);if(!w)return log("戰士沒有專武可升級");const c=specialWeaponCost(job);if(p.gold<c.gold||p.stone<c.stone)return log("專武升級資源不足，需要 "+c.gold+" 金幣 + "+c.stone+" 強化石");p.gold-=c.gold;p.stone-=c.stone;p.specialWeapons[w]=specialWeaponLevel(job)+1;save(false);log(JOBS[job].weaponName+" 升到 Lv."+p.specialWeapons[w]);render()}
+function jobPanelHtml(){const cur=currentJobKey(),j=JOBS[cur],sw=specialWeaponKey(cur),lv=specialWeaponLevel(cur),cost=specialWeaponCost(cur);const jobBtns=Object.keys(JOBS).map(k=>{const jj=JOBS[k],locked=!canUseJob(k);return `<button class="${cur===k?"active":"tab"}" onclick="window.setJob('${k}')" ${locked?"disabled":""}>${jj.icon} ${jj.name}${locked?` Lv${jj.lv}`:""}</button>`}).join("");let swHtml=sw?`<div class="small">專武：<b>${j.weaponName}</b> Lv.${lv}｜各職業專武等級獨立，不互相繼承。</div><button class="purple" onclick="window.upgradeSpecialWeapon()">升級${j.weaponName}｜${cost.gold}金幣 + ${cost.stone}強化石</button>`:`<div class="small">專武：尚未啟用。戰士沒有專武與被動。</div>`;return `<div class="row"><b>⚔️ 職業與專武</b><span class="pill">${j.icon} ${j.name}</span></div><div class="multiBtns">${jobBtns}</div><div class="small">被動：${j.desc}</div>${swHtml}`}
+
 function canEnterMap(map){return p.lv>=map.lv}
 function enterWorldMap(id){const map=WORLD_MAPS.find(m=>m.id===id);if(!map)return;if(!canEnterMap(map))return log(map.name+" 需要 Lv"+map.lv+" 才能進入");if(!map.open)return log(map.name+" 尚未開放，入口已保留");p.world.current=id;resetCombo();clearPlayerStatus();p.hp=Math.min(playerMaxHp(),Math.max(1,p.hp||playerMaxHp()));log("進入地圖："+map.name);save(false);spawnMain();show("main")}
 function returnOriginMap(){p.world.current="origin";resetCombo();clearPlayerStatus();log("回到起源主線");save(false);spawnMain();show("main")}
@@ -389,10 +440,11 @@ function createMainEnemy(){const st=p.stage,t=typeOf(st),count=t==="boss"?1:rand
 function createDungeonEnemy(kind,count){let hp,def,name,emoji;if(kind==="gold"){hp=10000+count*10000;def=count===0?100:200+(count-1)*200;name="金幣哥布林";emoji="🪙"}else if(kind==="exp"){hp=50000+count*15000;def=5000+count*1500;name="經驗史萊姆";emoji="📖"}else if(kind==="stone"){hp=65000+count*22000;def=6000+count*1800;name=count%5===4?"礦坑守衛":"強化石魔偶";emoji=count%5===4?"💎":"⛏️"}else{hp=80000+count*25000;def=8000+count*2500;name=count%5===4?"裝備副本Boss":"裝備魔偶";emoji=count%5===4?"🎁":"⚔️"}return enemy({mode:"dungeon",dungeonType:kind,type:"dungeon",name,emoji,hp,def,reg:0,gold:0,xp:0,drop:0,timer:0})}
 function enemy(o){return{...o,max:o.hp,e:o.e||{burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0},dotFloat:0,kills:0,gain:0}}
 function aliveMonsters(){return fight&&fight.monsters?fight.monsters.filter(m=>m.hp>0):[]}
-function targetKeyOf(m){if(!m)return"auto";if(m.targetKey)return m.targetKey;if(m.emoji==="🐇")return"rabbit";if(m.emoji==="🐂")return"bull";if(m.emoji==="🦖")return"rex";if(m.emoji==="🦕")return"ancient";return"auto"}
+function targetKeyOf(m){if(!m)return"auto";if(m.targetKey)return m.targetKey;if(m.emoji==="🐇")return"rabbit";if(m.emoji==="🐂")return"bull";if(m.emoji==="🦖")return"rex";if(m.emoji==="🦕")return"ancient";if(m.emoji==="🪵")return"wood";if(m.emoji==="👹")return"eliteWood";if(m.emoji==="🌳")return"treeBoss";return"auto"}
 function targetName(key){const o=TARGET_OPTIONS[key]||TARGET_OPTIONS.auto;return o[0]+" "+o[1]}
-function activeMonster(){const a=aliveMonsters();if(!a.length)return fight;const pref=p&&p.preferredTarget&&TARGET_OPTIONS[p.preferredTarget]?p.preferredTarget:"auto";if(pref==="auto")return a[0];const pool=a.filter(m=>targetKeyOf(m)===pref);if(pool.length)return pool.slice().sort((x,y)=>x.hp-y.hp)[0];return a[0]}
-function setPriorityTarget(key){if(!TARGET_OPTIONS[key])key="auto";p.preferredTarget=key;log("🎯 優先目標："+targetName(key));save(false);render()}
+function activeMonster(){const a=aliveMonsters();if(!a.length)return fight;const pref=preferredTargetKey();if(pref==="auto")return a[0];const pool=a.filter(m=>targetKeyOf(m)===pref);if(pool.length)return pool.slice().sort((x,y)=>x.hp-y.hp)[0];return a[0]}
+function selectedAttackTargets(){const a=aliveMonsters();if(!a.length)return [fight].filter(Boolean);const first=activeMonster();if(currentJobKey()!=="reaper")return [first];const rest=a.filter(m=>m!==first).sort((x,y)=>x.hp-y.hp);return [first,...rest].filter(Boolean).slice(0,3)}
+function setPriorityTarget(key){const keys=currentTargetKeys();if(!keys.includes(key))key="auto";if(!p.preferredTargetByMap)p.preferredTargetByMap={origin:"auto",forest:"auto"};p.preferredTargetByMap[currentMapId()]=key;p.preferredTarget=key;log("🎯 優先目標："+targetName(key));save(false);render()}
 function formationDropState(){if(!fight.dropState)fight.dropState={items:0};return fight.dropState}
 function settleFormationDeaths(){if(!fight||!fight.monsters)return;let gained=false;for(const m of fight.monsters){if(m.hp<=0&&!m.rewarded){rewardMonster(m,formationDropState());gained=true}}if(gained)levelUp()}
 function refreshTotalHp(){if(fight&&fight.monsters)fight.hp=fight.monsters.reduce((a,m)=>a+Math.max(0,m.hp),0)}
@@ -400,7 +452,8 @@ function spawnMain(){resetPlayerArmorBreakForStage();fight=createMainEnemy();p.q
 function dungeonName(kind){return kind==="gold"?"金幣":kind==="exp"?"經驗":kind==="stone"?"強化石":"裝備"}
 function startDungeon(kind){resetCombo();if(isDungeon()){log("副本進行中，不能重複進入");return}if(kind==="gold"&&p.high<25)return log("25關解鎖金幣副本");if(kind==="exp"&&p.high<50)return log("50關解鎖經驗副本");if(kind==="eq"&&p.high<100)return log("100關解鎖裝備副本");if(kind==="stone"&&p.high<150)return log("150關解鎖強化石礦坑");if(kind==="gold"&&p.dun.goldRuns<=0)return log("金幣副本次數不足");if(kind==="exp"&&p.dun.expRuns<=0)return log("經驗副本次數不足");if(kind==="gold")p.dun.goldRuns--;else if(kind==="exp")p.dun.expRuns--;dungeon={type:kind,timer:kind==="gold"?60:(kind==="exp"?120:90),kills:0,gain:0,running:true};fight=createDungeonEnemy(kind,0);p.queue=0;hold=false;budget=0;show("main");log(dungeonName(kind)+"副本開始");save(false);render()}
 function endDungeon(){if(!dungeon)return;resetCombo();p.queue=0;hold=false;budget=0;dungeon.running=false;const kind=dungeon.type,bestKey=kind==="gold"?"goldBest":kind==="exp"?"expBest":kind==="stone"?"stoneBest":"eqBest";const old=p.dun[bestKey]||0;if(dungeon.kills>old){p.dun[bestKey]=dungeon.kills;log("🎉 NEW RECORD！"+dungeon.kills+"隻")}log(dungeonName(kind)+"副本結束，擊殺 "+dungeon.kills+"，收益 "+dungeon.gain);dungeon=null;save(false);spawnMain()}
-function effDef(){const t=activeMonster(),e=ensureEffectBag(t);if(e.shatter>0)return 0;return Math.floor(t.def*(1-Math.min(.9,pen()+e.break)))}
+function effDefForTarget(t){const e=ensureEffectBag(t);if(e.shatter>0)return 0;return Math.floor(t.def*(1-Math.min(.95,pen()+e.break)))}
+function effDef(){return effDefForTarget(activeMonster())}
 function baseEvade(target=activeMonster()){const type=(target&&target.type)||fight.type;if(type==="boss")return .30;if(type==="elite")return .15;return .05}
 function evadeRate(target=activeMonster()){const e=ensureEffectBag(target);return Math.max(0,Math.min(.90,baseEvade(target)+(target.extraEvade||0)+(e.dodge>0?.50:0)-(e.prison>0?.10:0)))}
 function effReg(){if(fight.monsters)return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);return a+m.reg*(e.freeze>0?.45:1)},0);const e=ensureEffectBag(fight);return fight.reg*(e.freeze>0?.45:1)}
@@ -422,14 +475,14 @@ function affixNames(target){return target&&Array.isArray(target.affixes)?target.
 function affixLabel(target){return affixNames(target).join("・")}
 function affixHtml(target){const names=affixNames(target);return names.length?names.map(n=>`<span class="affixBadge">${n}</span>`).join(""):"<span class='small'>無詞綴</span>"}
 function floatText(x,big=false){const d=document.createElement("div");d.className="float"+(big?" bigFloat":"");d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),big?1100:850)}
-function damage(mult=1,label="",opt={}){if(!fight||isPlayerStunned()||p.hp<=0)return;const target=activeMonster();const pst=playerStatus();if(pst.chaos>0&&Math.random()<.20){floatText("🌀MISS");sfx("hit");return}const te=ensureEffectBag(target);if(te.invincible>0){showHitEffect(opt.hitType||"normal");floatText("無敵");sfx("boss");return}if(Math.random()<evadeRate(target)){floatText("MISS");sfx("hit");return}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;addCombo();showHitEffect("execute");floatText("💀 秒殺！",true);sfx("crit");log("💀 秒殺成功！");settleFormationDeaths();if(fight.hp<=0)killEnemy();return}const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;p.baseAtk+=.1;addCombo();showHitEffect(opt.hitType||(label?"skill":(c?"crit":"normal")));floatText(label+(c?"💥":"")+d);sfx(c?"crit":((target.type||fight.type)==="boss"?"boss":"hit"));rollEffects(target);settleFormationDeaths();if(fight.hp<=0)killEnemy()}
-function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,.08,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.8,e.break+v);else if(k==="bleed")e.bleed=Math.min(20,e.bleed+v);else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
-function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1),burnMul=dotMul*(target.burnTaken||1);const inv=e.invincible>0;if(e.burn>0){if(!inv){const d=55*dt*burnMul;target.hp-=d;msgs.push(["🔥",d])}e.burn=Math.max(0,e.burn-dt)}if(e.poison>0){if(!inv){const d=target.max*.001*dt*dotMul;target.hp-=d;msgs.push(["☠️",d])}e.poison=Math.max(0,e.poison-dt)}if(e.bleed>0){if(!inv){const d=e.bleed*18*dt*dotMul;target.hp-=d;msgs.push(["🩸",d])}e.bleed=Math.max(0,e.bleed-dt*.7)}if(e.freeze>0)e.freeze=Math.max(0,e.freeze-dt);if(e.shatter>0)e.shatter=Math.max(0,e.shatter-dt);if(e.prison>0)e.prison=Math.max(0,e.prison-dt);if(e.invincible>0)e.invincible=Math.max(0,e.invincible-dt);if(e.berserk>0)e.berserk=Math.max(0,e.berserk-dt);if(e.dodge>0)e.dodge=Math.max(0,e.dodge-dt)}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
+function damage(mult=1,label="",opt={}){if(!fight||isPlayerStunned()||p.hp<=0)return;const pst=playerStatus();if(pst.chaos>0&&Math.random()<.20){floatText("🌀MISS");sfx("hit");return}const normal=!label&&!opt.skill&&!opt.forceSingle;const targets=normal?selectedAttackTargets():[activeMonster()];let anyHit=false,anyCrit=false,executed=false,totalDmg=0;for(const target of targets){if(!target||target.hp<=0)continue;const te=ensureEffectBag(target);if(te.invincible>0){showHitEffect(opt.hitType||"normal");floatText("無敵");sfx("boss");continue}if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");continue}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;executed=true;anyHit=true;floatText((target.emoji||"")+"💀 秒殺！",true);log("💀 秒殺成功！");continue}const c=Math.random()<crit();anyCrit=anyCrit||c;const ignoreDef=normal&&currentJobKey()==="lancer"&&Math.random()<.50;const defense=ignoreDef?0:effDefForTarget(target);const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-defense));target.hp-=d;totalDmg+=d;anyHit=true;floatText((target.emoji||"")+(ignoreDef?"貫通 ":"")+label+(c?"💥":"")+d);rollEffects(target)}if(anyHit){if(fight.monsters)refreshTotalHp();else fight.hp=targets[0]?targets[0].hp:fight.hp;p.baseAtk+=.1;addCombo();showHitEffect(opt.hitType||(label?"skill":(executed?"execute":(anyCrit?"crit":"normal"))));sfx(anyCrit?"crit":((activeMonster().type||fight.type)==="boss"?"boss":"hit"));settleFormationDeaths();if(fight.hp<=0)killEnemy()}}
+function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const breakAdd=.08*(currentJobKey()==="lancer"?1.35+specialWeaponLevel()*0.02:1);const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,breakAdd,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.95,e.break+v);else if(k==="bleed"){if(canInfiniteBleed())e.bleed=e.bleed+v;else e.bleed=Math.min(20,e.bleed+v)}else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
+function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1),burnMul=dotMul*(target.burnTaken||1);const inv=e.invincible>0;if(e.burn>0){if(!inv){const d=55*dt*burnMul*(1+jobStatusDamageBonus("burn"));target.hp-=d;msgs.push(["🔥",d])}e.burn=Math.max(0,e.burn-dt)}if(e.poison>0){if(!inv){const d=target.max*.001*dt*dotMul;target.hp-=d;msgs.push(["☠️",d])}e.poison=Math.max(0,e.poison-dt)}if(e.bleed>0){if(!inv){const d=e.bleed*18*dt*dotMul*(1+jobStatusDamageBonus("bleed"));target.hp-=d;msgs.push(["🩸",d])}e.bleed=Math.max(0,e.bleed-dt*.7)}if(e.freeze>0)e.freeze=Math.max(0,e.freeze-dt);if(e.shatter>0)e.shatter=Math.max(0,e.shatter-dt);if(e.prison>0)e.prison=Math.max(0,e.prison-dt);if(e.invincible>0)e.invincible=Math.max(0,e.invincible-dt);if(e.berserk>0)e.berserk=Math.max(0,e.berserk-dt);if(e.dodge>0)e.dodge=Math.max(0,e.dodge-dt)}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
 
 function applyPlayerBleed(duration=10,stacks=1,stacking=false){const st=playerStatus();if(stacking)st.bleedStacks=Math.max(0,Math.floor(st.bleedStacks||0))+stacks;else st.bleedStacks=Math.max(Math.floor(st.bleedStacks||0),stacks);st.bleed=Math.max(st.bleed||0,duration);if(!st.bleedTick)st.bleedTick=.5}
 function applyRabbitRamp(m){if(!m||!m.rabbitRamp)return;m.rabbitRampStacks=Math.min(20,(m.rabbitRampStacks||0)+1);m.mAspd=(m.baseMAspd||m.mAspd||1)*(1+m.rabbitRampStacks*.05);if([5,10,20].includes(m.rabbitRampStacks))log(`🐇 森林野兔狂咬 ${m.rabbitRampStacks} 層，攻速上升`)}
 function applyForestOnHitEffects(m){if(!m||m.map!=="forest")return;const st=playerStatus();if(m.targetKey==="rabbit"){applyPlayerBleed(10,1,false);st.weak=10;applyRabbitRamp(m);floatText("🥀虛弱")}else if(m.targetKey==="rex"){applyPlayerBleed(20,1,true);st.regenDown=10;st.chaos=10;floatText("🦖🩸撕裂+"+(st.bleedStacks||1),true)}}
-function renderPriorityTargets(){const el=$("priorityTargetBox");if(!el)return;const cur=p.preferredTarget||"auto";const keys=["auto","rabbit","bull","rex","ancient"];el.innerHTML=`<div class="small">🎯 優先目標：${targetName(cur)}</div><div class="targetBtns">`+keys.map(k=>{const o=TARGET_OPTIONS[k];return `<button class="${cur===k?"active":"tab"}" onclick="window.setPriorityTarget('${k}')">${o[0]} ${cur===k?"已選":o[1]}</button>`}).join("")+`</div>`}
+function renderPriorityTargets(){const el=$("priorityTargetBox");if(!el)return;const cur=preferredTargetKey();const keys=currentTargetKeys();el.innerHTML=`<div class="small">🎯 優先目標：${targetName(cur)}</div><div class="targetBtns">`+keys.map(k=>{const o=TARGET_OPTIONS[k]||TARGET_OPTIONS.auto;return `<button class="${cur===k?"active":"tab"}" onclick="window.setPriorityTarget('${k}')">${o[0]} ${cur===k?"已選":o[1]}</button>`}).join("")+`</div>`}
 function playerStatusHtml(){const st=playerStatus(),out=[];if(st.stun>0)out.push(`<span class="badge freeze">💫 暈眩 ${st.stun.toFixed(1)}秒</span>`);if(st.bleed>0)out.push(`<span class="badge bleed">🩸 撕裂 ${Math.max(1,Math.floor(st.bleedStacks||1))}層｜${st.bleed.toFixed(1)}秒</span>`);if(st.weak>0)out.push(`<span class="badge poison">🥀 虛弱 攻速-15%｜${st.weak.toFixed(1)}秒</span>`);if(st.chaos>0)out.push(`<span class="badge freeze">🌀 混沌 命中-20%｜${st.chaos.toFixed(1)}秒</span>`);if(st.regenDown>0)out.push(`<span class="badge bleed">🩸 傷口惡化 回血-50%｜${st.regenDown.toFixed(1)}秒</span>`);if(st.terror>0)out.push(`<span class="badge break">🦖 震懾 防禦歸0｜${st.terror.toFixed(1)}秒</span>`);if(st.defDown>0)out.push(`<span class="badge break">🛡️ 降防 ${st.defDown.toFixed(1)}秒</span>`);if((st.armorBreak||0)>0)out.push(`<span class="badge break">🪓 破甲 -${Math.floor(st.armorBreak)}</span>`);return out.join("")||"玩家狀態：無"}
 function tickPlayer(dt){const st=playerStatus();if(st.stun>0)st.stun=Math.max(0,st.stun-dt);if(st.defDown>0)st.defDown=Math.max(0,st.defDown-dt);if(st.weak>0)st.weak=Math.max(0,st.weak-dt);if(st.chaos>0)st.chaos=Math.max(0,st.chaos-dt);if(st.regenDown>0)st.regenDown=Math.max(0,st.regenDown-dt);if(st.terror>0)st.terror=Math.max(0,st.terror-dt);if(st.bleed>0){st.bleed=Math.max(0,st.bleed-dt);st.bleedTick=(st.bleedTick||.5)-dt;if(st.bleedTick<=0){st.bleedTick=.5;const stacks=Math.max(1,Math.floor(st.bleedStacks||1));const d=Math.max(1,Math.floor(playerMaxHp()*.01*stacks));p.hp=Math.max(0,(p.hp||playerMaxHp())-d);floatText("玩家🩸x"+stacks+"-"+d)}}else{st.bleedTick=.5;st.bleedStacks=0}if(st.armorBreak>0)st.armorBreak=Math.max(0,st.armorBreak-dt*2);if(p.hp>0)p.hp=Math.min(playerMaxHp(),(p.hp||playerMaxHp())+effectivePlayerRegen()*dt);if(p.hp<=0)playerDeath()}
 function monsterAttackInterval(m){const e=ensureEffectBag(m),spd=(m.mAspd||0)*(e.berserk>0?2:1);return spd>0?Math.max(.25,1/spd):999999}
@@ -569,7 +622,7 @@ return `<div class="card ${!unlocked||running?'lock':''}"><div class="row"><div>
 }).join("")
 }
 
-function renderPlayerPanel(){const max=playerMaxHp(),hp=Math.max(0,Math.min(max,p.hp||max));if($("playerHp"))$("playerHp").textContent=Math.floor(hp).toLocaleString();if($("playerMaxHp"))$("playerMaxHp").textContent=max.toLocaleString();if($("playerHpBar"))$("playerHpBar").style.width=Math.max(0,Math.min(100,hp/max*100))+"%";if($("playerDef"))$("playerDef").textContent=playerDef().toLocaleString();if($("playerEffDef"))$("playerEffDef").textContent=effectivePlayerDef().toLocaleString();if($("playerRegen"))$("playerRegen").textContent=effectivePlayerRegen().toLocaleString();if($("playerStatusBox"))$("playerStatusBox").innerHTML=playerStatusHtml();if($("mapNow"))$("mapNow").textContent=currentMapName();if($("mapHud"))$("mapHud").textContent=currentMapId()==="forest"?"森林":"起源"}
+function renderPlayerPanel(){const max=playerMaxHp(),hp=Math.max(0,Math.min(max,p.hp||max));if($("playerHp"))$("playerHp").textContent=Math.floor(hp).toLocaleString();if($("playerMaxHp"))$("playerMaxHp").textContent=max.toLocaleString();if($("playerHpBar"))$("playerHpBar").style.width=Math.max(0,Math.min(100,hp/max*100))+"%";if($("playerDef"))$("playerDef").textContent=playerDef().toLocaleString();if($("playerEffDef"))$("playerEffDef").textContent=effectivePlayerDef().toLocaleString();if($("playerRegen"))$("playerRegen").textContent=effectivePlayerRegen().toLocaleString();if($("playerStatusBox"))$("playerStatusBox").innerHTML=playerStatusHtml();if($("mapNow"))$("mapNow").textContent=currentMapName();if($("mapHud"))$("mapHud").textContent=currentMapId()==="forest"?"森林":"起源";if($("jobPanel"))$("jobPanel").innerHTML=jobPanelHtml()}
 function renderWorld(){const el=$("worldMapList");if(!el)return;const cur=currentMapId();const originBtn=cur==="origin"?"disabled":"onclick='window.returnOriginMap()'";const origin=`<div class="mapCard ${cur==="origin"?"current":"open"}"><div class="mapTitle"><div><b>🏠 起源主線</b><div class="small">既有主線怪物與所有舊系統保留。</div></div><button ${originBtn}>${cur==="origin"?"目前所在地":"返回"}</button></div></div>`;el.innerHTML=origin+WORLD_MAPS.map(m=>{const levelOk=canEnterMap(m),open=levelOk&&m.open,curNow=cur===m.id,cls=curNow?"current":(open?"open":(!m.open&&levelOk?"coming":"locked"));const state=curNow?"目前所在地":(!levelOk?"未解鎖":(m.open?"已解鎖":"尚未開放"));const btn=curNow?"目前所在地":(!levelOk?`Lv${m.lv} 解鎖`:(m.open?"進入":"敬請期待"));const attr=open&&!curNow?`onclick='window.enterWorldMap("${m.id}")'`:"disabled";return `<div class="mapCard ${cls}"><div class="mapTitle"><div><b>${m.icon} ${m.name}</b><div class="small">解鎖等級：Lv ${m.lv}｜${state}<br>${m.desc}</div></div><button ${attr}>${btn}</button></div></div>`}).join("")}
 function render(){if(!fight)return;if($("saveVer"))$("saveVer").textContent=p.saveVersion||GAME_VERSION;$("stage").textContent=p.stage;$("power").textContent=power();$("level").textContent=p.lv;$("points").textContent=p.points;$("gold").textContent=Math.floor(p.gold);if($("soul"))$("soul").textContent=Math.floor(p.soul||0);if($("stone"))$("stone").textContent=Math.floor(p.stone||0);$("bagCap").textContent=p.bag.length+"/"+p.bagCap;$("atk").textContent=atk().toFixed(1);$("aspd").textContent=asp().toFixed(2);$("crit").textContent=(crit()*100).toFixed(1);$("pen").textContent=(pen()*100).toFixed(1);if($("executeRate"))$("executeRate").textContent=(executeRate()*100).toFixed(4);$("queue").textContent=Math.floor(p.queue);const target=activeMonster();const monsters=fight.monsters||[];renderCombo();renderPlayerPanel();renderWorld();if($("formationCount"))$("formationCount").textContent=monsters.length||1;$("enemyEmoji").textContent=isDungeon()?fight.emoji:(monsters.length?target.emoji:fight.emoji);$("enemyName").textContent=isDungeon()?fight.name:(monsters.length>1?"怪物編隊｜"+(affixLabel(target)?affixLabel(target)+" ":"")+target.name:(affixLabel(target)?affixLabel(target)+" ":"")+target.name);if($("affixBox"))$("affixBox").innerHTML=isDungeon()?"":affixHtml(target);$("enemyType").textContent=isDungeon()?(dungeon.type==="gold"?"金幣副本":dungeon.type==="exp"?"經驗副本":dungeon.type==="stone"?"強化石副本":"裝備副本"):(fight.type==="boss"?"Boss":fight.type==="elite"?"精英":"普通")+"｜建議戰力 "+recPower(p.stage);const targetIndex=monsters.indexOf(target);if($("monsterList"))$("monsterList").innerHTML=monsters.length?monsters.map((m,i)=>`<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===targetIndex?"🎯 ":""}${m.emoji} ${m.name}${m.rabbitRampStacks?`<span class="monsterAffixes">狂咬 ${m.rabbitRampStacks}層</span>`:""}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`).join(""):"";renderPriorityTargets();$("enemyHp").textContent=Math.max(0,Math.floor(fight.hp)).toLocaleString();$("enemyMaxHp").textContent=fight.max.toLocaleString();$("enemyDef").textContent=target.def||fight.def;$("effDef").textContent=effDef();$("regen").textContent=Math.floor(effReg());$("drop").textContent=Math.round(Math.min(.95,(target.drop||fight.drop||0)+p.bonus.drop)*100);$("hpBar").style.width=Math.max(0,Math.min(100,fight.hp/fight.max*100))+"%";$("timerBox").classList.toggle("hidden",!(fight.type==="boss"||isDungeon()));$("timer").textContent=Math.max(0,Math.ceil(isDungeon()?dungeon.timer:(fight.timer||0)));if($("mainDungeonInfo")){$("mainDungeonInfo").classList.toggle("hidden",!isDungeon());$("mainDungeonInfo").innerHTML=isDungeon()?`<b>${dungeon.type==="gold"?"🪙 金幣副本":dungeon.type==="exp"?"📖 經驗副本":dungeon.type==="stone"?"💎 強化石礦坑":"⚔️ 裝備副本"}</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜擊殺：${dungeon.kills}｜收益：${dungeon.gain}</div>`:"";}$("challengeBtn").classList.toggle("hidden",!(p.retryBoss&&fight.mode==="main"));if(p.retryBoss)$("challengeBtn").textContent="繼續挑戰第 "+p.retryBoss+" 關 Boss";$("autoBtn").textContent="自動："+(p.auto?"開":"關");$("status").innerHTML=statusHtml();renderWeapon();renderMulBox("pointMulBox",p.pointMul,"setPointMul");renderMulBox("upMulBox",p.upMul,"setUpMul");if($("pointMulNow"))$("pointMulNow").textContent="×"+p.pointMul;if($("upMulNow"))$("upMulNow").textContent="×"+p.upMul;if($("autoDismantleSelect"))$("autoDismantleSelect").value=p.autoDismantle||"none";$("costAtk").textContent=p.cost.atk;if($("costAspd"))$("costAspd").textContent=p.cost.aspd;$("costCrit").textContent=p.cost.crit;$("costPen").textContent=p.cost.pen;if($("costExecute"))$("costExecute").textContent=p.cost.execute;if($("costHp"))$("costHp").textContent=p.cost.hp;if($("costDef"))$("costDef").textContent=p.cost.def;if($("costRegen"))$("costRegen").textContent=p.cost.regen;$("costBag").textContent=p.cost.bag;$("equipBox").innerHTML=equipSlotsHtml();renderBagTabs();const shown=p.bagFilter==="all"?p.bag:p.bag.filter(x=>(x.slot||"weapon")===p.bagFilter);$("bagBox").innerHTML=shown.length?shown.map(x=>itemHtml(x,false)).join(""):"<div class='small'>這個分類目前空空</div>";$("forge").textContent=p.equips[p.selectedSlot]?`目前選中：${slotMeta[p.selectedSlot][1]}｜成功率 ${Math.round(Math.min(1,enhanceChance(p.equips[p.selectedSlot].enh)+p.equips[p.selectedSlot].pity)*100)}%，費用 ${enhanceCostGold(p.equips[p.selectedSlot].enh)} 金幣 + ${enhanceCostStone(p.equips[p.selectedSlot].enh)} 強化石`:"點擊裝備格可選擇強化目標";$("journal").innerHTML=`最高關卡：${p.j.high}<br>Boss擊敗：${p.j.boss}<br>累積金幣：${Math.floor(p.j.gold)}<br>挑戰失敗：${p.j.fail}<br>最高連擊：${combo.best||0}<br>副本擊殺：${isDungeon()?dungeon.kills:0}｜收益：${isDungeon()?dungeon.gain:0}`;renderSkills();if($("autoSkillBtn"))$("autoSkillBtn").textContent="技能自動："+(p.autoSkill?"開":"關");$("soundBtn").textContent="音效："+(p.sound?"開":"關");$("volumeBtn").textContent="音量："+Math.round((p.vol||1)*100)+"%";renderDungeon()}
 function tick(dt){if(!fight)return;tickCombo();tickPlayer(dt);tickMonsterAI(dt);if(!fight)return;if(battleDebuff.slow>0)battleDebuff.slow=Math.max(0,battleDebuff.slow-dt);tickEffects(dt);if(fight.monsters){for(const m of aliveMonsters()){const e=ensureEffectBag(m);m.hp=Math.min(m.max,m.hp+m.reg*(e.freeze>0?.45:1)*dt)}refreshTotalHp()}else fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(isPlayerStunned()){p.queue=0;budget=0;hold=false}else{if(hold)request(dt*asp());if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
@@ -614,7 +667,7 @@ function setupPwaInstall(){
   close.onclick=()=>{localStorage.setItem("chuan_cheng_install_dismissed","1");box.classList.add("hidden")};
 }
 
-window.setPriorityTarget=setPriorityTarget;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;
+window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;
 if(!load())p=newPlayer();normalizeSpeed();const pendingOffline=calculateOfflineRewards();bind();spawnMain();if(pendingOffline)showOfflineRewards();setInterval(()=>{touchOfflineTime();save(false)},10000);window.addEventListener("pagehide",()=>{touchOfflineTime();save(false)});window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){touchOfflineTime();save(false)}});requestAnimationFrame(loop);
 </script>
 
