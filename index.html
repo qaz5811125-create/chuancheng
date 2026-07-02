@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.7.0</title>
+<title>傳承 Beta 0.8.0</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -123,7 +123,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 </div>
 
 <div class="card" id="jobPanel">
-<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.7.0</span></div>
+<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.8.0</span></div>
 <div class="small">職業系統載入中...</div>
 </div>
 
@@ -190,7 +190,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.7.0 職業與專武系統</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.8.0 職業擴充與元素法師</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -198,7 +198,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.7.0";
+const GAME_VERSION="0.8.0";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -233,7 +233,10 @@ const JOBS={
  warrior:{icon:"⚔️",name:"戰士",lv:1,weapon:null,weaponName:"無",desc:"基礎職業，無專武與被動。"},
  berserker:{icon:"🪓",name:"狂戰士",lv:50,weapon:"axe",weaponName:"戰斧專武",desc:"燃燒與撕裂傷害強化，撕裂可無限疊加。"},
  lancer:{icon:"🐎",name:"戰騎",lv:100,weapon:"spear",weaponName:"長槍專武",desc:"破甲強化，普攻 50% 無視防禦，秒殺率提升至 10%。"},
- reaper:{icon:"🩸",name:"戰鐮",lv:150,weapon:"scythe",weaponName:"鐮刀專武",desc:"普攻必定攻擊最多 3 個目標，撕裂傷害強化且無限疊加。"}
+ reaper:{icon:"🩸",name:"戰鐮",lv:150,weapon:"scythe",weaponName:"鐮刀專武",desc:"普攻必定攻擊最多 3 個目標，撕裂傷害強化且無限疊加。"},
+ assassin:{icon:"🗡️",name:"刺客",lv:200,weapon:"dagger",weaponName:"帶毒匕首",desc:"無限疊毒，閃避+35%，普攻命中一次疊 2 層中毒。"},
+ mage:{icon:"🔥",name:"法師",lv:300,weapon:"staff",weaponName:"元素法杖",desc:"燃燒疊層、技能爆發、魔力爆燃與元素護盾。"},
+ archer:{icon:"🏹",name:"弓箭手",lv:350,weapon:"bow",weaponName:"破碎之弓",desc:"傳說級職業，多段攻擊、破碎散射與天災一擊。"}
 };
 const MONSTER_AFFIXES=[
  {id:"berserk",name:"狂暴",desc:"怪物攻速提升，擊殺金幣增加",apply:m=>{m.mAspd=(m.mAspd||0)*1.35;m.gold=Math.floor(m.gold*1.20)}},
@@ -269,7 +272,7 @@ function newPlayer(){return{
  skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false},force:{lv:1,exp:0,unlocked:true}},
  fragments:{slash:0,shatter:0,gale:0,force:0},sound:true,vol:1,
  dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0,stoneBest:0},offline:{lastTime:Date.now(),stage:1,pending:null},
- world:{current:"origin"},preferredTarget:"auto",preferredTargetByMap:{origin:"auto",forest:"auto"},job:"warrior",specialWeapons:{axe:0,spear:0,scythe:0},playerStatus:{stun:0,defDown:0,armorBreak:0,bleed:0,bleedStacks:0,bleedTick:.5,weak:0,chaos:0,regenDown:0,terror:0},
+ world:{current:"origin"},preferredTarget:"auto",preferredTargetByMap:{origin:"auto",forest:"auto"},job:"warrior",specialWeapons:{axe:0,spear:0,scythe:0,dagger:0,staff:0,bow:0},playerStatus:{stun:0,defDown:0,armorBreak:0,bleed:0,bleedStacks:0,bleedTick:.5,weak:0,chaos:0,regenDown:0,terror:0},
  j:{fail:0,gold:0,boss:0,high:1}
 }}
 function log(x){const d=document.createElement("div");d.textContent="› "+x;$("log").prepend(d);while($("log").children.length>70)$("log").lastChild.remove()}
@@ -311,7 +314,7 @@ function migrateSave(){
  p.job=JOBS[p.job]?p.job:"warrior";
  if(!canUseJob(p.job))p.job="warrior";
  p.specialWeapons=Object.assign(fresh.specialWeapons,p.specialWeapons||{});
- for(const k of ["axe","spear","scythe"])p.specialWeapons[k]=Math.max(0,Math.floor(Number(p.specialWeapons[k]||0)));
+ for(const k of ["axe","spear","scythe","dagger","staff","bow"])p.specialWeapons[k]=Math.max(0,Math.floor(Number(p.specialWeapons[k]||0)));
  p.playerStatus=Object.assign(fresh.playerStatus,p.playerStatus||{});
  if(!TARGET_OPTIONS[p.preferredTarget])p.preferredTarget="auto";
  p.hp=Math.max(1,Math.min(playerMaxHp(),p.hp||playerMaxHp()));
@@ -342,7 +345,7 @@ function equippedItems(){return slots.map(k=>p.equips&&p.equips[k]).filter(Boole
 function equipAtk(){return Math.floor(equipStat("atk"))}
 function equipStat(k){return equippedItems().reduce((a,it)=>a+(it[k]||0)*(1+(it.enh||0)*.08),0)}
 function atk(){return (p.baseAtk+p.bonus.atk+equipAtk())*(1+comboDamageBonus()+jobAtkBonus())}
-function asp(){const st=playerStatus();return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()+comboAspdBonus())*(battleDebuff.slow>0?.85:1)*(st.weak>0?.85:1))}
+function asp(){const st=playerStatus();return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()+comboAspdBonus()+jobAspdBonus())*(battleDebuff.slow>0?.85:1)*(st.weak>0?.85:1))}
 function crit(){return Math.min(.95,p.crit+p.bonus.crit+equipStat("crit")+comboCritBonus())}
 function critDmg(){return 2+equipStat("critDmg")}
 function cdr(){return Math.min(.5,p.bonus.cdr+equipStat("cdr"))}
@@ -386,10 +389,16 @@ function canUseJob(key){const j=JOBS[key];return !!j&&(!p||p.lv>=j.lv)}
 function specialWeaponKey(job=currentJobKey()){return JOBS[job]&&JOBS[job].weapon}
 function specialWeaponLevel(job=currentJobKey()){const w=specialWeaponKey(job);return w?Math.max(0,Math.floor((p.specialWeapons&&p.specialWeapons[w])||0)):0}
 function specialWeaponCost(job=currentJobKey()){const lv=specialWeaponLevel(job);return {gold:Math.floor(1000*Math.pow(1.35,lv)),stone:Math.floor(10+lv*5)}}
-function jobStatusDamageBonus(kind){const job=currentJobKey(),lv=specialWeaponLevel();if(job==="berserker"&&(kind==="burn"||kind==="bleed"))return .25+lv*.02;if(job==="reaper"&&kind==="bleed")return .35+lv*.025;return 0}
+function jobStatusDamageBonus(kind){const job=currentJobKey(),lv=specialWeaponLevel();if(job==="berserker"&&kind==="burn")return .25+lv*.02;return 0}
+function bleedRate(){const job=currentJobKey();if(job==="berserker")return .015;if(job==="reaper")return .0135;return .01}
+function burnRate(){return .011}
+function poisonRate(){return .009}
 function jobPenBonus(){return currentJobKey()==="lancer"?.10+specialWeaponLevel()*0.002:0}
 function jobAtkBonus(){const lv=specialWeaponLevel();if(currentJobKey()==="berserker")return .10+lv*.01;if(currentJobKey()==="lancer")return .05+lv*.008;if(currentJobKey()==="reaper")return .03+lv*.006;return 0}
+function jobAspdBonus(){return currentJobKey()==="archer"?.50:0}
 function canInfiniteBleed(){const job=currentJobKey();return job==="berserker"||job==="reaper"}
+function canInfinitePoison(){return currentJobKey()==="assassin"}
+function canInfiniteBurn(){return currentJobKey()==="mage"}
 function setJob(key){if(!JOBS[key])return;if(!canUseJob(key))return log(JOBS[key].name+" 需要 Lv."+JOBS[key].lv+" 才能解鎖");p.job=key;resetCombo();save(false);log("切換職業："+JOBS[key].icon+" "+JOBS[key].name);render()}
 function upgradeSpecialWeapon(){const job=currentJobKey(),w=specialWeaponKey(job);if(!w)return log("戰士沒有專武可升級");const c=specialWeaponCost(job);if(p.gold<c.gold||p.stone<c.stone)return log("專武升級資源不足，需要 "+c.gold+" 金幣 + "+c.stone+" 強化石");p.gold-=c.gold;p.stone-=c.stone;p.specialWeapons[w]=specialWeaponLevel(job)+1;save(false);log(JOBS[job].weaponName+" 升到 Lv."+p.specialWeapons[w]);render()}
 function jobPanelHtml(){const cur=currentJobKey(),j=JOBS[cur],sw=specialWeaponKey(cur),lv=specialWeaponLevel(cur),cost=specialWeaponCost(cur);const jobBtns=Object.keys(JOBS).map(k=>{const jj=JOBS[k],locked=!canUseJob(k);return `<button class="${cur===k?"active":"tab"}" onclick="window.setJob('${k}')" ${locked?"disabled":""}>${jj.icon} ${jj.name}${locked?` Lv${jj.lv}`:""}</button>`}).join("");let swHtml=sw?`<div class="small">專武：<b>${j.weaponName}</b> Lv.${lv}｜各職業專武等級獨立，不互相繼承。</div><button class="purple" onclick="window.upgradeSpecialWeapon()">升級${j.weaponName}｜${cost.gold}金幣 + ${cost.stone}強化石</button>`:`<div class="small">專武：尚未啟用。戰士沒有專武與被動。</div>`;return `<div class="row"><b>⚔️ 職業與專武</b><span class="pill">${j.icon} ${j.name}</span></div><div class="multiBtns">${jobBtns}</div><div class="small">被動：${j.desc}</div>${swHtml}`}
@@ -475,9 +484,16 @@ function affixNames(target){return target&&Array.isArray(target.affixes)?target.
 function affixLabel(target){return affixNames(target).join("・")}
 function affixHtml(target){const names=affixNames(target);return names.length?names.map(n=>`<span class="affixBadge">${n}</span>`).join(""):"<span class='small'>無詞綴</span>"}
 function floatText(x,big=false){const d=document.createElement("div");d.className="float"+(big?" bigFloat":"");d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),big?1100:850)}
-function damage(mult=1,label="",opt={}){if(!fight||isPlayerStunned()||p.hp<=0)return;const pst=playerStatus();if(pst.chaos>0&&Math.random()<.20){floatText("🌀MISS");sfx("hit");return}const normal=!label&&!opt.skill&&!opt.forceSingle;const targets=normal?selectedAttackTargets():[activeMonster()];let anyHit=false,anyCrit=false,executed=false,totalDmg=0;for(const target of targets){if(!target||target.hp<=0)continue;const te=ensureEffectBag(target);if(te.invincible>0){showHitEffect(opt.hitType||"normal");floatText("無敵");sfx("boss");continue}if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");continue}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;executed=true;anyHit=true;floatText((target.emoji||"")+"💀 秒殺！",true);log("💀 秒殺成功！");continue}const c=Math.random()<crit();anyCrit=anyCrit||c;const ignoreDef=normal&&currentJobKey()==="lancer"&&Math.random()<.50;const defense=ignoreDef?0:effDefForTarget(target);const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-defense));target.hp-=d;totalDmg+=d;anyHit=true;floatText((target.emoji||"")+(ignoreDef?"貫通 ":"")+label+(c?"💥":"")+d);rollEffects(target)}if(anyHit){if(fight.monsters)refreshTotalHp();else fight.hp=targets[0]?targets[0].hp:fight.hp;p.baseAtk+=.1;addCombo();showHitEffect(opt.hitType||(label?"skill":(executed?"execute":(anyCrit?"crit":"normal"))));sfx(anyCrit?"crit":((activeMonster().type||fight.type)==="boss"?"boss":"hit"));settleFormationDeaths();if(fight.hp<=0)killEnemy()}}
-function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const breakAdd=.08*(currentJobKey()==="lancer"?1.35+specialWeaponLevel()*0.02:1);const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,breakAdd,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.95,e.break+v);else if(k==="bleed"){if(canInfiniteBleed())e.bleed=e.bleed+v;else e.bleed=Math.min(20,e.bleed+v)}else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
-function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1),burnMul=dotMul*(target.burnTaken||1);const inv=e.invincible>0;if(e.burn>0){if(!inv){const d=55*dt*burnMul*(1+jobStatusDamageBonus("burn"));target.hp-=d;msgs.push(["🔥",d])}e.burn=Math.max(0,e.burn-dt)}if(e.poison>0){if(!inv){const d=target.max*.001*dt*dotMul;target.hp-=d;msgs.push(["☠️",d])}e.poison=Math.max(0,e.poison-dt)}if(e.bleed>0){if(!inv){const d=e.bleed*18*dt*dotMul*(1+jobStatusDamageBonus("bleed"));target.hp-=d;msgs.push(["🩸",d])}e.bleed=Math.max(0,e.bleed-dt*.7)}if(e.freeze>0)e.freeze=Math.max(0,e.freeze-dt);if(e.shatter>0)e.shatter=Math.max(0,e.shatter-dt);if(e.prison>0)e.prison=Math.max(0,e.prison-dt);if(e.invincible>0)e.invincible=Math.max(0,e.invincible-dt);if(e.berserk>0)e.berserk=Math.max(0,e.berserk-dt);if(e.dodge>0)e.dodge=Math.max(0,e.dodge-dt)}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
+function addBleed(target,stacks=1){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));if(canInfiniteBleed())e.bleed=Math.max(0,Math.floor(e.bleed||0))+add;else e.bleed=Math.min(20,Math.max(0,Math.floor(e.bleed||0))+add)}
+function addPoison(target,stacks=1,infinite=false){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));const uncapped=infinite||canInfinitePoison();e.poison=uncapped?Math.max(0,Math.floor(e.poison||0))+add:Math.min(20,Math.max(0,Math.floor(e.poison||0))+add);e.poisonDecay=e.poisonDecay||5}
+function addBurn(target,stacks=1,infinite=false){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));const uncapped=infinite||canInfiniteBurn();e.burn=uncapped?Math.max(0,Math.floor(e.burn||0))+add:Math.min(20,Math.max(0,Math.floor(e.burn||0))+add);e.burnDecay=e.burnDecay||5}
+function archerAttackPlan(normal,first){let targets=selectedAttackTargets(),mods=[1],tag="";if(!normal||currentJobKey()!=="archer")return{targets,mods,tag,big:false};const alive=aliveMonsters();targets=[first];let scatter=false;if(alive.length&&Math.random()<.20){scatter=true;targets=[first,...alive.filter(m=>m!==first).sort((x,y)=>x.hp-y.hp)].slice(0,3)}const n=Math.max(1,targets.length);const scatterBonus=scatter?(n>=3?1.05:n===2?1.10:1.20):1;let heaven=false;if(Math.random()<.35){heaven=true;tag="🏹天災一擊 ";}
+ const r=Math.random();if(r<.001){mods=[.0095,.0095,.0095];tag+=(heaven?"":"🏹爆炸三連 ")}else if(r<.101){mods=[1,1,1];tag+=(heaven?"":"🏹三連 ")}else if(r<.601){mods=[1,1];tag+=(heaven?"":"🏹二連 ")}const boost=(heaven?50:1)*scatterBonus;mods=mods.map(x=>x*boost);return{targets,mods,tag,big:heaven}}
+function damage(mult=1,label="",opt={}){if(!fight||isPlayerStunned()||p.hp<=0)return;const pst=playerStatus();if(pst.chaos>0&&Math.random()<.20){floatText("🌀MISS");sfx("hit");return}let skillMult=mult;if((opt.skill||label)&&currentJobKey()==="mage")skillMult*=1.5;const normal=!label&&!opt.skill&&!opt.forceSingle;let targets=normal?selectedAttackTargets():[activeMonster()];const first=targets[0]||activeMonster();const plan=archerAttackPlan(normal,first);targets=plan.targets;const hitMods=plan.mods;let anyHit=false,anyCrit=false,executed=false,totalDmg=0;for(const target of targets){if(!target||target.hp<=0)continue;for(const hm of hitMods){if(target.hp<=0)break;const te=ensureEffectBag(target);if(te.invincible>0){showHitEffect(opt.hitType||"normal");floatText("無敵");sfx("boss");continue}if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");continue}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;executed=true;anyHit=true;floatText((target.emoji||"")+"💀 秒殺！",true);log("💀 秒殺成功！");continue}const c=Math.random()<crit();anyCrit=anyCrit||c;const ignoreDef=normal&&currentJobKey()==="lancer"&&Math.random()<.50;const defense=ignoreDef?0:effDefForTarget(target);let d=Math.max(1,Math.floor(atk()*skillMult*hm*(c?critDmg():1)-defense));target.hp-=d;totalDmg+=d;anyHit=true;floatText((target.emoji||"")+(ignoreDef?"貫通 ":"")+plan.tag+label+(c?"💥":"")+d,plan.big);if(normal&&currentJobKey()==="mage"&&ensureEffectBag(target).burn>0){const md=Math.max(1,Math.floor(atk()*.20));target.hp-=md;totalDmg+=md;floatText("🔥魔法+"+md)}if(normal&&currentJobKey()==="mage"&&ensureEffectBag(target).burn>0&&Math.random()<.20){const bd=Math.max(1,Math.floor(atk()*Math.floor(ensureEffectBag(target).burn||0)*.02));target.hp-=bd;totalDmg+=bd;floatText("🌋爆燃 "+bd,true)}if(normal&&currentJobKey()==="assassin"){addPoison(target,2,true);const tox=Math.max(1,Math.floor(atk()*.35-effDefForTarget(target)));te.toxic=5;te.toxicDmg=Math.max(te.toxicDmg||0,tox);floatText("☠️毒刃+2")}
+ if(normal&&currentJobKey()==="mage"&&Math.random()<.30){addBurn(target,1,true);floatText("🔥燃燒+1")}
+ rollEffects(target)}}if(anyHit){if(fight.monsters)refreshTotalHp();else fight.hp=targets[0]?targets[0].hp:fight.hp;p.baseAtk+=.1;addCombo();showHitEffect(opt.hitType||(label?"skill":(executed?"execute":(anyCrit?"crit":"normal"))));sfx(anyCrit?"crit":((activeMonster().type||fight.type)==="boss"?"boss":"hit"));settleFormationDeaths();if(fight.hp<=0)killEnemy()}}
+function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const breakAdd=.08*(currentJobKey()==="lancer"?1.35+specialWeaponLevel()*0.02:1);const a=[["burn",.12,1,"🔥燃燒"],["poison",.1,1,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,breakAdd,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.95,e.break+v);else if(k==="bleed")addBleed(target,v);else if(k==="poison")addPoison(target,v);else if(k==="burn")addBurn(target,v);else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
+function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1),burnMul=dotMul*(target.burnTaken||1);const inv=e.invincible>0;if(e.burn>0){if(!inv){const d=atk()*burnRate()*Math.floor(e.burn)*dt*burnMul*(1+jobStatusDamageBonus("burn"));target.hp-=d;msgs.push(["🔥",d])}e.burnDecay=(e.burnDecay||5)-dt;if(e.burnDecay<=0){e.burn=Math.max(0,Math.floor(e.burn)-1);e.burnDecay=5}}if(e.poison>0){if(!inv){const d=atk()*poisonRate()*Math.floor(e.poison)*dt*dotMul;target.hp-=d;msgs.push(["☠️",d])}e.poisonDecay=(e.poisonDecay||5)-dt;if(e.poisonDecay<=0){e.poison=Math.max(0,Math.floor(e.poison)-1);e.poisonDecay=5}}if(e.bleed>0){if(!inv){const d=atk()*bleedRate()*Math.floor(e.bleed)*dt*dotMul;target.hp-=d;msgs.push(["🩸",d])}e.bleed=Math.max(0,e.bleed-dt*.7)}if(e.toxic>0){if(!inv){const d=(e.toxicDmg||1)*dt*dotMul;target.hp-=d;msgs.push(["☠️毒",d])}e.toxic=Math.max(0,e.toxic-dt);if(e.toxic<=0)e.toxicDmg=0}if(e.freeze>0)e.freeze=Math.max(0,e.freeze-dt);if(e.shatter>0)e.shatter=Math.max(0,e.shatter-dt);if(e.prison>0)e.prison=Math.max(0,e.prison-dt);if(e.invincible>0)e.invincible=Math.max(0,e.invincible-dt);if(e.berserk>0)e.berserk=Math.max(0,e.berserk-dt);if(e.dodge>0)e.dodge=Math.max(0,e.dodge-dt)}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
 
 function applyPlayerBleed(duration=10,stacks=1,stacking=false){const st=playerStatus();if(stacking)st.bleedStacks=Math.max(0,Math.floor(st.bleedStacks||0))+stacks;else st.bleedStacks=Math.max(Math.floor(st.bleedStacks||0),stacks);st.bleed=Math.max(st.bleed||0,duration);if(!st.bleedTick)st.bleedTick=.5}
 function applyRabbitRamp(m){if(!m||!m.rabbitRamp)return;m.rabbitRampStacks=Math.min(20,(m.rabbitRampStacks||0)+1);m.mAspd=(m.baseMAspd||m.mAspd||1)*(1+m.rabbitRampStacks*.05);if([5,10,20].includes(m.rabbitRampStacks))log(`🐇 森林野兔狂咬 ${m.rabbitRampStacks} 層，攻速上升`)}
@@ -486,9 +502,9 @@ function renderPriorityTargets(){const el=$("priorityTargetBox");if(!el)return;c
 function playerStatusHtml(){const st=playerStatus(),out=[];if(st.stun>0)out.push(`<span class="badge freeze">💫 暈眩 ${st.stun.toFixed(1)}秒</span>`);if(st.bleed>0)out.push(`<span class="badge bleed">🩸 撕裂 ${Math.max(1,Math.floor(st.bleedStacks||1))}層｜${st.bleed.toFixed(1)}秒</span>`);if(st.weak>0)out.push(`<span class="badge poison">🥀 虛弱 攻速-15%｜${st.weak.toFixed(1)}秒</span>`);if(st.chaos>0)out.push(`<span class="badge freeze">🌀 混沌 命中-20%｜${st.chaos.toFixed(1)}秒</span>`);if(st.regenDown>0)out.push(`<span class="badge bleed">🩸 傷口惡化 回血-50%｜${st.regenDown.toFixed(1)}秒</span>`);if(st.terror>0)out.push(`<span class="badge break">🦖 震懾 防禦歸0｜${st.terror.toFixed(1)}秒</span>`);if(st.defDown>0)out.push(`<span class="badge break">🛡️ 降防 ${st.defDown.toFixed(1)}秒</span>`);if((st.armorBreak||0)>0)out.push(`<span class="badge break">🪓 破甲 -${Math.floor(st.armorBreak)}</span>`);return out.join("")||"玩家狀態：無"}
 function tickPlayer(dt){const st=playerStatus();if(st.stun>0)st.stun=Math.max(0,st.stun-dt);if(st.defDown>0)st.defDown=Math.max(0,st.defDown-dt);if(st.weak>0)st.weak=Math.max(0,st.weak-dt);if(st.chaos>0)st.chaos=Math.max(0,st.chaos-dt);if(st.regenDown>0)st.regenDown=Math.max(0,st.regenDown-dt);if(st.terror>0)st.terror=Math.max(0,st.terror-dt);if(st.bleed>0){st.bleed=Math.max(0,st.bleed-dt);st.bleedTick=(st.bleedTick||.5)-dt;if(st.bleedTick<=0){st.bleedTick=.5;const stacks=Math.max(1,Math.floor(st.bleedStacks||1));const d=Math.max(1,Math.floor(playerMaxHp()*.01*stacks));p.hp=Math.max(0,(p.hp||playerMaxHp())-d);floatText("玩家🩸x"+stacks+"-"+d)}}else{st.bleedTick=.5;st.bleedStacks=0}if(st.armorBreak>0)st.armorBreak=Math.max(0,st.armorBreak-dt*2);if(p.hp>0)p.hp=Math.min(playerMaxHp(),(p.hp||playerMaxHp())+effectivePlayerRegen()*dt);if(p.hp<=0)playerDeath()}
 function monsterAttackInterval(m){const e=ensureEffectBag(m),spd=(m.mAspd||0)*(e.berserk>0?2:1);return spd>0?Math.max(.25,1/spd):999999}
-function playerTakeDamage(raw,source="怪物",m=null){const dmg=Math.max(1,Math.floor(raw*(100/(100+effectivePlayerDef()))));p.hp=Math.max(0,(p.hp||playerMaxHp())-dmg);const st=playerStatus();if(m&&m.armorBreak){const cap=Math.max(0,playerDef()*.9);st.armorBreak=Math.min(cap,(st.armorBreak||0)+m.armorBreak)}floatText((m&&m.emoji?m.emoji:"")+"玩家-"+dmg);return dmg}
+function playerTakeDamage(raw,source="怪物",m=null){if(currentJobKey()==="assassin"&&Math.random()<.35){floatText("🗡️刺客閃避");return 0}let incoming=raw;if(currentJobKey()==="mage"&&Math.random()<.10){incoming*=.5;floatText("🧊元素護盾")}const dmg=Math.max(1,Math.floor(incoming*(100/(100+effectivePlayerDef()))));p.hp=Math.max(0,(p.hp||playerMaxHp())-dmg);const st=playerStatus();if(m&&m.armorBreak){const cap=Math.max(0,playerDef()*.9);st.armorBreak=Math.min(cap,(st.armorBreak||0)+m.armorBreak)}floatText((m&&m.emoji?m.emoji:"")+"玩家-"+dmg);return dmg}
 function applyPlayerStun(duration,sourceText=""){const st=playerStatus();if(st.stun>0)return false;st.stun=Math.max(st.stun||0,duration);interruptPlayerActions(sourceText||"💫 玩家被擊暈，連擊中斷");return true}
-function monsterNormalAttack(m){const d=playerTakeDamage(m.mAtk||1,"攻擊",m);if(p.hp<=0){playerDeath();return false}if(d>0)applyForestOnHitEffects(m);if(m.stunChance>0&&m.stunDuration>0&&m.stunProcTimer<=0&&playerStatus().stun<=0&&Math.random()<m.stunChance){m.stunProcTimer=m.stunCd||BULL_STUN_COOLDOWN;applyPlayerStun(m.stunDuration,`${m.emoji} ${m.name} 觸發震盪撞擊，玩家暈眩 ${m.stunDuration} 秒，連擊歸零`);floatText("💫被撞暈！",true);sfx("boss")}return true}
+function monsterNormalAttack(m){const d=playerTakeDamage(m.mAtk||1,"攻擊",m);if(p.hp<=0){playerDeath();return false}if(d>0)applyForestOnHitEffects(m);if(d>0&&m.stunChance>0&&m.stunDuration>0&&m.stunProcTimer<=0&&playerStatus().stun<=0&&Math.random()<m.stunChance){m.stunProcTimer=m.stunCd||BULL_STUN_COOLDOWN;applyPlayerStun(m.stunDuration,`${m.emoji} ${m.name} 觸發震盪撞擊，玩家暈眩 ${m.stunDuration} 秒，連擊歸零`);floatText("💫被撞暈！",true);sfx("boss")}return true}
 function monsterUseSkill(m){if(!m||m.hp<=0||!m.skill)return;const e=ensureEffectBag(m);if(m.skill==="berserk"){e.berserk=5;log(`${m.emoji} ${m.name} 使用狂暴，攻速提升 5 秒`);return}if(m.skill==="dodge"){e.dodge=15;log(`${m.emoji} ${m.name} 使用閃避本能，閃避率提升 15 秒`);return}if(m.skill==="launch"){const d=playerTakeDamage((m.mAtk||1)*2.5,"擊飛",m);if(p.hp<=0){playerDeath();return}const st=playerStatus();st.defDown=Math.max(st.defDown||0,5);applyPlayerStun(3,`${m.emoji} ${m.name} 使用擊飛，造成 ${d} 傷害，玩家暈眩 3 秒`);return}if(m.skill==="bite"){const d=playerTakeDamage((m.mAtk||1)*2,"撕咬",m);if(p.hp<=0){playerDeath();return}applyPlayerBleed(20,1,true);log(`${m.emoji} ${m.name} 使用撕咬，造成 ${d} 傷害並附加撕裂`);return}if(m.skill==="terror"){const st=playerStatus();st.terror=10;log(`${m.emoji} ${m.name} 使用震懾，玩家防禦歸 0 持續 10 秒`);floatText("🦖震懾！",true);return}if(m.skill==="invincible"){e.invincible=20;log(`${m.emoji} ${m.name} 使用無敵，20 秒內免疫物理與狀態傷害`);return}}
 function tickMonsterAI(dt){if(!fight||isDungeon())return;for(const m of aliveMonsters()){if(!m.mAspd&&!m.skill)continue;if(m.stunProcTimer>0)m.stunProcTimer=Math.max(0,m.stunProcTimer-dt);if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<2){if(!monsterNormalAttack(m))return;m.attackTimer+=monsterAttackInterval(m);guard++}if(m.skill&&m.skillCd){if(m.skillTimer==null)m.skillTimer=m.skillCd;m.skillTimer-=dt;if(m.skillTimer<=0){monsterUseSkill(m);if(p.hp<=0)return;m.skillTimer=m.skillCd}}}}
 function playerDeath(){p.j.fail=(p.j.fail||0)+1;p.queue=0;hold=false;budget=0;resetCombo();clearPlayerStatus();p.hp=playerMaxHp();log("玩家血量歸零，戰鬥失敗，本關重新開始");save(false);spawnMain()}
@@ -544,7 +560,7 @@ function audioInit(){if(!p.sound)return;if(!audioCtx)audioCtx=new (window.AudioC
 function beep(f=440,d=.05,type="square",v=.18){if(!p.sound)return;try{audioInit();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v*(p.vol||1),audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+d)}catch(e){}}
 function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTimeout(()=>beep(120,.04,"sawtooth",.08),18)}if(k==="crit"){beep(780,.07,"triangle",.20);setTimeout(()=>beep(1080,.06,"triangle",.16),45);setTimeout(()=>beep(150,.055,"sawtooth",.13),25)}if(k==="boss"){beep(85,.11,"sawtooth",.22);setTimeout(()=>beep(140,.08,"square",.16),35)}if(k==="drop"){beep(880,.07,"sine",.18);setTimeout(()=>beep(1320,.09,"sine",.16),55)}if(k==="skill"){beep(520,.08,"triangle",.19);setTimeout(()=>beep(760,.09,"triangle",.16),60)}if(k==="success"){beep(660,.07,"sine",.18);setTimeout(()=>beep(990,.09,"sine",.16),70)}}
 function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");if($("worldView"))$("worldView").classList.toggle("hidden",v!=="world");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");if($("tabWorld"))$("tabWorld").classList.toggle("active",v==="world");render()}
-function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","poison","freeze","break","bleed","shatter","prison","invincible","berserk","dodge"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
+function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","burnDecay","poison","poisonDecay","freeze","break","bleed","shatter","prison","invincible","berserk","dodge","toxic","toxicDmg"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
 function cleanEquipName(name){return String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
 function weaponVisual(){return null}
 function renderWeapon(){disableLegacyAttackAnimation()}
@@ -567,7 +583,7 @@ function statusHtml(){
  if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);
  const target=activeMonster();
  if(target&&!pool.includes(target))pool.push(target);
- const sum={burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0,invincible:0,berserk:0,dodge:0};
+ const sum={burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0,invincible:0,berserk:0,dodge:0,toxic:0};
  for(const t of pool.filter(Boolean)){
   if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;
   const e=ensureEffectBag(t);
@@ -581,10 +597,11 @@ function statusHtml(){
   sum.invincible=Math.max(sum.invincible,Math.max(0,e.invincible));
   sum.berserk=Math.max(sum.berserk,Math.max(0,e.berserk));
    sum.dodge=Math.max(sum.dodge,Math.max(0,e.dodge));
+  sum.toxic=Math.max(sum.toxic,Math.max(0,e.toxic));
  }
  let h="";
- if(sum.burn>0)h+="<span class='badge burn'>🔥 燃燒 "+sum.burn.toFixed(1)+"秒</span>";
- if(sum.poison>0)h+="<span class='badge poison'>☠️ 中毒 "+sum.poison.toFixed(1)+"秒</span>";
+ if(sum.burn>0)h+="<span class='badge burn'>🔥 燃燒 "+Math.floor(sum.burn)+"層</span>";
+ if(sum.poison>0)h+="<span class='badge poison'>☠️ 中毒 "+Math.floor(sum.poison)+"層</span>";
  if(sum.freeze>0)h+="<span class='badge freeze'>❄️ 冰凍 "+sum.freeze.toFixed(1)+"秒</span>";
  if(sum.break>0)h+="<span class='badge break'>🛡️ 破甲 "+Math.round(sum.break*100)+"%</span>";
  if(sum.bleed>0)h+="<span class='badge bleed'>🩸 撕裂 "+Math.round(sum.bleed)+"層</span>";
@@ -593,6 +610,7 @@ function statusHtml(){
  if(sum.berserk>0)h+="<span class='badge burn'>🐇 狂暴 "+sum.berserk.toFixed(1)+"秒</span>";
  if(sum.dodge>0)h+="<span class='badge freeze'>🐇 閃避 "+sum.dodge.toFixed(1)+"秒｜閃避+50%</span>";
  if(sum.invincible>0)h+="<span class='badge freeze'>🦕 無敵 "+sum.invincible.toFixed(1)+"秒</span>";
+ if(sum.toxic>0)h+="<span class='badge poison'>☠️ 毒性傷害 "+sum.toxic.toFixed(1)+"秒</span>";
  return h||"<span class='small'>無狀態</span>"
 }
 function itemStatsHtml(it){const a=Math.floor((it.atk||0)*(1+it.enh*.08));let out=[];if(a)out.push("攻擊+"+a);if(it.critDmg)out.push("暴傷+"+Math.round(it.critDmg*100)+"%");if(it.crit)out.push("暴擊+"+(it.crit*100).toFixed(1)+"%");if(it.cdr)out.push("冷卻-"+(it.cdr*100).toFixed(1)+"%");if(it.def)out.push("防禦+"+Math.floor(it.def*(1+it.enh*.08)));if(it.regen)out.push("回血+"+Math.floor(it.regen*(1+it.enh*.08)));if(it.aspd)out.push("攻速+"+it.aspd);if(it.gold)out.push("金幣+"+Math.round(it.gold*100)+"%");if(it.exp)out.push("經驗+"+Math.round(it.exp*100)+"%");if(it.pen)out.push("破甲+"+(it.pen*100).toFixed(1)+"%");return out.join(" ｜ ")||"特殊裝備"}
