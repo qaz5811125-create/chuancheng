@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.6.0-forest-status-priority-v1";
+const CACHE_NAME = "chuancheng-cache-v0.8.0-jobs-expansion-elements-v2";
 const ASSETS = [
   "./",
   "index.html",
@@ -18,7 +18,10 @@ const ASSETS = [
   "great_sword.png",
   "scythe.png",
   "spear.png",
-  "axe.png"
+  "axe.png",
+  "attackAnimation.js",
+  "weaponConfig.js",
+  "weaponRenderer.js"
 ];
 
 self.addEventListener("install", event => {
