@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.5.3</title>
+<title>傳承 Beta 0.5.6</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -50,26 +50,18 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .offlinePanel{width:min(520px,100%);background:linear-gradient(180deg,rgba(30,41,59,.98),rgba(15,23,42,.98));border:1px solid rgba(250,204,21,.42);border-radius:24px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .offlinePanel h2{text-align:center;letter-spacing:3px}.offlineRewards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.offlineRewards div{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:10px}.offlineNote{font-size:13px;opacity:.86;line-height:1.55}.monsterLine{display:flex;justify-content:space-between;gap:8px;background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:7px 9px;margin:6px 0}.monsterLine.dead{opacity:.45;text-decoration:line-through}
 
+
 .combatStage{position:relative;height:132px;margin:4px 0 2px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 18%,rgba(250,204,21,.10),transparent 44%),linear-gradient(180deg,rgba(2,6,23,.22),rgba(2,6,23,.08));border:1px solid rgba(148,163,184,.16)}
-#enemyEmoji{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:2;transition:transform .08s ease,filter .08s ease}.enemyHurt #enemyEmoji{transform:translateX(-50%) scale(.92);filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}
-.playerHand{position:absolute;right:20px;bottom:10px;width:205px;height:150px;z-index:4;filter:drop-shadow(0 10px 8px rgba(0,0,0,.45));pointer-events:none;overflow:visible}
-.playerHand.swing.slash{animation:swingSlash .28s cubic-bezier(.2,.75,.18,1)}.playerHand.swing.heavy{animation:swingHeavy .38s cubic-bezier(.2,.75,.18,1)}.playerHand.swing.thrust{animation:swingThrust .25s cubic-bezier(.2,.75,.18,1)}.playerHand.swing.scythe{animation:swingScythe .34s cubic-bezier(.2,.75,.18,1)}.playerHand.swing.axe{animation:swingAxe .36s cubic-bezier(.2,.75,.18,1)}
-.arm{position:absolute;right:10px;bottom:6px;width:58px;height:36px;border-radius:22px 24px 18px 22px;background:linear-gradient(135deg,#f8c78a,#a16207);border:2px solid rgba(255,255,255,.16);transform:rotate(-18deg);z-index:6}.fist{position:absolute;right:54px;bottom:30px;width:32px;height:30px;border-radius:45% 42% 50% 38%;background:linear-gradient(135deg,#ffd7a3,#b45309);border:2px solid rgba(255,255,255,.18);z-index:8}
-.weaponModel{position:absolute;right:74px;bottom:46px;width:0;height:0;overflow:visible;z-index:5;transform:none!important;transform-origin:center center!important}.weaponModel img{position:absolute;width:auto;height:var(--weapon-h,150px);right:var(--weapon-r,0px);bottom:var(--weapon-b,0px);max-width:none;max-height:none;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(0,0,0,.55));transform-origin:var(--weapon-origin,85% 88%);transform:var(--weapon-transform,rotate(0deg));}.weaponEmojiFallback{position:absolute;right:0;bottom:0;font-size:72px;line-height:1;text-shadow:0 2px 0 #111,0 0 14px rgba(250,204,21,.25)}
-.playerHand.weapon-wood .weaponModel img{--weapon-h:150px;--weapon-r:-2px;--weapon-b:-5px;--weapon-origin:86% 88%;--weapon-transform:rotate(0deg)}
-.playerHand.weapon-iron .weaponModel img{--weapon-h:145px;--weapon-r:2px;--weapon-b:-8px;--weapon-origin:50% 92%;--weapon-transform:rotate(145deg)}
-.playerHand.weapon-great .weaponModel img{--weapon-h:172px;--weapon-r:-8px;--weapon-b:-18px;--weapon-origin:58% 88%;--weapon-transform:rotate(160deg)}
-.playerHand.weapon-scythe .weaponModel img{--weapon-h:180px;--weapon-r:-12px;--weapon-b:-26px;--weapon-origin:86% 88%;--weapon-transform:rotate(2deg)}
-.playerHand.weapon-spear .weaponModel img{--weapon-h:190px;--weapon-r:-18px;--weapon-b:-32px;--weapon-origin:18% 90%;--weapon-transform:rotate(0deg)}
-.playerHand.weapon-axe .weaponModel img{--weapon-h:170px;--weapon-r:-12px;--weapon-b:-22px;--weapon-origin:10% 92%;--weapon-transform:rotate(0deg)}
-.weaponShadow{position:absolute;right:22px;bottom:12px;width:160px;height:18px;background:radial-gradient(ellipse,rgba(0,0,0,.36),transparent 68%);transform:translateX(-50%)}.slashArc{position:absolute;left:48%;top:18px;width:120px;height:72px;border-top:5px solid rgba(250,204,21,.88);border-radius:50%;opacity:0;transform:rotate(-24deg);z-index:7;pointer-events:none}.slashArc.show{animation:arcFlash .25s ease-out forwards}
-.weaponNameTag{position:absolute;right:8px;top:8px;font-size:12px;opacity:.8;background:rgba(2,6,23,.5);border:1px solid rgba(148,163,184,.18);border-radius:99px;padding:2px 8px;z-index:5}
-@keyframes swingSlash{0%{transform:translate(0,0) rotate(0deg)}45%{transform:translate(-54px,-18px) rotate(-44deg)}100%{transform:translate(0,0) rotate(0deg)}}
-@keyframes swingHeavy{0%{transform:translate(0,0) rotate(0deg) scale(1)}50%{transform:translate(-62px,-28px) rotate(-64deg) scale(1.08)}100%{transform:translate(0,0) rotate(0deg) scale(1)}}
-@keyframes swingThrust{0%{transform:translate(0,0) rotate(0deg)}45%{transform:translate(-70px,-8px) rotate(4deg)}100%{transform:translate(0,0) rotate(0deg)}}
-@keyframes swingScythe{0%{transform:translate(0,0) rotate(0deg)}55%{transform:translate(-70px,-20px) rotate(-86deg)}100%{transform:translate(0,0) rotate(0deg)}}
-@keyframes swingBow{0%{transform:translate(0,0) rotate(-18deg)}40%{transform:translate(-30px,-10px) rotate(-8deg) scaleX(.9)}70%{transform:translate(-78px,-18px) rotate(-6deg) scaleX(1.04)}100%{transform:translate(0,0) rotate(-18deg)}}
-@keyframes swingAxe{0%{transform:rotate(-18deg) translate(0,0)}42%{transform:rotate(-86deg) translate(-58px,-18px) scale(1.04)}100%{transform:rotate(-18deg) translate(0,0)}}@keyframes arcFlash{0%{opacity:0;transform:scale(.7) rotate(-24deg)}45%{opacity:1}100%{opacity:0;transform:scale(1.18) rotate(-8deg)}}
+#enemyEmoji{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:2;transition:transform .08s ease,filter .08s ease}.enemyHurt #enemyEmoji{animation:enemyShake .12s linear 1;filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}
+.playerHand{position:absolute;right:-58px;bottom:-18px;width:230px;height:170px;z-index:4;pointer-events:none;overflow:visible;opacity:0;transform:translate(86px,58px) rotate(0deg);filter:drop-shadow(0 10px 8px rgba(0,0,0,.45));will-change:transform,opacity}.playerHand.swing{opacity:1}.weaponGrip{position:absolute;right:28px;bottom:28px;width:45px;height:34px;border-radius:45% 42% 50% 38%;background:linear-gradient(135deg,#ffd7a3,#b45309);border:2px solid rgba(255,255,255,.18);z-index:8}.weaponForearm{position:absolute;right:-6px;bottom:8px;width:72px;height:36px;border-radius:24px;background:linear-gradient(135deg,#f8c78a,#a16207);border:2px solid rgba(255,255,255,.16);transform:rotate(-22deg);z-index:6}.weaponModel{position:absolute;right:50px;bottom:42px;width:0;height:0;overflow:visible;z-index:7}.weaponModel img{position:absolute;width:auto;max-width:none;max-height:none;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(0,0,0,.55));transform-origin:var(--weapon-origin,85% 88%);height:var(--weapon-h,150px);right:var(--weapon-r,0px);bottom:var(--weapon-b,0px);transform:var(--weapon-pose,rotate(0deg))}.playerHand.weapon-wood .weaponModel img{--weapon-h:136px;--weapon-r:-10px;--weapon-b:-8px;--weapon-origin:84% 90%;--weapon-pose:rotate(-18deg)}.playerHand.weapon-iron .weaponModel img{--weapon-h:142px;--weapon-r:-8px;--weapon-b:-10px;--weapon-origin:82% 88%;--weapon-pose:rotate(78deg)}.playerHand.weapon-great .weaponModel img{--weapon-h:166px;--weapon-r:-16px;--weapon-b:-18px;--weapon-origin:78% 88%;--weapon-pose:rotate(112deg)}.playerHand.weapon-scythe .weaponModel img{--weapon-h:176px;--weapon-r:-20px;--weapon-b:-24px;--weapon-origin:82% 86%;--weapon-pose:rotate(72deg)}.playerHand.weapon-spear .weaponModel img{--weapon-h:188px;--weapon-r:-34px;--weapon-b:-34px;--weapon-origin:82% 92%;--weapon-pose:rotate(88deg)}.playerHand.weapon-axe .weaponModel img{--weapon-h:160px;--weapon-r:-12px;--weapon-b:-18px;--weapon-origin:74% 90%;--weapon-pose:rotate(116deg)}.slashArc{position:absolute;left:48%;top:18px;width:120px;height:72px;border-top:5px solid rgba(250,204,21,.88);border-radius:50%;opacity:0;transform:rotate(-24deg);z-index:7;pointer-events:none}.slashArc.show{animation:arcFlash .18s ease-out forwards}.slashArc.arc-scythe{width:168px;height:88px;left:42%;top:8px}.slashArc.arc-axe,.slashArc.arc-great{border-top-width:7px}.slashArc.arc-wood{width:98px;height:62px}.weaponNameTag{display:none!important}
+.playerHand.swing.woodSlash{animation:woodSlash .18s cubic-bezier(.1,.82,.16,1) forwards}.playerHand.swing.ironSlash{animation:ironSlash .19s cubic-bezier(.1,.82,.16,1) forwards}.playerHand.swing.greatHeavy{animation:greatHeavy .22s cubic-bezier(.16,.7,.12,1) forwards}.playerHand.swing.scytheSweep{animation:scytheSweep .22s cubic-bezier(.1,.82,.16,1) forwards}.playerHand.swing.spearThrust{animation:spearThrust .17s cubic-bezier(.1,.84,.12,1) forwards}.playerHand.swing.axeChop{animation:axeChop .22s cubic-bezier(.12,.72,.12,1) forwards}
+@keyframes woodSlash{0%{opacity:0;transform:translate(98px,66px) rotate(28deg)}18%{opacity:1}62%{opacity:1;transform:translate(-82px,-18px) rotate(-38deg)}100%{opacity:0;transform:translate(-44px,18px) rotate(-58deg)}}
+@keyframes ironSlash{0%{opacity:0;transform:translate(104px,42px) rotate(14deg)}16%{opacity:1}58%{opacity:1;transform:translate(-96px,-8px) rotate(-10deg)}100%{opacity:0;transform:translate(-38px,24px) rotate(-22deg)}}
+@keyframes greatHeavy{0%{opacity:0;transform:translate(88px,76px) rotate(48deg) scale(1.02)}18%{opacity:1;transform:translate(34px,-38px) rotate(72deg) scale(1.04)}68%{opacity:1;transform:translate(-70px,-10px) rotate(-34deg) scale(1.08)}100%{opacity:0;transform:translate(-18px,42px) rotate(-56deg) scale(1)}}
+@keyframes scytheSweep{0%{opacity:0;transform:translate(106px,58px) rotate(38deg)}16%{opacity:1}62%{opacity:1;transform:translate(-118px,-12px) rotate(-66deg)}100%{opacity:0;transform:translate(-58px,28px) rotate(-92deg)}}
+@keyframes spearThrust{0%{opacity:0;transform:translate(120px,40px) rotate(0deg)}20%{opacity:1}58%{opacity:1;transform:translate(-124px,-6px) rotate(-2deg)}100%{opacity:0;transform:translate(64px,28px) rotate(0deg)}}
+@keyframes axeChop{0%{opacity:0;transform:translate(88px,72px) rotate(54deg)}18%{opacity:1;transform:translate(18px,-52px) rotate(84deg)}66%{opacity:1;transform:translate(-66px,0) rotate(-48deg)}100%{opacity:0;transform:translate(-14px,42px) rotate(-72deg)}}
+@keyframes arcFlash{0%{opacity:0;transform:scale(.72) rotate(-24deg)}45%{opacity:1}100%{opacity:0;transform:scale(1.22) rotate(-8deg)}}@keyframes enemyShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 5px)) scale(.96)}75%{transform:translateX(calc(-50% + 5px)) scale(.96)}}
 
 </style>
 </head>
@@ -131,8 +123,8 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div class="combatStage" id="combatStage">
   <div id="enemyEmoji" class="emoji">🪵</div>
   <div id="slashArc" class="slashArc"></div>
-  <div id="playerHand" class="playerHand slash" aria-hidden="true"><div class="weaponShadow"></div><div id="weaponModel" class="weaponModel"><img id="weaponImg" src="assets/weapons/wood_sword.png" alt=""><span id="weaponEmojiFallback" class="weaponEmojiFallback hidden">🗡️</span></div><div class="fist"></div><div class="arm"></div></div>
-  <div id="weaponNameTag" class="weaponNameTag">徒手</div>
+  <div id="playerHand" class="playerHand weapon-wood" aria-hidden="true"><div id="weaponModel" class="weaponModel"><img id="weaponImg" src="assets/weapons/wood_sword.png" alt=""></div><div class="weaponGrip"></div><div class="weaponForearm"></div></div>
+  <div id="weaponNameTag" class="weaponNameTag"></div>
 </div>
 <h2 id="enemyName">木偶</h2>
 <div id="enemyType" class="pill">普通</div>
@@ -180,15 +172,18 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.5.3 動畫版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.5.6 攻擊演出版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
 
+<script src="weaponConfig.js"></script>
+<script src="weaponRenderer.js"></script>
+<script src="attackAnimation.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.5.3";
+const GAME_VERSION="0.5.6";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -365,10 +360,10 @@ function beep(f=440,d=.05,type="square",v=.18){if(!p.sound)return;try{audioInit(
 function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTimeout(()=>beep(120,.04,"sawtooth",.08),18)}if(k==="crit"){beep(780,.07,"triangle",.20);setTimeout(()=>beep(1080,.06,"triangle",.16),45);setTimeout(()=>beep(150,.055,"sawtooth",.13),25)}if(k==="boss"){beep(85,.11,"sawtooth",.22);setTimeout(()=>beep(140,.08,"square",.16),35)}if(k==="drop"){beep(880,.07,"sine",.18);setTimeout(()=>beep(1320,.09,"sine",.16),55)}if(k==="skill"){beep(520,.08,"triangle",.19);setTimeout(()=>beep(760,.09,"triangle",.16),60)}if(k==="success"){beep(660,.07,"sine",.18);setTimeout(()=>beep(990,.09,"sine",.16),70)}}
 function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");render()}
 function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","poison","freeze","break","bleed","shatter","prison"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
-function cleanEquipName(name){return String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
-function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;let raw=w&&w.name?w.name:"木劍",name=cleanEquipName(raw);let emoji="🪵",kind="slash",key="wood",asset="assets/weapons/wood_sword.png";if(/戰天斧|斧/.test(name)){emoji="🪓";kind="axe";key="axe";asset="assets/weapons/axe.png"}else if(/破雲槍|槍|矛/.test(name)){emoji="🔱";kind="thrust";key="spear";asset="assets/weapons/spear.png"}else if(/鐮/.test(name)){emoji="🌙";kind="scythe";key="scythe";asset="assets/weapons/scythe.png"}else if(/巨劍|大劍|重|滅世/.test(name)){emoji="🗡️";kind="heavy";key="great";asset="assets/weapons/great_sword.png"}else if(/鐵劍|鐵/.test(name)){emoji="⚔️";kind="slash";key="iron";asset="assets/weapons/iron_sword.png"}else if(/木劍|木裂|木/.test(name)){emoji="🪵";kind="slash";key="wood";asset="assets/weapons/wood_sword.png"}else if(/劍|刃|刀/.test(name)){emoji="⚔️";kind="slash";key="iron";asset="assets/weapons/iron_sword.png"}return{name,raw,emoji,kind,key,asset}}
-function renderWeapon(){const v=weaponVisual(),img=$("weaponImg"),fb=$("weaponEmojiFallback"),hand=$("playerHand");if(hand)hand.className="playerHand "+v.kind+" weapon-"+v.key;if(img){img.onerror=null;img.classList.remove("hidden");if(fb)fb.classList.add("hidden");img.onload=()=>{img.classList.remove("hidden");if(fb)fb.classList.add("hidden")};img.onerror=()=>{img.classList.add("hidden");if(fb){fb.textContent=v.emoji;fb.classList.remove("hidden")}};if(!img.src.endsWith(v.asset))img.src=v.asset;else if(img.complete&&img.naturalWidth>0){img.classList.remove("hidden");if(fb)fb.classList.add("hidden")}}if(fb)fb.textContent=v.emoji;if($("weaponNameTag"))$("weaponNameTag").textContent="武器："+v.name}
-function playAttackAnim(kind){renderWeapon();const hand=$("playerHand"),arc=$("slashArc"),card=$("enemyCard");if(!hand)return;const v=weaponVisual();kind=kind||v.kind;hand.className="playerHand "+kind+" weapon-"+v.key;void hand.offsetWidth;hand.classList.add("swing",kind);if(arc){arc.classList.remove("show");void arc.offsetWidth;if(kind!=="bow"&&kind!=="thrust")arc.classList.add("show")}if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),120)}setTimeout(()=>{if(hand)hand.className="playerHand "+v.kind+" weapon-"+v.key},430)}
+function cleanEquipName(name){return window.WeaponSystem?window.WeaponSystem.cleanEquipName(name):String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
+function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;return window.WeaponSystem?window.WeaponSystem.resolveWeapon(w):{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash"}}
+function renderWeapon(){const v=weaponVisual();if(window.WeaponRenderer)window.WeaponRenderer.prepareWeapon(v);if($("weaponNameTag"))$("weaponNameTag").textContent=""}
+function playAttackAnim(kind){const v=weaponVisual();if(window.AttackAnimation)window.AttackAnimation.play({weapon:v,kind,enemyCardId:"enemyCard"});else{const card=$("enemyCard");if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),120)}}}
 function statusHtml(){
  if(!fight)return "<span class='small'>無狀態</span>";
  const pool=[];

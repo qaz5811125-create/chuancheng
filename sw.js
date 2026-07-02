@@ -1,10 +1,13 @@
-const CACHE_NAME = "chuan-cheng-beta-0-5-5-weapon-renderer";
+const CACHE_NAME = "chuan-cheng-beta-0-5-6-attack-animation";
 const ASSETS = [
   "./",
   "index.html",
   "CHANGELOG.md",
   "README.md",
   "manifest.json",
+  "weaponConfig.js",
+  "weaponRenderer.js",
+  "attackAnimation.js",
   "cover.png",
   "splash.png",
   "icon-192.png",
