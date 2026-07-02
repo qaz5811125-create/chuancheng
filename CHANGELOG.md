@@ -1,3 +1,11 @@
+# Beta 0.5.6 全域攻擊動畫層修正
+- 攻擊動畫改由 `#attackAnimLayer` 強制掛到 `document.body` 最後面。
+- `#attackAnimLayer` 使用 `position: fixed`、`100vw/100vh`、`z-index: 999999`、`pointer-events: none`。
+- 攻擊成功時直接動態建立測試紅字、手、目前武器圖片與劍氣，不再依賴原本 `#playerHand`、`#weaponImg`、`#slashArc`。
+- 加入指定 Console log，方便確認攻擊流程與動畫函式是否真的被呼叫。
+- 更新 Service Worker 快取名稱，避免手機/PWA 吃到舊版。
+- 不修改怪物、掉落、裝備、秒殺、狀態、編隊與存檔邏輯。
+
 # Beta 0.5.6 攻擊演出系統
 - 移除 Beta 0.5.5 的常駐武器顯示方式。
 - 新增獨立武器設定、渲染與攻擊動畫模組。

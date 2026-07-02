@@ -61,6 +61,9 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 @keyframes spearThrustFallback{0%{opacity:0;transform:translate(138px,30px) rotate(0deg)}20%{opacity:1;transform:translate(56px,16px) rotate(0deg)}56%{opacity:1;transform:translate(-130px,-6px) rotate(-2deg)}100%{opacity:0;transform:translate(70px,24px) rotate(0deg)}}
 @keyframes axeChopFallback{0%{opacity:0;transform:translate(96px,72px) rotate(54deg)}20%{opacity:1;transform:translate(18px,-54px) rotate(88deg)}66%{opacity:1;transform:translate(-70px,4px) rotate(-54deg)}100%{opacity:0;transform:translate(-12px,44px) rotate(-76deg)}}
 @keyframes arcFlash{0%{opacity:0;transform:scale(.72) rotate(-24deg)}45%{opacity:1}100%{opacity:0;transform:scale(1.22) rotate(-8deg)}}@keyframes enemyShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 5px)) scale(.96)}75%{transform:translateX(calc(-50% + 5px)) scale(.96)}}
+
+#attackAnimLayer{position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;pointer-events:none!important;overflow:visible!important;contain:none!important}
+#attackAnimLayer *{pointer-events:none!important;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -302,7 +305,7 @@ function evadeRate(target=activeMonster()){const e=ensureEffectBag(target);retur
 function effReg(){if(fight.monsters)return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);return a+m.reg*(e.freeze>0?.45:1)},0);const e=ensureEffectBag(fight);return fight.reg*(e.freeze>0?.45:1)}
 function request(n=1){p.queue=Math.min(160,p.queue+n)}
 function floatText(x,big=false){const d=document.createElement("div");d.className="float"+(big?" bigFloat":"");d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),big?1100:850)}
-function damage(mult=1,label="",opt={}){if(!fight)return;playAttackAnim();const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");sfx("hit");return}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💀 秒殺！",true);sfx("crit");log("💀 秒殺成功！");settleFormationDeaths();if(fight.hp<=0)killEnemy();return}const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;p.baseAtk+=.1;floatText(label+(c?"💥":"")+d);sfx(c?"crit":((target.type||fight.type)==="boss"?"boss":"hit"));rollEffects(target);settleFormationDeaths();if(fight.hp<=0)killEnemy()}
+function damage(mult=1,label="",opt={}){if(!fight)return;console.log("ATTACK SUCCESS: before playAttackAnim");playAttackAnim();const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");sfx("hit");return}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💀 秒殺！",true);sfx("crit");log("💀 秒殺成功！");settleFormationDeaths();if(fight.hp<=0)killEnemy();return}const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;p.baseAtk+=.1;floatText(label+(c?"💥":"")+d);sfx(c?"crit":((target.type||fight.type)==="boss"?"boss":"hit"));rollEffects(target);settleFormationDeaths();if(fight.hp<=0)killEnemy()}
 function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",.1,.08,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.8,e.break+v);else if(k==="bleed")e.bleed=Math.min(20,e.bleed+v);else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
 function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target);if(e.burn>0){const d=55*dt;target.hp-=d;e.burn-=dt;msgs.push(["🔥",d])}if(e.poison>0){const d=target.max*.001*dt;target.hp-=d;e.poison-=dt;msgs.push(["☠️",d])}if(e.bleed>0){const d=e.bleed*18*dt;target.hp-=d;e.bleed=Math.max(0,e.bleed-dt*.7);msgs.push(["🩸",d])}if(e.freeze>0)e.freeze-=dt;if(e.shatter>0)e.shatter-=dt;if(e.prison>0)e.prison-=dt}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
 function gainSoul(n){p.soul=(p.soul||0)+n;log("獲得傳承之魂 +"+n)}
@@ -347,7 +350,7 @@ function renderMulBox(id,cur,fn){const vals=[1,5,10,100,"MAX"];const el=$(id);if
 function slash(){if(!hasSkill("slash"))return log("尚未解鎖劈砍");if(p.cd.slash>0)return log("劈砍冷卻中");const lv=skillLv("slash"),mult=1.5+.05*(lv-1);damage(mult,"劈砍Lv"+lv+" ");p.cd.slash=Math.max(2,(10-.15*(lv-1))*(1-cdr()));sfx("skill");log("使用劈砍 Lv"+lv)}
 function shatter(){if(p.lv<60)return log("Lv60開啟破碎");if(!hasSkill("shatter"))return log("尚未解鎖破碎");if(p.cd.shatter>0)return log("破碎冷卻中");if(!fight)return;const lv=skillLv("shatter"),dur=10+.35*(lv-1);ensureEffectBag(activeMonster()).shatter=dur;p.cd.shatter=Math.max(5,(20-.25*(lv-1))*(1-cdr()));sfx("skill");log("使用破碎 Lv"+lv+"！目標防禦歸0 "+dur.toFixed(1)+"秒");save(false);render()}
 function gale(){if(!hasSkill("gale"))return log("尚未解鎖疾風");if(p.cd.gale>0)return log("疾風冷卻中");const lv=skillLv("gale"),dur=15+.5*(lv-1);p.buff.gale=dur;p.cd.gale=Math.max(8,(30-.35*(lv-1))*(1-cdr()));sfx("skill");log("使用疾風 Lv"+lv+"！攻速+"+Math.round(galeAspdBonus()*100)+"%，持續 "+dur.toFixed(1)+"秒");save(false);render()}
-function forceStrike(){if(p.lv<100)return log("Lv100開啟奮力一擊");if(p.cd.force>0)return log("奮力一擊冷卻中");if(!fight)return;playAttackAnim("heavy");const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");p.cd.force=Math.max(10,30*(1-cdr()));sfx("hit");log("奮力一擊被閃避");save(false);render();return}const rate=target.type==="boss"?.25:.50;const d=Math.max(1,Math.floor(target.hp*rate));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💜奮力一擊 "+d,true);rollEffects(target);p.cd.force=Math.max(10,30*(1-cdr()));sfx("skill");log("使用奮力一擊，造成目前生命 "+Math.round(rate*100)+"% 傷害");settleFormationDeaths();if(fight.hp<=0)killEnemy();save(false);render()}
+function forceStrike(){if(p.lv<100)return log("Lv100開啟奮力一擊");if(p.cd.force>0)return log("奮力一擊冷卻中");if(!fight)return;console.log("ATTACK SUCCESS: before playAttackAnim");playAttackAnim("heavy");const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");p.cd.force=Math.max(10,30*(1-cdr()));sfx("hit");log("奮力一擊被閃避");save(false);render();return}const rate=target.type==="boss"?.25:.50;const d=Math.max(1,Math.floor(target.hp*rate));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💜奮力一擊 "+d,true);rollEffects(target);p.cd.force=Math.max(10,30*(1-cdr()));sfx("skill");log("使用奮力一擊，造成目前生命 "+Math.round(rate*100)+"% 傷害");settleFormationDeaths();if(fight.hp<=0)killEnemy();save(false);render()}
 function autoCastSkills(){if(!p.autoSkill||!fight)return;if(hasSkill("gale")&&p.cd.gale<=0&&(!p.buff.gale||p.buff.gale<=0))gale();if(p.cd.shatter<=0&&p.lv>=60&&fight.hp>fight.max*.45)shatter();if(p.cd.force<=0&&p.lv>=100&&fight.hp>fight.max*.35)forceStrike();if(p.cd.slash<=0)slash()}
 function summonSkill(){if((p.soul||0)<SUMMON_COST)return log("傳承之魂不足，召喚需要 "+SUMMON_COST);p.soul-=SUMMON_COST;const r=Math.random();let grade,count,book=false;if(r<.70){grade="普通";count=rand(1,9)}else if(r<.90){grade="稀有";count=rand(10,20)}else if(r<.98){grade="史詩";count=1;book=true}else if(r<.998){grade="傳說";count=3;book=true}else{grade="神話";count=5;book=true}const id=skillIds[Math.floor(Math.random()*skillIds.length)],nm=skillMeta[id].name;if(book){for(let i=0;i<count;i++)gainSkillExp(id,25);log("祭壇召喚【"+grade+"】：完整技能「"+nm+"」x"+count)}else{p.fragments[id]=(p.fragments[id]||0)+count;log("祭壇召喚【"+grade+"】："+nm+"碎片 +"+count)}save(false);render()}
 function upgradeSkill(id){const need=skillNeed(id),have=p.fragments[id]||0;if(!hasSkill(id)&&have>=30){p.fragments[id]-=30;p.skills[id].unlocked=true;p.skills[id].lv=1;log("碎片解鎖技能："+skillMeta[id].name);save(false);render();return}if(!hasSkill(id))return log("尚未解鎖，需30片碎片解鎖");if(have<need)return log("碎片不足，升級需要 "+need+" 片");p.fragments[id]-=need;gainSkillExp(id,need);save(false);render()}
@@ -361,114 +364,117 @@ function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn"
 function cleanEquipName(name){return window.WeaponSystem?window.WeaponSystem.cleanEquipName(name):String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
 function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;return window.WeaponSystem?window.WeaponSystem.resolveWeapon(w):{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash"}}
 function renderWeapon(){const actor=$("playerHand");if(actor&&actor.classList.contains("is-attacking"))return;const v=weaponVisual();if(window.WeaponRenderer)window.WeaponRenderer.prepareWeapon(v);if($("weaponNameTag"))$("weaponNameTag").textContent=""}
-let attackFallbackTimer=0;
-let attackFallbackRunning=[];
-function stopAttackFallback(){
- attackFallbackRunning.forEach(a=>{try{a.cancel()}catch(e){}});
- attackFallbackRunning=[];
- clearTimeout(attackFallbackTimer);
-}
-function ensureAttackFallbackDom(){
- const stage=$("combatStage")||$("enemyCard")||document.body;
- let arc=$("slashArc");
- if(!arc){arc=document.createElement("div");arc.id="slashArc";arc.className="slashArc";stage.appendChild(arc)}
- let actor=$("playerHand");
- if(!actor){
-  actor=document.createElement("div");
-  actor.id="playerHand";
-  actor.className="playerHand weapon-wood";
-  actor.setAttribute("aria-hidden","true");
-  actor.innerHTML='<div id="weaponModel" class="weaponModel"><img id="weaponImg" src="assets/weapons/wood_sword.png" alt=""></div><div class="weaponGrip"></div><div class="weaponForearm"></div>';
-  stage.appendChild(actor);
+function ensureAttackAnimLayer(){
+ let layer=document.getElementById("attackAnimLayer");
+ if(!layer){
+  layer=document.createElement("div");
+  layer.id="attackAnimLayer";
+  layer.setAttribute("aria-hidden","true");
+  Object.assign(layer.style,{position:"fixed",left:"0",top:"0",width:"100vw",height:"100vh",zIndex:"999999",pointerEvents:"none",overflow:"visible",contain:"none"});
+  document.body.appendChild(layer);
+  console.log("attackAnimLayer created");
  }
- if(actor.parentElement!==stage)stage.appendChild(actor);
- if(arc.parentElement!==stage)stage.appendChild(arc);
- return {stage,actor,arc,img:$("weaponImg")};
+ Object.assign(layer.style,{position:"fixed",left:"0",top:"0",width:"100vw",height:"100vh",zIndex:"999999",pointerEvents:"none",overflow:"visible",contain:"none"});
+ if(layer.parentElement!==document.body||document.body.lastElementChild!==layer)document.body.appendChild(layer);
+ return layer;
 }
-function applyAttackFallbackWeapon(actor,img,weapon){
- const w=weapon||{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash",duration:165,scale:.15,gripX:50,gripY:84,rotationOrigin:"50% 84%",initialRotation:-36,type:"slash",arc:true};
- const weaponPath=w.asset||"assets/weapons/wood_sword.png";
- console.log("weapon image path:",weaponPath);
- actor.className="playerHand weapon-"+(w.key||"wood");
- actor.style.setProperty("--weapon-hand-x",(w.handX||82)+"%");
- actor.style.setProperty("--weapon-hand-y",(w.handY||76)+"%");
- actor.style.setProperty("--weapon-height",Math.round(900*(w.scale||.16))+"px");
- actor.style.setProperty("--weapon-grip-x-neg",-(w.gripX||50)+"%");
- actor.style.setProperty("--weapon-grip-y-neg",-(w.gripY||86)+"%");
- actor.style.setProperty("--weapon-origin",w.rotationOrigin||((w.gripX||50)+"% "+(w.gripY||86)+"%"));
- actor.style.setProperty("--weapon-rotation",(w.initialRotation||0)+"deg");
- actor.style.zIndex="40";
- actor.style.display="block";
- actor.style.visibility="visible";
- if(img){img.src=weaponPath;img.alt=w.name||w.label||"";img.style.display="block";img.style.visibility="visible";img.style.opacity="1"}
- return w;
-}
-function attackFallbackFrames(motion){
+function forceAttackFrames(weapon,kind){
+ const motion=weapon&&weapon.animation?weapon.animation:"ironSlash";
  const table={
-  woodSlash:[{opacity:0,transform:"translate(110px,62px) rotate(30deg) scale(.96)"},{opacity:1,offset:.18,transform:"translate(36px,22px) rotate(-10deg) scale(1)"},{opacity:1,offset:.62,transform:"translate(-78px,-22px) rotate(-48deg) scale(1.02)"},{opacity:0,transform:"translate(-34px,18px) rotate(-62deg) scale(.98)"}],
-  ironSlash:[{opacity:0,transform:"translate(116px,42px) rotate(12deg)"},{opacity:1,offset:.16,transform:"translate(42px,18px) rotate(3deg)"},{opacity:1,offset:.58,transform:"translate(-90px,-8px) rotate(-16deg)"},{opacity:0,transform:"translate(-34px,26px) rotate(-26deg)"}],
-  greatHeavy:[{opacity:0,transform:"translate(96px,76px) rotate(42deg) scale(1.02)"},{opacity:1,offset:.20,transform:"translate(20px,-42px) rotate(76deg) scale(1.04)"},{opacity:1,offset:.68,transform:"translate(-72px,2px) rotate(-42deg) scale(1.08)"},{opacity:0,transform:"translate(-10px,44px) rotate(-60deg) scale(1)"}],
-  scytheSweep:[{opacity:0,transform:"translate(120px,56px) rotate(40deg)"},{opacity:1,offset:.16,transform:"translate(48px,8px) rotate(22deg)"},{opacity:1,offset:.62,transform:"translate(-122px,-18px) rotate(-76deg)"},{opacity:0,transform:"translate(-56px,28px) rotate(-96deg)"}],
-  spearThrust:[{opacity:0,transform:"translate(138px,30px) rotate(0deg)"},{opacity:1,offset:.20,transform:"translate(56px,16px) rotate(0deg)"},{opacity:1,offset:.56,transform:"translate(-130px,-6px) rotate(-2deg)"},{opacity:0,transform:"translate(70px,24px) rotate(0deg)"}],
-  axeChop:[{opacity:0,transform:"translate(96px,72px) rotate(54deg)"},{opacity:1,offset:.20,transform:"translate(18px,-54px) rotate(88deg)"},{opacity:1,offset:.66,transform:"translate(-70px,4px) rotate(-54deg)"},{opacity:0,transform:"translate(-12px,44px) rotate(-76deg)"}]
+  woodSlash:[{opacity:0,transform:"translate(150px,82px) rotate(34deg) scale(.96)"},{opacity:1,offset:.18,transform:"translate(52px,30px) rotate(-8deg) scale(1)"},{opacity:1,offset:.62,transform:"translate(-98px,-34px) rotate(-52deg) scale(1.04)"},{opacity:0,transform:"translate(-34px,24px) rotate(-66deg) scale(.98)"}],
+  ironSlash:[{opacity:0,transform:"translate(150px,72px) rotate(22deg)"},{opacity:1,offset:.16,transform:"translate(58px,28px) rotate(5deg)"},{opacity:1,offset:.58,transform:"translate(-110px,-16px) rotate(-22deg)"},{opacity:0,transform:"translate(-34px,32px) rotate(-34deg)"}],
+  greatHeavy:[{opacity:0,transform:"translate(128px,96px) rotate(48deg) scale(1.02)"},{opacity:1,offset:.20,transform:"translate(26px,-66px) rotate(82deg) scale(1.06)"},{opacity:1,offset:.68,transform:"translate(-94px,10px) rotate(-48deg) scale(1.1)"},{opacity:0,transform:"translate(-10px,56px) rotate(-66deg) scale(1)"}],
+  scytheSweep:[{opacity:0,transform:"translate(156px,78px) rotate(42deg)"},{opacity:1,offset:.16,transform:"translate(62px,12px) rotate(20deg)"},{opacity:1,offset:.62,transform:"translate(-148px,-24px) rotate(-80deg)"},{opacity:0,transform:"translate(-62px,34px) rotate(-100deg)"}],
+  spearThrust:[{opacity:0,transform:"translate(178px,36px) rotate(0deg)"},{opacity:1,offset:.20,transform:"translate(78px,18px) rotate(0deg)"},{opacity:1,offset:.56,transform:"translate(-156px,-8px) rotate(-2deg)"},{opacity:0,transform:"translate(88px,26px) rotate(0deg)"}],
+  axeChop:[{opacity:0,transform:"translate(130px,96px) rotate(58deg)"},{opacity:1,offset:.20,transform:"translate(22px,-72px) rotate(92deg)"},{opacity:1,offset:.66,transform:"translate(-92px,10px) rotate(-58deg)"},{opacity:0,transform:"translate(-18px,56px) rotate(-80deg)"}]
  };
+ if(kind==="heavy"&&motion!=="spearThrust")return table.greatHeavy;
  return table[motion]||table.ironSlash;
 }
-function playAttackFallback(kind,weapon){
- console.log("AttackAnimation fallback play used");
- const dom=ensureAttackFallbackDom();
- let w=applyAttackFallbackWeapon(dom.actor,dom.img,weapon);
- stopAttackFallback();
- const duration=Math.max(150,Math.min(290,kind==="heavy"?Math.max(230,w.duration||190):(w.duration||190)));
- dom.actor.className="playerHand weapon-"+(w.key||"wood")+" is-attacking";
- dom.actor.style.opacity="1";
- dom.actor.style.display="block";
- dom.actor.style.visibility="visible";
- dom.actor.style.animation="none";
- dom.actor.style.transform="translate(120px,70px) rotate(0deg)";
- void dom.actor.offsetWidth;
- if(dom.actor.animate){attackFallbackRunning.push(dom.actor.animate(attackFallbackFrames(w.animation||"ironSlash"),{duration,easing:"cubic-bezier(.12,.82,.16,1)",fill:"forwards"}))}
- else{dom.actor.style.animation=(w.animation||"ironSlash")+"Fallback "+duration+"ms cubic-bezier(.12,.82,.16,1) forwards"}
- if(dom.arc){
-  dom.arc.className="slashArc arc-"+(w.key||"wood");
-  dom.arc.style.display="block";dom.arc.style.visibility="visible";dom.arc.style.zIndex="45";
-  void dom.arc.offsetWidth;
-  dom.arc.classList.add("show");
+function forceAttackPosition(){
+ const card=$("enemyCard");
+ if(card&&card.getBoundingClientRect){
+  const r=card.getBoundingClientRect();
+  if(r.width&&r.height)return{x:r.left+r.width*.66,y:r.top+Math.min(150,Math.max(70,r.height*.30))};
  }
+ return{x:window.innerWidth*.62,y:window.innerHeight*.42};
+}
+function makeAttackTestText(){
+ const t=document.createElement("div");
+ t.textContent="TEST ATTACK ANIMATION";
+ Object.assign(t.style,{position:"absolute",left:"56vw",top:"42vh",transform:"translate(-20%,-50%)",fontSize:"clamp(24px,7vw,56px)",lineHeight:"1",fontWeight:"1000",letterSpacing:"1px",color:"#ff1515",zIndex:"100",textShadow:"0 0 4px #fff,0 0 14px rgba(255,0,0,.92),0 4px 18px rgba(0,0,0,.85)",whiteSpace:"nowrap",opacity:"1"});
+ return t;
+}
+function makeForcedHandVisual(weapon,kind){
+ const w=weapon||{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash",duration:165,scale:.15,gripX:50,gripY:84,rotationOrigin:"50% 84%",initialRotation:-36,type:"slash",arc:true};
+ const pos=forceAttackPosition();
+ const actor=document.createElement("div");
+ actor.className="forcedAttackActor weapon-"+(w.key||"wood");
+ Object.assign(actor.style,{position:"absolute",left:pos.x+"px",top:pos.y+"px",width:"0",height:"0",overflow:"visible",zIndex:"30",opacity:"0",filter:"drop-shadow(0 12px 10px rgba(0,0,0,.55))",willChange:"transform,opacity"});
+ const img=document.createElement("img");
+ const src=w.asset||"assets/weapons/wood_sword.png";
+ img.src=src;
+ img.alt=w.name||w.label||"weapon";
+ img.onerror=()=>console.error("[attackAnimLayer] weapon image failed:",src);
+ const h=Math.round(Math.min(window.innerHeight*.34,Math.max(132,900*(w.scale||.17))));
+ Object.assign(img.style,{position:"absolute",left:"0",top:"0",width:"auto",height:h+"px",maxWidth:"none",maxHeight:"none",objectFit:"contain",zIndex:"31",transformOrigin:w.rotationOrigin||((w.gripX||50)+"% "+(w.gripY||86)+"%"),transform:"translate("+(-(w.gripX||50))+"%,"+(-(w.gripY||86))+"%) rotate("+(w.initialRotation||0)+"deg)",filter:"drop-shadow(0 4px 4px rgba(0,0,0,.58))"});
+ const forearm=document.createElement("div");
+ Object.assign(forearm.style,{position:"absolute",left:"26px",top:"20px",width:"88px",height:"34px",borderRadius:"24px",background:"linear-gradient(135deg,#f8c78a,#a16207)",border:"2px solid rgba(255,255,255,.22)",transform:"translate(-50%,-50%) rotate(-18deg)",zIndex:"32",boxShadow:"0 4px 10px rgba(0,0,0,.35)"});
+ const hand=document.createElement("div");
+ Object.assign(hand.style,{position:"absolute",left:"0",top:"0",width:"46px",height:"34px",borderRadius:"45% 42% 50% 38%",background:"linear-gradient(135deg,#ffd7a3,#b45309)",border:"2px solid rgba(255,255,255,.25)",transform:"translate(-50%,-50%) rotate(-22deg)",zIndex:"33",boxShadow:"0 4px 10px rgba(0,0,0,.38)"});
+ actor.appendChild(img);
+ actor.appendChild(forearm);
+ actor.appendChild(hand);
+ const arc=document.createElement("div");
+ const spear=(w.type==="thrust"||w.animation==="spearThrust"||w.key==="spear");
+ if(spear){
+  Object.assign(arc.style,{position:"absolute",left:(pos.x-170)+"px",top:(pos.y-16)+"px",width:"270px",height:"0",borderTop:"6px solid rgba(147,197,253,.95)",borderRadius:"0",boxShadow:"0 0 18px rgba(147,197,253,.95),0 0 34px rgba(59,130,246,.55)",opacity:"0",zIndex:"20",transformOrigin:"100% 50%",transform:"rotate(-3deg) scaleX(.12)",willChange:"transform,opacity"});
+ }else{
+  Object.assign(arc.style,{position:"absolute",left:(pos.x-190)+"px",top:(pos.y-96)+"px",width:(w.key==="scythe"?"260px":"220px"),height:(w.key==="scythe"?"132px":"112px"),borderTop:(w.key==="great"||w.key==="axe"?"9px":"7px")+" solid rgba(250,204,21,.94)",borderRadius:"50%",boxShadow:"0 -2px 18px rgba(250,204,21,.85),0 -4px 32px rgba(255,255,255,.28)",opacity:"0",zIndex:"20",transform:"rotate(-28deg) scale(.72)",willChange:"transform,opacity"});
+ }
+ return{actor,arc,weapon:w,spear};
+}
+function animateForcedAttack(actor,arc,weapon,spear,kind){
+ const duration=Math.max(150,Math.min(320,kind==="heavy"?Math.max(230,weapon.duration||190):(weapon.duration||190)));
+ if(actor.animate){
+  actor.animate(forceAttackFrames(weapon,kind),{duration,easing:"cubic-bezier(.12,.82,.16,1)",fill:"forwards"});
+ }else{
+  actor.style.opacity="1";
+  actor.style.transform="translate(-90px,-16px) rotate(-20deg)";
+  setTimeout(()=>{actor.style.opacity="0"},duration);
+ }
+ if(arc&&arc.animate){
+  arc.animate(spear?
+   [{opacity:0,transform:"rotate(-3deg) scaleX(.12)"},{opacity:1,offset:.35,transform:"rotate(-3deg) scaleX(1.05)"},{opacity:0,transform:"rotate(-3deg) scaleX(1.2)"}]:
+   [{opacity:0,transform:"rotate(-30deg) scale(.72)"},{opacity:1,offset:.42,transform:"rotate(-16deg) scale(1.03)"},{opacity:0,transform:"rotate(-4deg) scale(1.22)"}],
+   {duration:Math.max(160,Math.min(260,duration)),easing:"ease-out",fill:"forwards"});
+ }else if(arc){arc.style.opacity="1";setTimeout(()=>{arc.style.opacity="0"},duration)}
  const card=$("enemyCard");
  if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),Math.min(140,duration))}
- attackFallbackTimer=setTimeout(()=>{
-  stopAttackFallback();
-  dom.actor.className="playerHand weapon-"+(w.key||"wood");
-  dom.actor.style.opacity="0";
-  dom.actor.style.display="";
-  dom.actor.style.visibility="";
-  dom.actor.style.transform="translate(120px,70px) rotate(0deg)";
-  dom.actor.style.animation="none";
-  if(dom.arc){dom.arc.className="slashArc arc-"+(w.key||"wood");dom.arc.style.display="";dom.arc.style.visibility=""}
- },duration+34);
+ return duration;
 }
 function playAttackAnim(kind){
- console.log("playAttackAnim called");
- const v=weaponVisual();
- try{
-  if(window.AttackAnimation&&typeof window.AttackAnimation.play==="function"){
-   window.AttackAnimation.play({weapon:v,kind,enemyCardId:"enemyCard"});
-   console.log("AttackAnimation external play used");
-   return;
-  }
- }catch(e){console.error("AttackAnimation external play failed",e)}
- try{
-  if(typeof window.playPlayerAttackAnimation==="function"){
-   window.playPlayerAttackAnimation({weapon:v,kind,enemyCardId:"enemyCard"});
-   console.log("AttackAnimation external play used");
-   return;
-  }
- }catch(e){console.error("playPlayerAttackAnimation failed",e)}
- playAttackFallback(kind,v);
+ console.log("playAttackAnim REALLY CALLED");
+ const layer=ensureAttackAnimLayer();
+ const weapon=weaponVisual();
+ const test=makeAttackTestText();
+ const visual=document.createElement("div");
+ Object.assign(visual.style,{position:"absolute",left:"0",top:"0",width:"100vw",height:"100vh",overflow:"visible",zIndex:"1"});
+ const made=makeForcedHandVisual(weapon,kind);
+ visual.appendChild(made.arc);
+ visual.appendChild(made.actor);
+ layer.appendChild(test);
+ layer.appendChild(visual);
+ console.log("attack visual inserted into body");
+ const duration=animateForcedAttack(made.actor,made.arc,made.weapon,made.spear,kind);
+ setTimeout(()=>{test.remove()},500);
+ setTimeout(()=>{visual.remove()},Math.max(520,duration+80));
 }
-window.playAttackFallback=playAttackFallback;
 window.playAttackAnim=playAttackAnim;
+window.playAttackFallback=playAttackAnim;
+window.playAttackAnimation=playAttackAnim;
+window.playPlayerAttackAnimation=playAttackAnim;
+window.AttackAnimation={play:opts=>playAttackAnim(opts&&opts.kind),playAttackAnimation:opts=>playAttackAnim(opts&&opts.kind),playPlayerAttackAnimation:opts=>playAttackAnim(opts&&opts.kind)};
 function statusHtml(){
  if(!fight)return "<span class='small'>無狀態</span>";
  const pool=[];
