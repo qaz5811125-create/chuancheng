@@ -53,7 +53,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 .combatStage{position:relative;height:132px;margin:4px 0 2px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 18%,rgba(250,204,21,.10),transparent 44%),linear-gradient(180deg,rgba(2,6,23,.22),rgba(2,6,23,.08));border:1px solid rgba(148,163,184,.16)}
 #enemyEmoji{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:2;transition:transform .08s ease,filter .08s ease}.enemyHurt #enemyEmoji{animation:enemyShake .12s linear 1;filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}
- .playerHand{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:visible;opacity:0;transform:translate(120px,70px) rotate(0deg);will-change:transform,opacity;filter:drop-shadow(0 10px 8px rgba(0,0,0,.45))}.playerHand.is-attacking{opacity:1!important;display:block!important;visibility:visible!important}.weaponGrip{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:42px;height:32px;border-radius:45% 42% 50% 38%;background:linear-gradient(135deg,#ffd7a3,#b45309);border:2px solid rgba(255,255,255,.18);z-index:8;transform:translate(-50%,-50%) rotate(-22deg)}.weaponForearm{position:absolute;left:calc(var(--weapon-hand-x,82%) + 22px);top:calc(var(--weapon-hand-y,76%) + 16px);width:72px;height:34px;border-radius:24px;background:linear-gradient(135deg,#f8c78a,#a16207);border:2px solid rgba(255,255,255,.16);transform:translate(-50%,-50%) rotate(-20deg);z-index:6}.weaponModel{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:0;height:0;overflow:visible;z-index:7}.weaponModel img{position:absolute;width:auto;height:var(--weapon-height,150px);max-width:none;max-height:none;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(0,0,0,.55));transform-origin:var(--weapon-origin,50% 86%);transform:translate(var(--weapon-grip-x-neg,-50%),var(--weapon-grip-y-neg,-86%)) rotate(var(--weapon-rotation,0deg))}.slashArc{position:absolute;left:48%;top:18px;width:120px;height:72px;border-top:5px solid rgba(250,204,21,.88);border-radius:50%;opacity:0;transform:rotate(-24deg);z-index:7;pointer-events:none}.slashArc.show{animation:arcFlash .18s ease-out forwards}.slashArc.arc-scythe{width:180px;height:92px;left:39%;top:5px}.slashArc.arc-axe,.slashArc.arc-great{border-top-width:7px;width:138px;height:82px}.slashArc.arc-wood{width:98px;height:62px}.slashArc.arc-spear{display:block;width:166px;height:0;left:42%;top:58px;border-top:4px solid rgba(147,197,253,.92);border-radius:0;transform:rotate(-2deg);box-shadow:0 0 12px rgba(147,197,253,.66)}.weaponNameTag{display:none!important}
+ .playerHand{position:absolute;inset:0;z-index:40;pointer-events:none;overflow:visible;opacity:0;transform:translate(120px,70px) rotate(0deg);will-change:transform,opacity;filter:drop-shadow(0 10px 8px rgba(0,0,0,.45))}.playerHand.is-attacking{opacity:1!important;display:block!important;visibility:visible!important}.weaponGrip{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:42px;height:32px;border-radius:45% 42% 50% 38%;background:linear-gradient(135deg,#ffd7a3,#b45309);border:2px solid rgba(255,255,255,.18);z-index:43;transform:translate(-50%,-50%) rotate(-22deg)}.weaponForearm{position:absolute;left:calc(var(--weapon-hand-x,82%) + 22px);top:calc(var(--weapon-hand-y,76%) + 16px);width:72px;height:34px;border-radius:24px;background:linear-gradient(135deg,#f8c78a,#a16207);border:2px solid rgba(255,255,255,.16);transform:translate(-50%,-50%) rotate(-20deg);z-index:41}.weaponModel{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:0;height:0;overflow:visible;z-index:42}.weaponModel img{position:absolute;width:auto;height:var(--weapon-height,150px);max-width:none;max-height:none;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(0,0,0,.55));transform-origin:var(--weapon-origin,50% 86%);transform:translate(var(--weapon-grip-x-neg,-50%),var(--weapon-grip-y-neg,-86%)) rotate(var(--weapon-rotation,0deg))}.slashArc{position:absolute;left:48%;top:18px;width:120px;height:72px;border-top:5px solid rgba(250,204,21,.88);border-radius:50%;opacity:0;transform:rotate(-24deg);z-index:45;pointer-events:none}.slashArc.show{animation:arcFlash .18s ease-out forwards}.slashArc.arc-scythe{width:180px;height:92px;left:39%;top:5px}.slashArc.arc-axe,.slashArc.arc-great{border-top-width:7px;width:138px;height:82px}.slashArc.arc-wood{width:98px;height:62px}.slashArc.arc-spear{display:block;width:166px;height:0;left:42%;top:58px;border-top:4px solid rgba(147,197,253,.92);border-radius:0;transform:rotate(-2deg);box-shadow:0 0 12px rgba(147,197,253,.66)}.weaponNameTag{display:none!important}
 @keyframes woodSlashFallback{0%{opacity:0;transform:translate(110px,62px) rotate(30deg) scale(.96)}18%{opacity:1;transform:translate(36px,22px) rotate(-10deg) scale(1)}62%{opacity:1;transform:translate(-78px,-22px) rotate(-48deg) scale(1.02)}100%{opacity:0;transform:translate(-34px,18px) rotate(-62deg) scale(.98)}}
 @keyframes ironSlashFallback{0%{opacity:0;transform:translate(116px,42px) rotate(12deg)}16%{opacity:1;transform:translate(42px,18px) rotate(3deg)}58%{opacity:1;transform:translate(-90px,-8px) rotate(-16deg)}100%{opacity:0;transform:translate(-34px,26px) rotate(-26deg)}}
 @keyframes greatHeavyFallback{0%{opacity:0;transform:translate(96px,76px) rotate(42deg) scale(1.02)}20%{opacity:1;transform:translate(20px,-42px) rotate(76deg) scale(1.04)}68%{opacity:1;transform:translate(-72px,2px) rotate(-42deg) scale(1.08)}100%{opacity:0;transform:translate(-10px,44px) rotate(-60deg) scale(1)}}
@@ -361,7 +361,113 @@ function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn"
 function cleanEquipName(name){return window.WeaponSystem?window.WeaponSystem.cleanEquipName(name):String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
 function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;return window.WeaponSystem?window.WeaponSystem.resolveWeapon(w):{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash"}}
 function renderWeapon(){const actor=$("playerHand");if(actor&&actor.classList.contains("is-attacking"))return;const v=weaponVisual();if(window.WeaponRenderer)window.WeaponRenderer.prepareWeapon(v);if($("weaponNameTag"))$("weaponNameTag").textContent=""}
-function playAttackAnim(kind){const v=weaponVisual();if(window.AttackAnimation&&typeof window.AttackAnimation.play==="function"){window.AttackAnimation.play({weapon:v,kind,enemyCardId:"enemyCard"});return}if(typeof window.playPlayerAttackAnimation==="function"){window.playPlayerAttackAnimation({weapon:v,kind,enemyCardId:"enemyCard"});return}const card=$("enemyCard");if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),120)}}
+let attackFallbackTimer=0;
+let attackFallbackRunning=[];
+function stopAttackFallback(){
+ attackFallbackRunning.forEach(a=>{try{a.cancel()}catch(e){}});
+ attackFallbackRunning=[];
+ clearTimeout(attackFallbackTimer);
+}
+function ensureAttackFallbackDom(){
+ const stage=$("combatStage")||$("enemyCard")||document.body;
+ let arc=$("slashArc");
+ if(!arc){arc=document.createElement("div");arc.id="slashArc";arc.className="slashArc";stage.appendChild(arc)}
+ let actor=$("playerHand");
+ if(!actor){
+  actor=document.createElement("div");
+  actor.id="playerHand";
+  actor.className="playerHand weapon-wood";
+  actor.setAttribute("aria-hidden","true");
+  actor.innerHTML='<div id="weaponModel" class="weaponModel"><img id="weaponImg" src="assets/weapons/wood_sword.png" alt=""></div><div class="weaponGrip"></div><div class="weaponForearm"></div>';
+  stage.appendChild(actor);
+ }
+ if(actor.parentElement!==stage)stage.appendChild(actor);
+ if(arc.parentElement!==stage)stage.appendChild(arc);
+ return {stage,actor,arc,img:$("weaponImg")};
+}
+function applyAttackFallbackWeapon(actor,img,weapon){
+ const w=weapon||{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash",duration:165,scale:.15,gripX:50,gripY:84,rotationOrigin:"50% 84%",initialRotation:-36,type:"slash",arc:true};
+ const weaponPath=w.asset||"assets/weapons/wood_sword.png";
+ console.log("weapon image path:",weaponPath);
+ actor.className="playerHand weapon-"+(w.key||"wood");
+ actor.style.setProperty("--weapon-hand-x",(w.handX||82)+"%");
+ actor.style.setProperty("--weapon-hand-y",(w.handY||76)+"%");
+ actor.style.setProperty("--weapon-height",Math.round(900*(w.scale||.16))+"px");
+ actor.style.setProperty("--weapon-grip-x-neg",-(w.gripX||50)+"%");
+ actor.style.setProperty("--weapon-grip-y-neg",-(w.gripY||86)+"%");
+ actor.style.setProperty("--weapon-origin",w.rotationOrigin||((w.gripX||50)+"% "+(w.gripY||86)+"%"));
+ actor.style.setProperty("--weapon-rotation",(w.initialRotation||0)+"deg");
+ actor.style.zIndex="40";
+ actor.style.display="block";
+ actor.style.visibility="visible";
+ if(img){img.src=weaponPath;img.alt=w.name||w.label||"";img.style.display="block";img.style.visibility="visible";img.style.opacity="1"}
+ return w;
+}
+function attackFallbackFrames(motion){
+ const table={
+  woodSlash:[{opacity:0,transform:"translate(110px,62px) rotate(30deg) scale(.96)"},{opacity:1,offset:.18,transform:"translate(36px,22px) rotate(-10deg) scale(1)"},{opacity:1,offset:.62,transform:"translate(-78px,-22px) rotate(-48deg) scale(1.02)"},{opacity:0,transform:"translate(-34px,18px) rotate(-62deg) scale(.98)"}],
+  ironSlash:[{opacity:0,transform:"translate(116px,42px) rotate(12deg)"},{opacity:1,offset:.16,transform:"translate(42px,18px) rotate(3deg)"},{opacity:1,offset:.58,transform:"translate(-90px,-8px) rotate(-16deg)"},{opacity:0,transform:"translate(-34px,26px) rotate(-26deg)"}],
+  greatHeavy:[{opacity:0,transform:"translate(96px,76px) rotate(42deg) scale(1.02)"},{opacity:1,offset:.20,transform:"translate(20px,-42px) rotate(76deg) scale(1.04)"},{opacity:1,offset:.68,transform:"translate(-72px,2px) rotate(-42deg) scale(1.08)"},{opacity:0,transform:"translate(-10px,44px) rotate(-60deg) scale(1)"}],
+  scytheSweep:[{opacity:0,transform:"translate(120px,56px) rotate(40deg)"},{opacity:1,offset:.16,transform:"translate(48px,8px) rotate(22deg)"},{opacity:1,offset:.62,transform:"translate(-122px,-18px) rotate(-76deg)"},{opacity:0,transform:"translate(-56px,28px) rotate(-96deg)"}],
+  spearThrust:[{opacity:0,transform:"translate(138px,30px) rotate(0deg)"},{opacity:1,offset:.20,transform:"translate(56px,16px) rotate(0deg)"},{opacity:1,offset:.56,transform:"translate(-130px,-6px) rotate(-2deg)"},{opacity:0,transform:"translate(70px,24px) rotate(0deg)"}],
+  axeChop:[{opacity:0,transform:"translate(96px,72px) rotate(54deg)"},{opacity:1,offset:.20,transform:"translate(18px,-54px) rotate(88deg)"},{opacity:1,offset:.66,transform:"translate(-70px,4px) rotate(-54deg)"},{opacity:0,transform:"translate(-12px,44px) rotate(-76deg)"}]
+ };
+ return table[motion]||table.ironSlash;
+}
+function playAttackFallback(kind,weapon){
+ console.log("AttackAnimation fallback play used");
+ const dom=ensureAttackFallbackDom();
+ let w=applyAttackFallbackWeapon(dom.actor,dom.img,weapon);
+ stopAttackFallback();
+ const duration=Math.max(150,Math.min(290,kind==="heavy"?Math.max(230,w.duration||190):(w.duration||190)));
+ dom.actor.className="playerHand weapon-"+(w.key||"wood")+" is-attacking";
+ dom.actor.style.opacity="1";
+ dom.actor.style.display="block";
+ dom.actor.style.visibility="visible";
+ dom.actor.style.animation="none";
+ dom.actor.style.transform="translate(120px,70px) rotate(0deg)";
+ void dom.actor.offsetWidth;
+ if(dom.actor.animate){attackFallbackRunning.push(dom.actor.animate(attackFallbackFrames(w.animation||"ironSlash"),{duration,easing:"cubic-bezier(.12,.82,.16,1)",fill:"forwards"}))}
+ else{dom.actor.style.animation=(w.animation||"ironSlash")+"Fallback "+duration+"ms cubic-bezier(.12,.82,.16,1) forwards"}
+ if(dom.arc){
+  dom.arc.className="slashArc arc-"+(w.key||"wood");
+  dom.arc.style.display="block";dom.arc.style.visibility="visible";dom.arc.style.zIndex="45";
+  void dom.arc.offsetWidth;
+  dom.arc.classList.add("show");
+ }
+ const card=$("enemyCard");
+ if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),Math.min(140,duration))}
+ attackFallbackTimer=setTimeout(()=>{
+  stopAttackFallback();
+  dom.actor.className="playerHand weapon-"+(w.key||"wood");
+  dom.actor.style.opacity="0";
+  dom.actor.style.display="";
+  dom.actor.style.visibility="";
+  dom.actor.style.transform="translate(120px,70px) rotate(0deg)";
+  dom.actor.style.animation="none";
+  if(dom.arc){dom.arc.className="slashArc arc-"+(w.key||"wood");dom.arc.style.display="";dom.arc.style.visibility=""}
+ },duration+34);
+}
+function playAttackAnim(kind){
+ console.log("playAttackAnim called");
+ const v=weaponVisual();
+ try{
+  if(window.AttackAnimation&&typeof window.AttackAnimation.play==="function"){
+   window.AttackAnimation.play({weapon:v,kind,enemyCardId:"enemyCard"});
+   console.log("AttackAnimation external play used");
+   return;
+  }
+ }catch(e){console.error("AttackAnimation external play failed",e)}
+ try{
+  if(typeof window.playPlayerAttackAnimation==="function"){
+   window.playPlayerAttackAnimation({weapon:v,kind,enemyCardId:"enemyCard"});
+   console.log("AttackAnimation external play used");
+   return;
+  }
+ }catch(e){console.error("playPlayerAttackAnimation failed",e)}
+ playAttackFallback(kind,v);
+}
+window.playAttackFallback=playAttackFallback;
 window.playAttackAnim=playAttackAnim;
 function statusHtml(){
  if(!fight)return "<span class='small'>無狀態</span>";

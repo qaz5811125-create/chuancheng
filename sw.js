@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuan-cheng-beta-0-5-6-attack-animation-v2";
+const CACHE_NAME = "chuancheng-cache-v0.5.6-attack-animation-v3";
 const ASSETS = [
   "./",
   "index.html",
