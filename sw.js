@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.8.0-jobs-expansion-elements-v2";
+const CACHE_NAME = "chuancheng-cache-v0.9.0-abyss-artifact-v1";
 const ASSETS = [
   "./",
   "index.html",
