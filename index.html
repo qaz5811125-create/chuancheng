@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.5.6</title>
+<title>傳承 Beta 0.5.7</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -53,17 +53,9 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 .combatStage{position:relative;height:132px;margin:4px 0 2px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 18%,rgba(250,204,21,.10),transparent 44%),linear-gradient(180deg,rgba(2,6,23,.22),rgba(2,6,23,.08));border:1px solid rgba(148,163,184,.16)}
 #enemyEmoji{position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:2;transition:transform .08s ease,filter .08s ease}.enemyHurt #enemyEmoji{animation:enemyShake .12s linear 1;filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}
- .playerHand{position:absolute;inset:0;z-index:40;pointer-events:none;overflow:visible;opacity:0;transform:translate(120px,70px) rotate(0deg);will-change:transform,opacity;filter:drop-shadow(0 10px 8px rgba(0,0,0,.45))}.playerHand.is-attacking{opacity:1!important;display:block!important;visibility:visible!important}.weaponGrip{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:42px;height:32px;border-radius:45% 42% 50% 38%;background:linear-gradient(135deg,#ffd7a3,#b45309);border:2px solid rgba(255,255,255,.18);z-index:43;transform:translate(-50%,-50%) rotate(-22deg)}.weaponForearm{position:absolute;left:calc(var(--weapon-hand-x,82%) + 22px);top:calc(var(--weapon-hand-y,76%) + 16px);width:72px;height:34px;border-radius:24px;background:linear-gradient(135deg,#f8c78a,#a16207);border:2px solid rgba(255,255,255,.16);transform:translate(-50%,-50%) rotate(-20deg);z-index:41}.weaponModel{position:absolute;left:var(--weapon-hand-x,82%);top:var(--weapon-hand-y,76%);width:0;height:0;overflow:visible;z-index:42}.weaponModel img{position:absolute;width:auto;height:var(--weapon-height,150px);max-width:none;max-height:none;object-fit:contain;pointer-events:none;filter:drop-shadow(0 5px 4px rgba(0,0,0,.55));transform-origin:var(--weapon-origin,50% 86%);transform:translate(var(--weapon-grip-x-neg,-50%),var(--weapon-grip-y-neg,-86%)) rotate(var(--weapon-rotation,0deg))}.slashArc{position:absolute;left:48%;top:18px;width:120px;height:72px;border-top:5px solid rgba(250,204,21,.88);border-radius:50%;opacity:0;transform:rotate(-24deg);z-index:45;pointer-events:none}.slashArc.show{animation:arcFlash .18s ease-out forwards}.slashArc.arc-scythe{width:180px;height:92px;left:39%;top:5px}.slashArc.arc-axe,.slashArc.arc-great{border-top-width:7px;width:138px;height:82px}.slashArc.arc-wood{width:98px;height:62px}.slashArc.arc-spear{display:block;width:166px;height:0;left:42%;top:58px;border-top:4px solid rgba(147,197,253,.92);border-radius:0;transform:rotate(-2deg);box-shadow:0 0 12px rgba(147,197,253,.66)}.weaponNameTag{display:none!important}
-@keyframes woodSlashFallback{0%{opacity:0;transform:translate(110px,62px) rotate(30deg) scale(.96)}18%{opacity:1;transform:translate(36px,22px) rotate(-10deg) scale(1)}62%{opacity:1;transform:translate(-78px,-22px) rotate(-48deg) scale(1.02)}100%{opacity:0;transform:translate(-34px,18px) rotate(-62deg) scale(.98)}}
-@keyframes ironSlashFallback{0%{opacity:0;transform:translate(116px,42px) rotate(12deg)}16%{opacity:1;transform:translate(42px,18px) rotate(3deg)}58%{opacity:1;transform:translate(-90px,-8px) rotate(-16deg)}100%{opacity:0;transform:translate(-34px,26px) rotate(-26deg)}}
-@keyframes greatHeavyFallback{0%{opacity:0;transform:translate(96px,76px) rotate(42deg) scale(1.02)}20%{opacity:1;transform:translate(20px,-42px) rotate(76deg) scale(1.04)}68%{opacity:1;transform:translate(-72px,2px) rotate(-42deg) scale(1.08)}100%{opacity:0;transform:translate(-10px,44px) rotate(-60deg) scale(1)}}
-@keyframes scytheSweepFallback{0%{opacity:0;transform:translate(120px,56px) rotate(40deg)}16%{opacity:1;transform:translate(48px,8px) rotate(22deg)}62%{opacity:1;transform:translate(-122px,-18px) rotate(-76deg)}100%{opacity:0;transform:translate(-56px,28px) rotate(-96deg)}}
-@keyframes spearThrustFallback{0%{opacity:0;transform:translate(138px,30px) rotate(0deg)}20%{opacity:1;transform:translate(56px,16px) rotate(0deg)}56%{opacity:1;transform:translate(-130px,-6px) rotate(-2deg)}100%{opacity:0;transform:translate(70px,24px) rotate(0deg)}}
-@keyframes axeChopFallback{0%{opacity:0;transform:translate(96px,72px) rotate(54deg)}20%{opacity:1;transform:translate(18px,-54px) rotate(88deg)}66%{opacity:1;transform:translate(-70px,4px) rotate(-54deg)}100%{opacity:0;transform:translate(-12px,44px) rotate(-76deg)}}
-@keyframes arcFlash{0%{opacity:0;transform:scale(.72) rotate(-24deg)}45%{opacity:1}100%{opacity:0;transform:scale(1.22) rotate(-8deg)}}@keyframes enemyShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 5px)) scale(.96)}75%{transform:translateX(calc(-50% + 5px)) scale(.96)}}
-
-#attackAnimLayer{position:fixed!important;left:0!important;top:0!important;width:100vw!important;height:100vh!important;z-index:999999!important;pointer-events:none!important;overflow:visible!important;contain:none!important}
-#attackAnimLayer *{pointer-events:none!important;box-sizing:border-box}
+.hitFxLayer{position:absolute;inset:0;z-index:12;pointer-events:none;overflow:visible}.hitFx{position:absolute;left:50%;top:46%;width:120px;height:84px;transform:translate(-50%,-50%);opacity:0;pointer-events:none}.hitFx:before,.hitFx:after{content:"";position:absolute;left:50%;top:50%;border-radius:999px;transform:translate(-50%,-50%) rotate(-24deg)}.hitFx.normal:before{width:118px;height:6px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.96),transparent);box-shadow:0 0 14px rgba(255,255,255,.7);animation:hitSlash .24s ease-out forwards}.hitFx.normal:after{width:74px;height:4px;background:rgba(191,219,254,.82);animation:hitSlash2 .22s ease-out forwards}.hitFx.crit:before{width:150px;height:8px;background:linear-gradient(90deg,transparent,#facc15,#fb7185,transparent);box-shadow:0 0 18px rgba(250,204,21,.95),0 0 34px rgba(248,113,113,.55);animation:hitSlash .32s cubic-bezier(.12,.9,.2,1) forwards}.hitFx.crit:after{width:116px;height:8px;background:linear-gradient(90deg,transparent,#fb7185,transparent);transform:translate(-50%,-50%) rotate(28deg);animation:hitSlashCross .30s ease-out forwards}.hitFx.skill{width:150px;height:150px}.hitFx.skill:before{width:46px;height:46px;border:4px solid rgba(196,181,253,.9);background:rgba(147,51,234,.15);box-shadow:0 0 22px rgba(196,181,253,.85);animation:hitRing .38s ease-out forwards}.hitFx.skill:after{width:126px;height:8px;background:linear-gradient(90deg,transparent,#c4b5fd,#93c5fd,transparent);animation:hitSlash2 .35s ease-out forwards}.hitFx.execute{width:170px;height:170px}.hitFx.execute:before{width:68px;height:68px;border:5px solid rgba(248,113,113,.95);background:rgba(127,29,29,.22);box-shadow:0 0 28px rgba(248,113,113,.95);animation:hitBurst .40s ease-out forwards}.hitFx.execute:after{width:150px;height:10px;background:linear-gradient(90deg,transparent,#facc15,#ef4444,transparent);box-shadow:0 0 22px rgba(250,204,21,.9);animation:hitSlashCross .34s ease-out forwards}.comboPanel{margin:6px auto 0;min-height:28px;font-weight:1000;color:#facc15;text-shadow:0 2px 8px rgba(0,0,0,.65);letter-spacing:1px}.comboPanel .comboBonus{font-size:12px;color:#fde68a;opacity:.92}.comboToast{position:absolute;left:50%;top:16px;z-index:22;transform:translateX(-50%);font-weight:1000;font-size:18px;color:#facc15;text-shadow:0 0 12px rgba(250,204,21,.9),0 3px 10px #000;opacity:0;pointer-events:none;white-space:nowrap}.comboToast.show{animation:comboToast .75s ease-out forwards}.affixBox{min-height:24px;margin-top:5px}.affixBadge{display:inline-block;margin:2px;padding:3px 9px;border-radius:999px;background:rgba(15,23,42,.65);border:1px solid rgba(250,204,21,.34);font-size:12px;color:#fde68a}.monsterAffixes{display:block;font-size:11px;color:#fde68a;opacity:.9}.battleDebuff{display:inline-block;margin-left:4px;color:#fca5a5}
+@keyframes hitSlash{0%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scaleX(.15)}42%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scaleX(1.35)}}@keyframes hitSlash2{0%{opacity:0;transform:translate(-50%,-50%) rotate(30deg) scaleX(.18)}48%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(8deg) scaleX(1.18)}}@keyframes hitSlashCross{0%{opacity:0;transform:translate(-50%,-50%) rotate(28deg) scaleX(.18)}45%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(44deg) scaleX(1.28)}}@keyframes hitRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.32)}45%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(2.35)}}@keyframes hitBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}35%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}}@keyframes comboToast{0%{opacity:0;transform:translate(-50%,-4px) scale(.82)}20%{opacity:1;transform:translate(-50%,0) scale(1.08)}100%{opacity:0;transform:translate(-50%,-34px) scale(1.18)}}@keyframes enemyShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 5px)) scale(.96)}75%{transform:translateX(calc(-50% + 5px)) scale(.96)}}
+.playerHand,.weaponGrip,.weaponForearm,.weaponModel,.slashArc,.weaponNameTag,#attackAnimLayer{display:none!important;visibility:hidden!important;pointer-events:none!important}
 </style>
 </head>
 <body>
@@ -71,7 +63,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div class="app">
 <div class="topLogo">
   <h1>傳承</h1>
-  <div class="small">五裝備欄・技能祭壇・離線掛機</div>
+  <div class="small">命中回饋・連擊系統・怪物詞綴</div>
 </div>
 
 <div id="offlineModal" class="offlineOverlay hidden">
@@ -118,17 +110,19 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div>攻擊 <b id="atk">50</b></div><div>攻速 <b id="aspd">1</b>/秒</div>
 <div>暴擊 <b id="crit">5</b>%</div><div>破甲 <b id="pen">0</b>%</div>
 <div>💀 秒殺率 <b id="executeRate">0.0001</b>%</div><div>佇列 <b id="queue">0</b></div><div>編隊 <b id="formationCount">1</b>隻</div>
+<div>連擊 <b id="comboCount">x0</b></div><div>連擊加成 <b id="comboBonus">無</b></div><div>負面 <b id="debuffText">無</b></div>
 </div>
 
 <div class="card enemy" id="enemyCard">
 <div class="combatStage" id="combatStage">
   <div id="enemyEmoji" class="emoji">🪵</div>
-  <div id="slashArc" class="slashArc"></div>
-  <div id="playerHand" class="playerHand weapon-wood" aria-hidden="true"><div id="weaponModel" class="weaponModel"><img id="weaponImg" src="assets/weapons/wood_sword.png" alt=""></div><div class="weaponGrip"></div><div class="weaponForearm"></div></div>
-  <div id="weaponNameTag" class="weaponNameTag"></div>
+  <div id="hitFxLayer" class="hitFxLayer" aria-hidden="true"></div>
+  <div id="comboToast" class="comboToast" aria-hidden="true"></div>
 </div>
 <h2 id="enemyName">木偶</h2>
 <div id="enemyType" class="pill">普通</div>
+<div id="affixBox" class="affixBox small"></div>
+<div id="comboPanel" class="comboPanel"></div>
 <div id="monsterList" class="small"></div>
 <div class="bar"><div id="hpBar" class="hp"></div></div>
 <p><b id="enemyHp">100</b>/<span id="enemyMaxHp">100</span> HP</p>
@@ -173,18 +167,15 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.5.6 攻擊演出版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><span class="pill">Beta 0.5.7 命中回饋與連擊系統</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
 
-<script src="weaponConfig.js"></script>
-<script src="weaponRenderer.js"></script>
-<script src="attackAnimation.js"></script>
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.5.6";
+const GAME_VERSION="0.5.7";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -198,7 +189,20 @@ const skillMeta={
  force:{icon:"💜",name:"奮力一擊",desc:"造成目標目前生命值比例傷害",baseCd:30,free:true,lvReq:100}
 };
 const skillIds=Object.keys(skillMeta),SUMMON_COST=100;
+const COMBO_TIMEOUT=3;
+const MONSTER_AFFIXES=[
+ {id:"berserk",name:"狂暴",desc:"回血提升，擊殺金幣增加",apply:m=>{m.reg=Math.floor(m.reg*1.25);m.gold=Math.floor(m.gold*1.20)}},
+ {id:"hard",name:"硬皮",desc:"最大生命提升，擊殺經驗增加",apply:m=>{m.hp=Math.floor(m.hp*1.35);m.max=m.hp;m.xp=Math.floor(m.xp*1.20)}},
+ {id:"evasive",name:"閃避",desc:"閃避率提升，裝備掉落提高",apply:m=>{m.extraEvade=(m.extraEvade||0)+.08;m.drop=Math.min(.95,(m.drop||0)+.05)}},
+ {id:"treasure",name:"寶藏",desc:"血量降低，金幣與掉落提高",apply:m=>{m.hp=Math.max(1,Math.floor(m.hp*.75));m.max=m.hp;m.gold=Math.floor(m.gold*1.60);m.drop=Math.min(.95,(m.drop||0)+.12);m.stoneBonus={chance:.35,min:1,max:3}}},
+ {id:"curse",name:"詛咒",desc:"死亡時可能緩速，傳承之魂提高",apply:m=>{m.curseChance=.25;m.soulBonus=2}},
+ {id:"resilient",name:"堅韌",desc:"持續傷害降低，擊殺經驗增加",apply:m=>{m.dotTaken=.65;m.xp=Math.floor(m.xp*1.25)}},
+ {id:"flammable",name:"易燃",desc:"燃燒傷害提高",apply:m=>{m.burnTaken=1.5}},
+ {id:"breakable",name:"破甲",desc:"更容易被破甲",apply:m=>{m.breakWeak=true}}
+];
 let p,fight,dungeon=null,view="main",hold=false,budget=0,last=performance.now(),renderClock=0,audioCtx=null;
+let combo={count:0,lastHit:0,best:0,lastTier:0};
+let battleDebuff={slow:0};
 
 function newPlayer(){return{saveVersion:GAME_VERSION,lv:1,exp:0,points:0,gold:0,soul:0,stone:0,upMul:1,pointMul:1,autoDismantle:"none",baseAtk:50,aspd:1,crit:.05,pen:.0,execute:.000001,click:1,bonus:{atk:0,aspd:0,crit:0,pen:0,execute:0,gold:0,drop:0,exp:0,cdr:0,critDmg:0,def:0,regen:0},stage:1,high:1,kills:0,boss:0,retryBoss:0,auto:false,queue:0,cost:{atk:10,aspd:25,crit:50,pen:80,execute:50000,click:120,bag:150},bagCap:12,bag:[],equip:null,equips:{weapon:null,head:null,armor:null,ring:null,shoes:null},selectedSlot:"weapon",bagFilter:"all",autoSkill:false,nextId:1,cd:{slash:0,shatter:0,gale:0,force:0},buff:{gale:0},skills:{slash:{lv:1,exp:0,unlocked:true},shatter:{lv:1,exp:0,unlocked:true},gale:{lv:0,exp:0,unlocked:false},force:{lv:1,exp:0,unlocked:true}},fragments:{slash:0,shatter:0,gale:0,force:0},sound:true,vol:1,dun:{goldRuns:3,expRuns:3,goldBest:0,expBest:0,eqBest:0,stoneBest:0},offline:{lastTime:Date.now(),stage:1,pending:null},j:{fail:0,gold:0,boss:0,high:1}}}
 function log(x){const d=document.createElement("div");d.textContent="› "+x;$("log").prepend(d);while($("log").children.length>70)$("log").lastChild.remove()}
@@ -250,9 +254,9 @@ function reset(){if(confirm("確定重置存檔？")){localStorage.removeItem(SA
 function equippedItems(){return slots.map(k=>p.equips&&p.equips[k]).filter(Boolean)}
 function equipAtk(){return Math.floor(equipStat("atk"))}
 function equipStat(k){return equippedItems().reduce((a,it)=>a+(it[k]||0)*(1+(it.enh||0)*.08),0)}
-function atk(){return p.baseAtk+p.bonus.atk+equipAtk()}
-function asp(){return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()))}
-function crit(){return Math.min(.95,p.crit+p.bonus.crit+equipStat("crit"))}
+function atk(){return (p.baseAtk+p.bonus.atk+equipAtk())*(1+comboDamageBonus())}
+function asp(){return Math.max(.2,(p.aspd+(p.bonus.aspd||0)+equipStat("aspd"))*(1+galeAspdBonus()+comboAspdBonus())*(battleDebuff.slow>0?.85:1))}
+function crit(){return Math.min(.95,p.crit+p.bonus.crit+equipStat("crit")+comboCritBonus())}
 function critDmg(){return 2+equipStat("critDmg")}
 function cdr(){return Math.min(.5,p.bonus.cdr+equipStat("cdr"))}
 function goldBonus(){return p.bonus.gold+equipStat("gold")}
@@ -272,6 +276,9 @@ function typeOf(st){return st%10===0?"boss":st%5===0?"elite":"normal"}
 function isDungeon(){return dungeon&&dungeon.running}
 function recPower(st){const t=typeOf(st);if(t==="boss")return Math.floor(450+st*95+Math.pow(st,1.25)*16);if(t==="elite")return Math.floor(260+st*55+Math.pow(st,1.18)*10);return Math.floor(80+st*22+Math.pow(st,1.12)*6)}
 function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function affixCountFor(type,st){if(type==="boss")return st>=100?2:1;if(type==="elite"){if(Math.random()<.08)return 2;return Math.random()<.50?1:0}return Math.random()<.20?1:0}
+function pickAffixes(type,st){let count=affixCountFor(type,st),pool=[...MONSTER_AFFIXES],out=[];while(count>0&&pool.length){const i=Math.floor(Math.random()*pool.length);out.push(pool.splice(i,1)[0]);count--}return out}
+function applyMonsterAffixes(m,st=p.stage){const picked=pickAffixes(m.type,st);m.affixes=picked.map(a=>({id:a.id,name:a.name,desc:a.desc}));for(const a of picked){if(typeof a.apply==="function")a.apply(m)}m.hp=Math.max(1,Math.floor(m.hp));m.max=Math.max(1,Math.floor(m.max||m.hp));m.def=Math.max(0,Math.floor(m.def||0));m.reg=Math.max(0,Math.floor(m.reg||0));m.gold=Math.max(0,Math.floor(m.gold||0));m.xp=Math.max(0,Math.floor(m.xp||0));m.drop=Math.max(0,Math.min(.95,m.drop||0));return m}
 function mainMonsterTemplate(st,type){const baseHp=Math.floor(100*Math.pow(1.18,st-1)+st*45);const baseDef=Math.floor(8+st*10+Math.pow(st,1.18)*4);const baseReg=Math.floor(1+st*1.4+Math.pow(st,1.08));let hp,def,reg,gold,xp,drop,emoji,name;
 if(type==="boss"){
   let tier=st<=50?0:st<=100?1:st<=200?2:3;
@@ -286,7 +293,7 @@ if(type==="boss"){
 }else{
   hp=baseHp;def=baseDef;reg=baseReg;gold=rand(35+st*12,60+st*18);xp=25+st*7;drop=.22+Math.min(.18,st*.004);emoji="🪵";name="木偶";
 }
-return enemy({mode:"main",type,name,emoji,hp,def,reg,gold,xp,drop,timer:type==="boss"?90:0})}
+return applyMonsterAffixes(enemy({mode:"main",type,name,emoji,hp,def,reg,gold,xp,drop,timer:type==="boss"?90:0}),st)}
 function createMainEnemy(){const st=p.stage,t=typeOf(st),count=t==="boss"?1:rand(1,3),types=["normal","elite","boss"];let monsters=[];for(let i=0;i<count;i++){let mt=t;if(t!=="boss"){mt=Math.random()<.68?"normal":"elite";if(st>=30&&Math.random()<.04)mt="boss"}monsters.push(mainMonsterTemplate(st,mt))}if(t==="elite"&&!monsters.some(m=>m.type==="elite"))monsters[0]=mainMonsterTemplate(st,"elite");const total=monsters.reduce((a,m)=>a+m.max,0);const lead=monsters[0];return{mode:"main",type:t,name:"怪物編隊",emoji:monsters.map(m=>m.emoji).join(""),hp:total,max:total,def:lead.def,reg:lead.reg,drop:lead.drop,timer:t==="boss"?90:0,e:{burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0},dotFloat:0,dropState:{items:0},monsters}}
 function createDungeonEnemy(kind,count){let hp,def,name,emoji;if(kind==="gold"){hp=10000+count*10000;def=count===0?100:200+(count-1)*200;name="金幣哥布林";emoji="🪙"}else if(kind==="exp"){hp=50000+count*15000;def=5000+count*1500;name="經驗史萊姆";emoji="📖"}else if(kind==="stone"){hp=65000+count*22000;def=6000+count*1800;name=count%5===4?"礦坑守衛":"強化石魔偶";emoji=count%5===4?"💎":"⛏️"}else{hp=80000+count*25000;def=8000+count*2500;name=count%5===4?"裝備副本Boss":"裝備魔偶";emoji=count%5===4?"🎁":"⚔️"}return enemy({mode:"dungeon",dungeonType:kind,type:"dungeon",name,emoji,hp,def,reg:0,gold:0,xp:0,drop:0,timer:0})}
 function enemy(o){return{...o,max:o.hp,e:o.e||{burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0},dotFloat:0,kills:0,gain:0}}
@@ -295,21 +302,35 @@ function activeMonster(){const a=aliveMonsters();return a[0]||fight}
 function formationDropState(){if(!fight.dropState)fight.dropState={items:0};return fight.dropState}
 function settleFormationDeaths(){if(!fight||!fight.monsters)return;let gained=false;for(const m of fight.monsters){if(m.hp<=0&&!m.rewarded){rewardMonster(m,formationDropState());gained=true}}if(gained)levelUp()}
 function refreshTotalHp(){if(fight&&fight.monsters)fight.hp=fight.monsters.reduce((a,m)=>a+Math.max(0,m.hp),0)}
-function spawnMain(){fight=createMainEnemy();p.queue=0;hold=false;budget=0;render()}
+function spawnMain(){fight=createMainEnemy();p.queue=0;hold=false;budget=0;resetCombo();render()}
 function dungeonName(kind){return kind==="gold"?"金幣":kind==="exp"?"經驗":kind==="stone"?"強化石":"裝備"}
-function startDungeon(kind){if(isDungeon()){log("副本進行中，不能重複進入");return}if(kind==="gold"&&p.high<25)return log("25關解鎖金幣副本");if(kind==="exp"&&p.high<50)return log("50關解鎖經驗副本");if(kind==="eq"&&p.high<100)return log("100關解鎖裝備副本");if(kind==="stone"&&p.high<150)return log("150關解鎖強化石礦坑");if(kind==="gold"&&p.dun.goldRuns<=0)return log("金幣副本次數不足");if(kind==="exp"&&p.dun.expRuns<=0)return log("經驗副本次數不足");if(kind==="gold")p.dun.goldRuns--;else if(kind==="exp")p.dun.expRuns--;dungeon={type:kind,timer:kind==="gold"?60:(kind==="exp"?120:90),kills:0,gain:0,running:true};fight=createDungeonEnemy(kind,0);p.queue=0;hold=false;budget=0;show("main");log(dungeonName(kind)+"副本開始");save(false);render()}
-function endDungeon(){if(!dungeon)return;p.queue=0;hold=false;budget=0;dungeon.running=false;const kind=dungeon.type,bestKey=kind==="gold"?"goldBest":kind==="exp"?"expBest":kind==="stone"?"stoneBest":"eqBest";const old=p.dun[bestKey]||0;if(dungeon.kills>old){p.dun[bestKey]=dungeon.kills;log("🎉 NEW RECORD！"+dungeon.kills+"隻")}log(dungeonName(kind)+"副本結束，擊殺 "+dungeon.kills+"，收益 "+dungeon.gain);dungeon=null;save(false);spawnMain()}
+function startDungeon(kind){resetCombo();if(isDungeon()){log("副本進行中，不能重複進入");return}if(kind==="gold"&&p.high<25)return log("25關解鎖金幣副本");if(kind==="exp"&&p.high<50)return log("50關解鎖經驗副本");if(kind==="eq"&&p.high<100)return log("100關解鎖裝備副本");if(kind==="stone"&&p.high<150)return log("150關解鎖強化石礦坑");if(kind==="gold"&&p.dun.goldRuns<=0)return log("金幣副本次數不足");if(kind==="exp"&&p.dun.expRuns<=0)return log("經驗副本次數不足");if(kind==="gold")p.dun.goldRuns--;else if(kind==="exp")p.dun.expRuns--;dungeon={type:kind,timer:kind==="gold"?60:(kind==="exp"?120:90),kills:0,gain:0,running:true};fight=createDungeonEnemy(kind,0);p.queue=0;hold=false;budget=0;show("main");log(dungeonName(kind)+"副本開始");save(false);render()}
+function endDungeon(){if(!dungeon)return;resetCombo();p.queue=0;hold=false;budget=0;dungeon.running=false;const kind=dungeon.type,bestKey=kind==="gold"?"goldBest":kind==="exp"?"expBest":kind==="stone"?"stoneBest":"eqBest";const old=p.dun[bestKey]||0;if(dungeon.kills>old){p.dun[bestKey]=dungeon.kills;log("🎉 NEW RECORD！"+dungeon.kills+"隻")}log(dungeonName(kind)+"副本結束，擊殺 "+dungeon.kills+"，收益 "+dungeon.gain);dungeon=null;save(false);spawnMain()}
 function effDef(){const t=activeMonster(),e=ensureEffectBag(t);if(e.shatter>0)return 0;return Math.floor(t.def*(1-Math.min(.9,pen()+e.break)))}
 function baseEvade(target=activeMonster()){const type=(target&&target.type)||fight.type;if(type==="boss")return .30;if(type==="elite")return .15;return .05}
-function evadeRate(target=activeMonster()){const e=ensureEffectBag(target);return Math.max(0,baseEvade(target)-(e.prison>0?.10:0))}
+function evadeRate(target=activeMonster()){const e=ensureEffectBag(target);return Math.max(0,Math.min(.75,baseEvade(target)+(target.extraEvade||0)-(e.prison>0?.10:0)))}
 function effReg(){if(fight.monsters)return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);return a+m.reg*(e.freeze>0?.45:1)},0);const e=ensureEffectBag(fight);return fight.reg*(e.freeze>0?.45:1)}
 function request(n=1){p.queue=Math.min(160,p.queue+n)}
+function comboTier(count=combo.count){if(count>=300)return 300;if(count>=100)return 100;if(count>=50)return 50;if(count>=10)return 10;return 0}
+function comboDamageBonus(){const t=comboTier();return t>=300?.10:t>=100?.05:t>=50?.03:t>=10?.01:0}
+function comboCritBonus(){const t=comboTier();return t>=300?.02:t>=100?.01:0}
+function comboAspdBonus(){return comboTier()>=300?.02:0}
+function comboBonusText(){const d=comboDamageBonus(),c=comboCritBonus(),a=comboAspdBonus(),out=[];if(d)out.push("傷害+"+Math.round(d*100)+"%");if(c)out.push("爆擊+"+Math.round(c*100)+"%");if(a)out.push("攻速+"+Math.round(a*100)+"%");return out.join("｜")||"無"}
+function showComboToast(text){const el=$("comboToast");if(!el)return;el.textContent=text;el.classList.remove("show");void el.offsetWidth;el.classList.add("show")}
+function addCombo(){const now=performance.now()/1000;if(combo.count&&now-(combo.lastHit||0)>COMBO_TIMEOUT)combo.count=0;combo.count++;combo.lastHit=now;combo.best=Math.max(combo.best,combo.count);const t=comboTier();if(t>combo.lastTier){combo.lastTier=t;if(t===10)showComboToast("10 連擊！");if(t===50)showComboToast("50 連擊！");if(t===100)showComboToast("百連斬！");if(t===300)showComboToast("傳承暴走！");}renderCombo()}
+function resetCombo(){combo.count=0;combo.lastHit=0;combo.lastTier=0;renderCombo()}
+function tickCombo(now=performance.now()/1000){if(combo.count&&now-(combo.lastHit||0)>COMBO_TIMEOUT)resetCombo()}
+function renderCombo(){if($("comboCount"))$("comboCount").textContent="x"+(combo.count||0);if($("comboBonus"))$("comboBonus").textContent=comboBonusText();if($("comboPanel"))$("comboPanel").innerHTML=combo.count?`連擊 x${combo.count}<div class="comboBonus">${comboBonusText()}</div>`:"";if($("debuffText"))$("debuffText").textContent=battleDebuff.slow>0?"詛咒緩速":"無"}
+function showHitEffect(kind="normal"){const layer=$("hitFxLayer")||$("combatStage");if(!layer)return;const d=document.createElement("div");d.className="hitFx "+kind;d.style.left=(48+Math.random()*10-5)+"%";d.style.top=(44+Math.random()*12-6)+"%";layer.appendChild(d);const card=$("enemyCard");if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),140)}setTimeout(()=>d.remove(),480)}
+function affixNames(target){return target&&Array.isArray(target.affixes)?target.affixes.map(a=>a.name):[]}
+function affixLabel(target){return affixNames(target).join("・")}
+function affixHtml(target){const names=affixNames(target);return names.length?names.map(n=>`<span class="affixBadge">${n}</span>`).join(""):"<span class='small'>無詞綴</span>"}
 function floatText(x,big=false){const d=document.createElement("div");d.className="float"+(big?" bigFloat":"");d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),big?1100:850)}
-function damage(mult=1,label="",opt={}){if(!fight)return;console.log("ATTACK SUCCESS: before playAttackAnim");playAttackAnim();const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");sfx("hit");return}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💀 秒殺！",true);sfx("crit");log("💀 秒殺成功！");settleFormationDeaths();if(fight.hp<=0)killEnemy();return}const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;p.baseAtk+=.1;floatText(label+(c?"💥":"")+d);sfx(c?"crit":((target.type||fight.type)==="boss"?"boss":"hit"));rollEffects(target);settleFormationDeaths();if(fight.hp<=0)killEnemy()}
-function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",.1,.08,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.8,e.break+v);else if(k==="bleed")e.bleed=Math.min(20,e.bleed+v);else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
-function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target);if(e.burn>0){const d=55*dt;target.hp-=d;e.burn-=dt;msgs.push(["🔥",d])}if(e.poison>0){const d=target.max*.001*dt;target.hp-=d;e.poison-=dt;msgs.push(["☠️",d])}if(e.bleed>0){const d=e.bleed*18*dt;target.hp-=d;e.bleed=Math.max(0,e.bleed-dt*.7);msgs.push(["🩸",d])}if(e.freeze>0)e.freeze-=dt;if(e.shatter>0)e.shatter-=dt;if(e.prison>0)e.prison-=dt}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
+function damage(mult=1,label="",opt={}){if(!fight)return;const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");sfx("hit");return}if(!opt.noExecute&&target.type!=="boss"&&Math.random()<executeRate()){target.hp=0;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;addCombo();showHitEffect("execute");floatText("💀 秒殺！",true);sfx("crit");log("💀 秒殺成功！");settleFormationDeaths();if(fight.hp<=0)killEnemy();return}const c=Math.random()<crit();const d=Math.max(1,Math.floor(atk()*mult*(c?critDmg():1)-effDef()));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;p.baseAtk+=.1;addCombo();showHitEffect(opt.hitType||(label?"skill":(c?"crit":"normal")));floatText(label+(c?"💥":"")+d);sfx(c?"crit":((target.type||fight.type)==="boss"?"boss":"hit"));rollEffects(target);settleFormationDeaths();if(fight.hp<=0)killEnemy()}
+function rollEffects(target=activeMonster()){const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const a=[["burn",.12,5,"🔥燃燒"],["poison",.1,6,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,.08,"🛡️破甲"],["bleed",.13,3,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.8,e.break+v);else if(k==="bleed")e.bleed=Math.min(20,e.bleed+v);else if(k==="prison")e.prison=v;else e[k]=Math.max(e[k],v);log(msg)}}}
+function tickEffects(dt){const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];for(const target of list){const e=ensureEffectBag(target),dotMul=target.dotTaken||1,burnMul=dotMul*(target.burnTaken||1);if(e.burn>0){const d=55*dt*burnMul;target.hp-=d;e.burn-=dt;msgs.push(["🔥",d])}if(e.poison>0){const d=target.max*.001*dt*dotMul;target.hp-=d;e.poison-=dt;msgs.push(["☠️",d])}if(e.bleed>0){const d=e.bleed*18*dt*dotMul;target.hp-=d;e.bleed=Math.max(0,e.bleed-dt*.7);msgs.push(["🩸",d])}if(e.freeze>0)e.freeze-=dt;if(e.shatter>0)e.shatter-=dt;if(e.prison>0)e.prison-=dt}if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)}
 function gainSoul(n){p.soul=(p.soul||0)+n;log("獲得傳承之魂 +"+n)}
-function rewardMonster(m,dropState){if(m.rewarded)return;m.rewarded=true;const gold=Math.floor(m.gold*(1+goldBonus()));p.gold+=gold;p.j.gold+=gold;p.exp+=Math.floor(m.xp*(1+expBonus()));p.kills++;log("擊敗 "+m.emoji+" "+m.name+"，金幣+"+gold);if(m.type==="elite")gainSoul(rand(3,7));if(m.type==="boss"){p.boss++;p.j.boss++;gainSoul(rand(20,35));log("Boss擊破！")}rollDrop(m,dropState)}
+function rewardMonster(m,dropState){if(m.rewarded)return;m.rewarded=true;const gold=Math.floor(m.gold*(1+goldBonus()));p.gold+=gold;p.j.gold+=gold;p.exp+=Math.floor(m.xp*(1+expBonus()));p.kills++;const af=affixLabel(m);log("擊敗 "+(af?"【"+af+"】 ":"")+m.emoji+" "+m.name+"，金幣+"+gold);if(m.stoneBonus&&Math.random()<m.stoneBonus.chance){const st=rand(m.stoneBonus.min,m.stoneBonus.max);p.stone=(p.stone||0)+st;log("寶藏詞綴：強化石+"+st)}if(m.soulBonus)gainSoul(m.soulBonus);if(m.curseChance&&Math.random()<m.curseChance){battleDebuff.slow=5;log("詛咒爆發：攻速短暫下降")}if(m.type==="elite")gainSoul(rand(3,7));if(m.type==="boss"){p.boss++;p.j.boss++;gainSoul(rand(20,35));log("Boss擊破！")}rollDrop(m,dropState)}
 function killEnemy(){if(isDungeon())return dungeonKill();const dropState=formationDropState();const ms=fight.monsters||[fight];for(const m of ms)rewardMonster(m,dropState);levelUp();if((fight.type==="boss")||(ms.some(m=>m.type==="boss")&&typeOf(p.stage)==="boss"))log("Boss通關！");p.retryBoss=0;p.stage++;p.high=Math.max(p.high,p.stage);p.j.high=p.high;save(false);spawnMain()}
 function dungeonKill(){if(!dungeon)return;dungeon.kills++;if(dungeon.type==="gold"){const g=Math.floor(700+dungeon.kills*260+Math.pow(dungeon.kills,1.18)*60);p.gold+=g;p.j.gold+=g;dungeon.gain+=g;log("金幣副本 第"+dungeon.kills+"隻 +"+g)}else if(dungeon.type==="exp"){const xp=Math.floor(260+dungeon.kills*120+Math.pow(dungeon.kills,1.22)*90);p.exp+=Math.floor(xp*(1+expBonus()));dungeon.gain+=xp;levelUp();log("經驗副本 第"+dungeon.kills+"隻 +"+xp+"EXP")}else if(dungeon.type==="stone"){const isBoss=dungeon.kills%5===0;const st=isBoss?rand(45,90):rand(6,14)+Math.floor(dungeon.kills*.8);p.stone=(p.stone||0)+st;dungeon.gain+=st;log("強化石礦坑 第"+dungeon.kills+"隻 +"+st+"強化石")}else{const isBoss=dungeon.kills%5===0;let got=false;if(isBoss||Math.random()<.4){const oldType=fight.type,oldDrop=fight.drop;fight.type=isBoss?"boss":"elite";fight.drop=1;rollDrop();if(isBoss)gainSoul(rand(8,15));else if(Math.random()<.35)gainSoul(rand(1,3));fight.type=oldType;fight.drop=oldDrop;got=true}dungeon.gain+=got?1:0;log("裝備副本 第"+dungeon.kills+"隻"+(got?" 掉落裝備":" 未掉落"))}save(false);fight=createDungeonEnemy(dungeon.type,dungeon.kills)}
 function levelUp(){let up=false;while(p.exp>=expNeed()){p.exp-=expNeed();p.lv++;p.points+=3;p.baseAtk+=3;up=true;log("升到Lv."+p.lv+"，能力點+3")}if(up)save(false)}
@@ -347,10 +368,10 @@ function upgrade(k){let max=mulCount("up"),done=0;while(done<max&&applyUpgrade(k
 function setPointMul(v){p.pointMul=v;save(false);render()}
 function setUpMul(v){p.upMul=v;save(false);render()}
 function renderMulBox(id,cur,fn){const vals=[1,5,10,100,"MAX"];const el=$(id);if(!el)return;el.innerHTML=vals.map(v=>`<button class="${String(cur)===String(v)?"active":""}" onclick="window.${fn}('${v}')">×${v}</button>`).join("")}
-function slash(){if(!hasSkill("slash"))return log("尚未解鎖劈砍");if(p.cd.slash>0)return log("劈砍冷卻中");const lv=skillLv("slash"),mult=1.5+.05*(lv-1);damage(mult,"劈砍Lv"+lv+" ");p.cd.slash=Math.max(2,(10-.15*(lv-1))*(1-cdr()));sfx("skill");log("使用劈砍 Lv"+lv)}
+function slash(){if(!hasSkill("slash"))return log("尚未解鎖劈砍");if(p.cd.slash>0)return log("劈砍冷卻中");const lv=skillLv("slash"),mult=1.5+.05*(lv-1);damage(mult,"劈砍Lv"+lv+" ",{hitType:"skill"});p.cd.slash=Math.max(2,(10-.15*(lv-1))*(1-cdr()));sfx("skill");log("使用劈砍 Lv"+lv)}
 function shatter(){if(p.lv<60)return log("Lv60開啟破碎");if(!hasSkill("shatter"))return log("尚未解鎖破碎");if(p.cd.shatter>0)return log("破碎冷卻中");if(!fight)return;const lv=skillLv("shatter"),dur=10+.35*(lv-1);ensureEffectBag(activeMonster()).shatter=dur;p.cd.shatter=Math.max(5,(20-.25*(lv-1))*(1-cdr()));sfx("skill");log("使用破碎 Lv"+lv+"！目標防禦歸0 "+dur.toFixed(1)+"秒");save(false);render()}
 function gale(){if(!hasSkill("gale"))return log("尚未解鎖疾風");if(p.cd.gale>0)return log("疾風冷卻中");const lv=skillLv("gale"),dur=15+.5*(lv-1);p.buff.gale=dur;p.cd.gale=Math.max(8,(30-.35*(lv-1))*(1-cdr()));sfx("skill");log("使用疾風 Lv"+lv+"！攻速+"+Math.round(galeAspdBonus()*100)+"%，持續 "+dur.toFixed(1)+"秒");save(false);render()}
-function forceStrike(){if(p.lv<100)return log("Lv100開啟奮力一擊");if(p.cd.force>0)return log("奮力一擊冷卻中");if(!fight)return;console.log("ATTACK SUCCESS: before playAttackAnim");playAttackAnim("heavy");const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");p.cd.force=Math.max(10,30*(1-cdr()));sfx("hit");log("奮力一擊被閃避");save(false);render();return}const rate=target.type==="boss"?.25:.50;const d=Math.max(1,Math.floor(target.hp*rate));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;floatText("💜奮力一擊 "+d,true);rollEffects(target);p.cd.force=Math.max(10,30*(1-cdr()));sfx("skill");log("使用奮力一擊，造成目前生命 "+Math.round(rate*100)+"% 傷害");settleFormationDeaths();if(fight.hp<=0)killEnemy();save(false);render()}
+function forceStrike(){if(p.lv<100)return log("Lv100開啟奮力一擊");if(p.cd.force>0)return log("奮力一擊冷卻中");if(!fight)return;const target=activeMonster();if(Math.random()<evadeRate(target)){floatText("MISS");p.cd.force=Math.max(10,30*(1-cdr()));sfx("hit");log("奮力一擊被閃避");save(false);render();return}const rate=target.type==="boss"?.25:.50;const d=Math.max(1,Math.floor(target.hp*rate));target.hp-=d;if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;addCombo();showHitEffect("skill");floatText("💜奮力一擊 "+d,true);rollEffects(target);p.cd.force=Math.max(10,30*(1-cdr()));sfx("skill");log("使用奮力一擊，造成目前生命 "+Math.round(rate*100)+"% 傷害");settleFormationDeaths();if(fight.hp<=0)killEnemy();save(false);render()}
 function autoCastSkills(){if(!p.autoSkill||!fight)return;if(hasSkill("gale")&&p.cd.gale<=0&&(!p.buff.gale||p.buff.gale<=0))gale();if(p.cd.shatter<=0&&p.lv>=60&&fight.hp>fight.max*.45)shatter();if(p.cd.force<=0&&p.lv>=100&&fight.hp>fight.max*.35)forceStrike();if(p.cd.slash<=0)slash()}
 function summonSkill(){if((p.soul||0)<SUMMON_COST)return log("傳承之魂不足，召喚需要 "+SUMMON_COST);p.soul-=SUMMON_COST;const r=Math.random();let grade,count,book=false;if(r<.70){grade="普通";count=rand(1,9)}else if(r<.90){grade="稀有";count=rand(10,20)}else if(r<.98){grade="史詩";count=1;book=true}else if(r<.998){grade="傳說";count=3;book=true}else{grade="神話";count=5;book=true}const id=skillIds[Math.floor(Math.random()*skillIds.length)],nm=skillMeta[id].name;if(book){for(let i=0;i<count;i++)gainSkillExp(id,25);log("祭壇召喚【"+grade+"】：完整技能「"+nm+"」x"+count)}else{p.fragments[id]=(p.fragments[id]||0)+count;log("祭壇召喚【"+grade+"】："+nm+"碎片 +"+count)}save(false);render()}
 function upgradeSkill(id){const need=skillNeed(id),have=p.fragments[id]||0;if(!hasSkill(id)&&have>=30){p.fragments[id]-=30;p.skills[id].unlocked=true;p.skills[id].lv=1;log("碎片解鎖技能："+skillMeta[id].name);save(false);render();return}if(!hasSkill(id))return log("尚未解鎖，需30片碎片解鎖");if(have<need)return log("碎片不足，升級需要 "+need+" 片");p.fragments[id]-=need;gainSkillExp(id,need);save(false);render()}
@@ -361,120 +382,21 @@ function beep(f=440,d=.05,type="square",v=.18){if(!p.sound)return;try{audioInit(
 function sfx(k){if(k==="hit"){beep(220+Math.random()*80,.055,"square",.16);setTimeout(()=>beep(120,.04,"sawtooth",.08),18)}if(k==="crit"){beep(780,.07,"triangle",.20);setTimeout(()=>beep(1080,.06,"triangle",.16),45);setTimeout(()=>beep(150,.055,"sawtooth",.13),25)}if(k==="boss"){beep(85,.11,"sawtooth",.22);setTimeout(()=>beep(140,.08,"square",.16),35)}if(k==="drop"){beep(880,.07,"sine",.18);setTimeout(()=>beep(1320,.09,"sine",.16),55)}if(k==="skill"){beep(520,.08,"triangle",.19);setTimeout(()=>beep(760,.09,"triangle",.16),60)}if(k==="success"){beep(660,.07,"sine",.18);setTimeout(()=>beep(990,.09,"sine",.16),70)}}
 function show(v){view=v;$("mainView").classList.toggle("hidden",v!=="main");$("dungeonView").classList.toggle("hidden",v!=="dungeon");$("skillView").classList.toggle("hidden",v!=="skill");$("tabMain").classList.toggle("active",v==="main");$("tabDungeon").classList.toggle("active",v==="dungeon");$("tabSkill").classList.toggle("active",v==="skill");render()}
 function ensureEffectBag(target){if(!target.e)target.e={};for(const k of ["burn","poison","freeze","break","bleed","shatter","prison"]){if(typeof target.e[k]!=="number"||Number.isNaN(target.e[k]))target.e[k]=0}return target.e}
-function cleanEquipName(name){return window.WeaponSystem?window.WeaponSystem.cleanEquipName(name):String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
-function weaponVisual(){const w=p.equips&&p.equips.weapon?p.equips.weapon:null;return window.WeaponSystem?window.WeaponSystem.resolveWeapon(w):{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash"}}
-function renderWeapon(){const actor=$("playerHand");if(actor&&actor.classList.contains("is-attacking"))return;const v=weaponVisual();if(window.WeaponRenderer)window.WeaponRenderer.prepareWeapon(v);if($("weaponNameTag"))$("weaponNameTag").textContent=""}
-function ensureAttackAnimLayer(){
- let layer=document.getElementById("attackAnimLayer");
- if(!layer){
-  layer=document.createElement("div");
-  layer.id="attackAnimLayer";
-  layer.setAttribute("aria-hidden","true");
-  Object.assign(layer.style,{position:"fixed",left:"0",top:"0",width:"100vw",height:"100vh",zIndex:"999999",pointerEvents:"none",overflow:"visible",contain:"none"});
-  document.body.appendChild(layer);
-  console.log("attackAnimLayer created");
- }
- Object.assign(layer.style,{position:"fixed",left:"0",top:"0",width:"100vw",height:"100vh",zIndex:"999999",pointerEvents:"none",overflow:"visible",contain:"none"});
- if(layer.parentElement!==document.body||document.body.lastElementChild!==layer)document.body.appendChild(layer);
- return layer;
+function cleanEquipName(name){return String(name||"木劍").replace(/^(武器|頭盔|盔甲|戒指|鞋子)[－:-]/,'')}
+function weaponVisual(){return null}
+function renderWeapon(){disableLegacyAttackAnimation()}
+function disableLegacyAttackAnimation(){
+ const ids=["attackAnimLayer","playerHand","slashArc","weaponNameTag"];
+ for(const id of ids){const el=document.getElementById(id);if(el){if(id==="attackAnimLayer")el.remove();else el.classList.add("hidden")}}
 }
-function forceAttackFrames(weapon,kind){
- const motion=weapon&&weapon.animation?weapon.animation:"ironSlash";
- const table={
-  woodSlash:[{opacity:0,transform:"translate(150px,82px) rotate(34deg) scale(.96)"},{opacity:1,offset:.18,transform:"translate(52px,30px) rotate(-8deg) scale(1)"},{opacity:1,offset:.62,transform:"translate(-98px,-34px) rotate(-52deg) scale(1.04)"},{opacity:0,transform:"translate(-34px,24px) rotate(-66deg) scale(.98)"}],
-  ironSlash:[{opacity:0,transform:"translate(150px,72px) rotate(22deg)"},{opacity:1,offset:.16,transform:"translate(58px,28px) rotate(5deg)"},{opacity:1,offset:.58,transform:"translate(-110px,-16px) rotate(-22deg)"},{opacity:0,transform:"translate(-34px,32px) rotate(-34deg)"}],
-  greatHeavy:[{opacity:0,transform:"translate(128px,96px) rotate(48deg) scale(1.02)"},{opacity:1,offset:.20,transform:"translate(26px,-66px) rotate(82deg) scale(1.06)"},{opacity:1,offset:.68,transform:"translate(-94px,10px) rotate(-48deg) scale(1.1)"},{opacity:0,transform:"translate(-10px,56px) rotate(-66deg) scale(1)"}],
-  scytheSweep:[{opacity:0,transform:"translate(156px,78px) rotate(42deg)"},{opacity:1,offset:.16,transform:"translate(62px,12px) rotate(20deg)"},{opacity:1,offset:.62,transform:"translate(-148px,-24px) rotate(-80deg)"},{opacity:0,transform:"translate(-62px,34px) rotate(-100deg)"}],
-  spearThrust:[{opacity:0,transform:"translate(178px,36px) rotate(0deg)"},{opacity:1,offset:.20,transform:"translate(78px,18px) rotate(0deg)"},{opacity:1,offset:.56,transform:"translate(-156px,-8px) rotate(-2deg)"},{opacity:0,transform:"translate(88px,26px) rotate(0deg)"}],
-  axeChop:[{opacity:0,transform:"translate(130px,96px) rotate(58deg)"},{opacity:1,offset:.20,transform:"translate(22px,-72px) rotate(92deg)"},{opacity:1,offset:.66,transform:"translate(-92px,10px) rotate(-58deg)"},{opacity:0,transform:"translate(-18px,56px) rotate(-80deg)"}]
- };
- if(kind==="heavy"&&motion!=="spearThrust")return table.greatHeavy;
- return table[motion]||table.ironSlash;
-}
-function forceAttackPosition(){
- const card=$("enemyCard");
- if(card&&card.getBoundingClientRect){
-  const r=card.getBoundingClientRect();
-  if(r.width&&r.height)return{x:r.left+r.width*.66,y:r.top+Math.min(150,Math.max(70,r.height*.30))};
- }
- return{x:window.innerWidth*.62,y:window.innerHeight*.42};
-}
-function makeAttackTestText(){
- const t=document.createElement("div");
- t.textContent="TEST ATTACK ANIMATION";
- Object.assign(t.style,{position:"absolute",left:"56vw",top:"42vh",transform:"translate(-20%,-50%)",fontSize:"clamp(24px,7vw,56px)",lineHeight:"1",fontWeight:"1000",letterSpacing:"1px",color:"#ff1515",zIndex:"100",textShadow:"0 0 4px #fff,0 0 14px rgba(255,0,0,.92),0 4px 18px rgba(0,0,0,.85)",whiteSpace:"nowrap",opacity:"1"});
- return t;
-}
-function makeForcedHandVisual(weapon,kind){
- const w=weapon||{key:"wood",name:"木劍",asset:"assets/weapons/wood_sword.png",animation:"woodSlash",duration:165,scale:.15,gripX:50,gripY:84,rotationOrigin:"50% 84%",initialRotation:-36,type:"slash",arc:true};
- const pos=forceAttackPosition();
- const actor=document.createElement("div");
- actor.className="forcedAttackActor weapon-"+(w.key||"wood");
- Object.assign(actor.style,{position:"absolute",left:pos.x+"px",top:pos.y+"px",width:"0",height:"0",overflow:"visible",zIndex:"30",opacity:"0",filter:"drop-shadow(0 12px 10px rgba(0,0,0,.55))",willChange:"transform,opacity"});
- const img=document.createElement("img");
- const src=w.asset||"assets/weapons/wood_sword.png";
- img.src=src;
- img.alt=w.name||w.label||"weapon";
- img.onerror=()=>console.error("[attackAnimLayer] weapon image failed:",src);
- const h=Math.round(Math.min(window.innerHeight*.34,Math.max(132,900*(w.scale||.17))));
- Object.assign(img.style,{position:"absolute",left:"0",top:"0",width:"auto",height:h+"px",maxWidth:"none",maxHeight:"none",objectFit:"contain",zIndex:"31",transformOrigin:w.rotationOrigin||((w.gripX||50)+"% "+(w.gripY||86)+"%"),transform:"translate("+(-(w.gripX||50))+"%,"+(-(w.gripY||86))+"%) rotate("+(w.initialRotation||0)+"deg)",filter:"drop-shadow(0 4px 4px rgba(0,0,0,.58))"});
- const forearm=document.createElement("div");
- Object.assign(forearm.style,{position:"absolute",left:"26px",top:"20px",width:"88px",height:"34px",borderRadius:"24px",background:"linear-gradient(135deg,#f8c78a,#a16207)",border:"2px solid rgba(255,255,255,.22)",transform:"translate(-50%,-50%) rotate(-18deg)",zIndex:"32",boxShadow:"0 4px 10px rgba(0,0,0,.35)"});
- const hand=document.createElement("div");
- Object.assign(hand.style,{position:"absolute",left:"0",top:"0",width:"46px",height:"34px",borderRadius:"45% 42% 50% 38%",background:"linear-gradient(135deg,#ffd7a3,#b45309)",border:"2px solid rgba(255,255,255,.25)",transform:"translate(-50%,-50%) rotate(-22deg)",zIndex:"33",boxShadow:"0 4px 10px rgba(0,0,0,.38)"});
- actor.appendChild(img);
- actor.appendChild(forearm);
- actor.appendChild(hand);
- const arc=document.createElement("div");
- const spear=(w.type==="thrust"||w.animation==="spearThrust"||w.key==="spear");
- if(spear){
-  Object.assign(arc.style,{position:"absolute",left:(pos.x-170)+"px",top:(pos.y-16)+"px",width:"270px",height:"0",borderTop:"6px solid rgba(147,197,253,.95)",borderRadius:"0",boxShadow:"0 0 18px rgba(147,197,253,.95),0 0 34px rgba(59,130,246,.55)",opacity:"0",zIndex:"20",transformOrigin:"100% 50%",transform:"rotate(-3deg) scaleX(.12)",willChange:"transform,opacity"});
- }else{
-  Object.assign(arc.style,{position:"absolute",left:(pos.x-190)+"px",top:(pos.y-96)+"px",width:(w.key==="scythe"?"260px":"220px"),height:(w.key==="scythe"?"132px":"112px"),borderTop:(w.key==="great"||w.key==="axe"?"9px":"7px")+" solid rgba(250,204,21,.94)",borderRadius:"50%",boxShadow:"0 -2px 18px rgba(250,204,21,.85),0 -4px 32px rgba(255,255,255,.28)",opacity:"0",zIndex:"20",transform:"rotate(-28deg) scale(.72)",willChange:"transform,opacity"});
- }
- return{actor,arc,weapon:w,spear};
-}
-function animateForcedAttack(actor,arc,weapon,spear,kind){
- const duration=Math.max(150,Math.min(320,kind==="heavy"?Math.max(230,weapon.duration||190):(weapon.duration||190)));
- if(actor.animate){
-  actor.animate(forceAttackFrames(weapon,kind),{duration,easing:"cubic-bezier(.12,.82,.16,1)",fill:"forwards"});
- }else{
-  actor.style.opacity="1";
-  actor.style.transform="translate(-90px,-16px) rotate(-20deg)";
-  setTimeout(()=>{actor.style.opacity="0"},duration);
- }
- if(arc&&arc.animate){
-  arc.animate(spear?
-   [{opacity:0,transform:"rotate(-3deg) scaleX(.12)"},{opacity:1,offset:.35,transform:"rotate(-3deg) scaleX(1.05)"},{opacity:0,transform:"rotate(-3deg) scaleX(1.2)"}]:
-   [{opacity:0,transform:"rotate(-30deg) scale(.72)"},{opacity:1,offset:.42,transform:"rotate(-16deg) scale(1.03)"},{opacity:0,transform:"rotate(-4deg) scale(1.22)"}],
-   {duration:Math.max(160,Math.min(260,duration)),easing:"ease-out",fill:"forwards"});
- }else if(arc){arc.style.opacity="1";setTimeout(()=>{arc.style.opacity="0"},duration)}
- const card=$("enemyCard");
- if(card){card.classList.add("enemyHurt");setTimeout(()=>card.classList.remove("enemyHurt"),Math.min(140,duration))}
- return duration;
-}
-function playAttackAnim(kind){
- console.log("playAttackAnim REALLY CALLED");
- const layer=ensureAttackAnimLayer();
- const weapon=weaponVisual();
- const test=makeAttackTestText();
- const visual=document.createElement("div");
- Object.assign(visual.style,{position:"absolute",left:"0",top:"0",width:"100vw",height:"100vh",overflow:"visible",zIndex:"1"});
- const made=makeForcedHandVisual(weapon,kind);
- visual.appendChild(made.arc);
- visual.appendChild(made.actor);
- layer.appendChild(test);
- layer.appendChild(visual);
- console.log("attack visual inserted into body");
- const duration=animateForcedAttack(made.actor,made.arc,made.weapon,made.spear,kind);
- setTimeout(()=>{test.remove()},500);
- setTimeout(()=>{visual.remove()},Math.max(520,duration+80));
-}
+function playAttackAnim(){return false}
 window.playAttackAnim=playAttackAnim;
 window.playAttackFallback=playAttackAnim;
 window.playAttackAnimation=playAttackAnim;
 window.playPlayerAttackAnimation=playAttackAnim;
-window.AttackAnimation={play:opts=>playAttackAnim(opts&&opts.kind),playAttackAnimation:opts=>playAttackAnim(opts&&opts.kind),playPlayerAttackAnimation:opts=>playAttackAnim(opts&&opts.kind)};
+window.AttackAnimation={play:playAttackAnim,playAttackAnimation:playAttackAnim,playPlayerAttackAnimation:playAttackAnim};
+disableLegacyAttackAnimation();
+
 function statusHtml(){
  if(!fight)return "<span class='small'>無狀態</span>";
  const pool=[];
@@ -530,8 +452,8 @@ const btnText=running?"副本進行中":(open?"進入":"鎖定");
 return `<div class="card ${!unlocked||running?'lock':''}"><div class="row"><div><b>${x[1]}</b><div class="small">${x[3]}</div><div class="small">解鎖：${x[2]}關</div></div><button ${open?`onclick="window.startDungeon('${x[0]}')"`:"disabled"}>${btnText}</button></div></div>`
 }).join("")
 }
-function render(){if(!fight)return;if($("saveVer"))$("saveVer").textContent=p.saveVersion||GAME_VERSION;$("stage").textContent=p.stage;$("power").textContent=power();$("level").textContent=p.lv;$("points").textContent=p.points;$("gold").textContent=Math.floor(p.gold);if($("soul"))$("soul").textContent=Math.floor(p.soul||0);if($("stone"))$("stone").textContent=Math.floor(p.stone||0);$("bagCap").textContent=p.bag.length+"/"+p.bagCap;$("atk").textContent=atk().toFixed(1);$("aspd").textContent=asp().toFixed(2);$("crit").textContent=(crit()*100).toFixed(1);$("pen").textContent=(pen()*100).toFixed(1);if($("executeRate"))$("executeRate").textContent=(executeRate()*100).toFixed(4);$("queue").textContent=Math.floor(p.queue);const target=activeMonster();const monsters=fight.monsters||[];if($("formationCount"))$("formationCount").textContent=monsters.length||1;$("enemyEmoji").textContent=isDungeon()?fight.emoji:(monsters.length?target.emoji:fight.emoji);$("enemyName").textContent=isDungeon()?fight.name:(monsters.length>1?"怪物編隊｜"+target.name:target.name);$("enemyType").textContent=isDungeon()?(dungeon.type==="gold"?"金幣副本":dungeon.type==="exp"?"經驗副本":dungeon.type==="stone"?"強化石副本":"裝備副本"):(fight.type==="boss"?"Boss":fight.type==="elite"?"精英":"普通")+"｜建議戰力 "+recPower(p.stage);const targetIndex=monsters.findIndex(m=>m.hp>0);if($("monsterList"))$("monsterList").innerHTML=monsters.length?monsters.map((m,i)=>`<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===targetIndex?"🎯 ":""}${m.emoji} ${m.name}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`).join(""):"";$("enemyHp").textContent=Math.max(0,Math.floor(fight.hp)).toLocaleString();$("enemyMaxHp").textContent=fight.max.toLocaleString();$("enemyDef").textContent=target.def||fight.def;$("effDef").textContent=effDef();$("regen").textContent=Math.floor(effReg());$("drop").textContent=Math.round(Math.min(.95,(target.drop||fight.drop||0)+p.bonus.drop)*100);$("hpBar").style.width=Math.max(0,Math.min(100,fight.hp/fight.max*100))+"%";$("timerBox").classList.toggle("hidden",!(fight.type==="boss"||isDungeon()));$("timer").textContent=Math.max(0,Math.ceil(isDungeon()?dungeon.timer:(fight.timer||0)));if($("mainDungeonInfo")){$("mainDungeonInfo").classList.toggle("hidden",!isDungeon());$("mainDungeonInfo").innerHTML=isDungeon()?`<b>${dungeon.type==="gold"?"🪙 金幣副本":dungeon.type==="exp"?"📖 經驗副本":dungeon.type==="stone"?"💎 強化石礦坑":"⚔️ 裝備副本"}</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜擊殺：${dungeon.kills}｜收益：${dungeon.gain}</div>`:"";}$("challengeBtn").classList.toggle("hidden",!(p.retryBoss&&fight.mode==="main"));if(p.retryBoss)$("challengeBtn").textContent="繼續挑戰第 "+p.retryBoss+" 關 Boss";$("autoBtn").textContent="自動："+(p.auto?"開":"關");$("status").innerHTML=statusHtml();renderWeapon();renderMulBox("pointMulBox",p.pointMul,"setPointMul");renderMulBox("upMulBox",p.upMul,"setUpMul");if($("pointMulNow"))$("pointMulNow").textContent="×"+p.pointMul;if($("upMulNow"))$("upMulNow").textContent="×"+p.upMul;if($("autoDismantleSelect"))$("autoDismantleSelect").value=p.autoDismantle||"none";$("costAtk").textContent=p.cost.atk;if($("costAspd"))$("costAspd").textContent=p.cost.aspd;$("costCrit").textContent=p.cost.crit;$("costPen").textContent=p.cost.pen;if($("costExecute"))$("costExecute").textContent=p.cost.execute;$("costBag").textContent=p.cost.bag;$("equipBox").innerHTML=equipSlotsHtml();renderBagTabs();const shown=p.bagFilter==="all"?p.bag:p.bag.filter(x=>(x.slot||"weapon")===p.bagFilter);$("bagBox").innerHTML=shown.length?shown.map(x=>itemHtml(x,false)).join(""):"<div class='small'>這個分類目前空空</div>";$("forge").textContent=p.equips[p.selectedSlot]?`目前選中：${slotMeta[p.selectedSlot][1]}｜成功率 ${Math.round(Math.min(1,enhanceChance(p.equips[p.selectedSlot].enh)+p.equips[p.selectedSlot].pity)*100)}%，費用 ${enhanceCostGold(p.equips[p.selectedSlot].enh)} 金幣 + ${enhanceCostStone(p.equips[p.selectedSlot].enh)} 強化石`:"點擊裝備格可選擇強化目標";$("journal").innerHTML=`最高關卡：${p.j.high}<br>Boss擊敗：${p.j.boss}<br>累積金幣：${Math.floor(p.j.gold)}<br>挑戰失敗：${p.j.fail}<br>副本擊殺：${isDungeon()?dungeon.kills:0}｜收益：${isDungeon()?dungeon.gain:0}`;renderSkills();if($("autoSkillBtn"))$("autoSkillBtn").textContent="技能自動："+(p.autoSkill?"開":"關");$("soundBtn").textContent="音效："+(p.sound?"開":"關");$("volumeBtn").textContent="音量："+Math.round((p.vol||1)*100)+"%";renderDungeon()}
-function tick(dt){if(!fight)return;tickEffects(dt);if(fight.monsters){for(const m of aliveMonsters()){const e=ensureEffectBag(m);m.hp=Math.min(m.max,m.hp+m.reg*(e.freeze>0?.45:1)*dt)}refreshTotalHp()}else fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(hold)request(dt*asp());if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
+function render(){if(!fight)return;if($("saveVer"))$("saveVer").textContent=p.saveVersion||GAME_VERSION;$("stage").textContent=p.stage;$("power").textContent=power();$("level").textContent=p.lv;$("points").textContent=p.points;$("gold").textContent=Math.floor(p.gold);if($("soul"))$("soul").textContent=Math.floor(p.soul||0);if($("stone"))$("stone").textContent=Math.floor(p.stone||0);$("bagCap").textContent=p.bag.length+"/"+p.bagCap;$("atk").textContent=atk().toFixed(1);$("aspd").textContent=asp().toFixed(2);$("crit").textContent=(crit()*100).toFixed(1);$("pen").textContent=(pen()*100).toFixed(1);if($("executeRate"))$("executeRate").textContent=(executeRate()*100).toFixed(4);$("queue").textContent=Math.floor(p.queue);const target=activeMonster();const monsters=fight.monsters||[];renderCombo();if($("formationCount"))$("formationCount").textContent=monsters.length||1;$("enemyEmoji").textContent=isDungeon()?fight.emoji:(monsters.length?target.emoji:fight.emoji);$("enemyName").textContent=isDungeon()?fight.name:(monsters.length>1?"怪物編隊｜"+(affixLabel(target)?affixLabel(target)+" ":"")+target.name:(affixLabel(target)?affixLabel(target)+" ":"")+target.name);if($("affixBox"))$("affixBox").innerHTML=isDungeon()?"":affixHtml(target);$("enemyType").textContent=isDungeon()?(dungeon.type==="gold"?"金幣副本":dungeon.type==="exp"?"經驗副本":dungeon.type==="stone"?"強化石副本":"裝備副本"):(fight.type==="boss"?"Boss":fight.type==="elite"?"精英":"普通")+"｜建議戰力 "+recPower(p.stage);const targetIndex=monsters.findIndex(m=>m.hp>0);if($("monsterList"))$("monsterList").innerHTML=monsters.length?monsters.map((m,i)=>`<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===targetIndex?"🎯 ":""}${m.emoji} ${m.name}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`).join(""):"";$("enemyHp").textContent=Math.max(0,Math.floor(fight.hp)).toLocaleString();$("enemyMaxHp").textContent=fight.max.toLocaleString();$("enemyDef").textContent=target.def||fight.def;$("effDef").textContent=effDef();$("regen").textContent=Math.floor(effReg());$("drop").textContent=Math.round(Math.min(.95,(target.drop||fight.drop||0)+p.bonus.drop)*100);$("hpBar").style.width=Math.max(0,Math.min(100,fight.hp/fight.max*100))+"%";$("timerBox").classList.toggle("hidden",!(fight.type==="boss"||isDungeon()));$("timer").textContent=Math.max(0,Math.ceil(isDungeon()?dungeon.timer:(fight.timer||0)));if($("mainDungeonInfo")){$("mainDungeonInfo").classList.toggle("hidden",!isDungeon());$("mainDungeonInfo").innerHTML=isDungeon()?`<b>${dungeon.type==="gold"?"🪙 金幣副本":dungeon.type==="exp"?"📖 經驗副本":dungeon.type==="stone"?"💎 強化石礦坑":"⚔️ 裝備副本"}</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜擊殺：${dungeon.kills}｜收益：${dungeon.gain}</div>`:"";}$("challengeBtn").classList.toggle("hidden",!(p.retryBoss&&fight.mode==="main"));if(p.retryBoss)$("challengeBtn").textContent="繼續挑戰第 "+p.retryBoss+" 關 Boss";$("autoBtn").textContent="自動："+(p.auto?"開":"關");$("status").innerHTML=statusHtml();renderWeapon();renderMulBox("pointMulBox",p.pointMul,"setPointMul");renderMulBox("upMulBox",p.upMul,"setUpMul");if($("pointMulNow"))$("pointMulNow").textContent="×"+p.pointMul;if($("upMulNow"))$("upMulNow").textContent="×"+p.upMul;if($("autoDismantleSelect"))$("autoDismantleSelect").value=p.autoDismantle||"none";$("costAtk").textContent=p.cost.atk;if($("costAspd"))$("costAspd").textContent=p.cost.aspd;$("costCrit").textContent=p.cost.crit;$("costPen").textContent=p.cost.pen;if($("costExecute"))$("costExecute").textContent=p.cost.execute;$("costBag").textContent=p.cost.bag;$("equipBox").innerHTML=equipSlotsHtml();renderBagTabs();const shown=p.bagFilter==="all"?p.bag:p.bag.filter(x=>(x.slot||"weapon")===p.bagFilter);$("bagBox").innerHTML=shown.length?shown.map(x=>itemHtml(x,false)).join(""):"<div class='small'>這個分類目前空空</div>";$("forge").textContent=p.equips[p.selectedSlot]?`目前選中：${slotMeta[p.selectedSlot][1]}｜成功率 ${Math.round(Math.min(1,enhanceChance(p.equips[p.selectedSlot].enh)+p.equips[p.selectedSlot].pity)*100)}%，費用 ${enhanceCostGold(p.equips[p.selectedSlot].enh)} 金幣 + ${enhanceCostStone(p.equips[p.selectedSlot].enh)} 強化石`:"點擊裝備格可選擇強化目標";$("journal").innerHTML=`最高關卡：${p.j.high}<br>Boss擊敗：${p.j.boss}<br>累積金幣：${Math.floor(p.j.gold)}<br>挑戰失敗：${p.j.fail}<br>最高連擊：${combo.best||0}<br>副本擊殺：${isDungeon()?dungeon.kills:0}｜收益：${isDungeon()?dungeon.gain:0}`;renderSkills();if($("autoSkillBtn"))$("autoSkillBtn").textContent="技能自動："+(p.autoSkill?"開":"關");$("soundBtn").textContent="音效："+(p.sound?"開":"關");$("volumeBtn").textContent="音量："+Math.round((p.vol||1)*100)+"%";renderDungeon()}
+function tick(dt){if(!fight)return;tickCombo();if(battleDebuff.slow>0)battleDebuff.slow=Math.max(0,battleDebuff.slow-dt);tickEffects(dt);if(fight.monsters){for(const m of aliveMonsters()){const e=ensureEffectBag(m);m.hp=Math.min(m.max,m.hp+m.reg*(e.freeze>0?.45:1)*dt)}refreshTotalHp()}else fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(hold)request(dt*asp());if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
 function loop(now){const dt=Math.min(.2,(now-last)/1000);last=now;tick(dt);requestAnimationFrame(loop)}
 function bind(){document.addEventListener("pointerdown",audioInit,{once:true});$("attackBtn").onclick=()=>request(1);$("attackBtn").onpointerdown=()=>{hold=true;request(1)};$("attackBtn").onpointerup=()=>hold=false;$("attackBtn").onpointercancel=()=>hold=false;$("autoBtn").onclick=()=>{p.auto=!p.auto;p.queue=0;hold=false;save(false);render()};$("challengeBtn").onclick=continueBoss;$("tabMain").onclick=()=>show("main");$("tabDungeon").onclick=()=>show("dungeon");$("tabSkill").onclick=()=>show("skill");document.querySelectorAll("[data-point]").forEach(b=>b.onclick=()=>spendPoint(b.dataset.point));document.querySelectorAll("[data-up]").forEach(b=>b.onclick=()=>upgrade(b.dataset.up));if($("autoDismantleSelect"))$("autoDismantleSelect").onchange=e=>{p.autoDismantle=e.target.value;save(false);render()};if($("summonBtn"))$("summonBtn").onclick=summonSkill;if($("autoSkillBtn"))$("autoSkillBtn").onclick=()=>{p.autoSkill=!p.autoSkill;save(false);render()};$("enhanceBtn").onclick=enhance;if($("claimOfflineBtn"))$("claimOfflineBtn").onclick=claimOfflineRewards;$("saveBtn").onclick=()=>{touchOfflineTime();save(true)};$("resetBtn").onclick=reset;$("soundBtn").onclick=()=>{p.sound=!p.sound;if(p.sound)audioInit();save(false);render()};$("volumeBtn").onclick=()=>{const lv=[.5,.75,1,1.25,1.5,2],i=lv.indexOf(p.vol||1);p.vol=lv[(i+1)%lv.length];sfx("hit");save(false);render()}}
 

@@ -1,13 +1,10 @@
-const CACHE_NAME = "chuancheng-cache-v0.5.6-attack-animation-body-layer-v4";
+const CACHE_NAME = "chuancheng-cache-v0.5.7-hit-combo-affix-v1";
 const ASSETS = [
   "./",
   "index.html",
   "CHANGELOG.md",
   "README.md",
   "manifest.json",
-  "weaponConfig.js",
-  "weaponRenderer.js",
-  "attackAnimation.js",
   "cover.png",
   "splash.png",
   "icon-192.png",
