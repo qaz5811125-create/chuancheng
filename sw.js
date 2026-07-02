@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.5.9-formation-siege-bull-stun-v1";
+const CACHE_NAME = "chuancheng-cache-v0.6.0-forest-status-priority-v1";
 const ASSETS = [
   "./",
   "index.html",
