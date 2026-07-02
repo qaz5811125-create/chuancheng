@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.1 大型系統修正版</title>
+<title>傳承 Beta 0.9.1 召喚師與深淵修正版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -50,6 +50,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .offlineOverlay{position:fixed;inset:0;z-index:9998;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(8px)}
 .offlinePanel{width:min(520px,100%);background:linear-gradient(180deg,rgba(30,41,59,.98),rgba(15,23,42,.98));border:1px solid rgba(250,204,21,.42);border-radius:24px;padding:18px;box-shadow:0 24px 80px rgba(0,0,0,.45)}
 .offlinePanel h2{text-align:center;letter-spacing:3px}.offlineRewards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.offlineRewards div{background:rgba(2,6,23,.55);border:1px solid rgba(148,163,184,.2);border-radius:14px;padding:10px}.offlineNote{font-size:13px;opacity:.86;line-height:1.55}.monsterLine{display:flex;justify-content:space-between;gap:8px;background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.18);border-radius:12px;padding:7px 9px;margin:6px 0}.monsterLine.dead{opacity:.45;text-decoration:line-through}.targetBtns{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.targetBtns button{font-size:12px;padding:7px 9px}.targetBtns .active{background:#facc15;color:#111;box-shadow:0 4px 0 #a16207}
+.summonBox{margin-top:8px;display:grid;gap:6px}.summonLine{background:rgba(2,6,23,.42);border:1px solid rgba(148,163,184,.22);border-radius:12px;padding:8px;line-height:1.45}.summonDead{opacity:.55}.summonName{font-weight:900}.summonHpBar{height:8px;background:#020617;border-radius:99px;overflow:hidden;margin:4px 0}.summonHpFill{height:100%;background:linear-gradient(90deg,#86efac,#93c5fd);width:100%}
 
 
 .combatStage{position:relative;height:132px;margin:4px 0 2px;overflow:hidden;border-radius:18px;background:radial-gradient(circle at 50% 18%,rgba(250,204,21,.10),transparent 44%),linear-gradient(180deg,rgba(2,6,23,.22),rgba(2,6,23,.08));border:1px solid rgba(148,163,184,.16)}
@@ -121,6 +122,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <div class="bar playerHp"><div id="playerHpBar" class="hp"></div></div>
 <div class="small">血量 <b id="playerHp">10000</b>/<b id="playerMaxHp">10000</b>｜防禦 <b id="playerDef">500</b>（實際 <b id="playerEffDef">500</b>）｜回血 <b id="playerRegen">500</b>/秒</div>
 <div id="playerStatusBox" class="small playerStatusBox">玩家狀態：無</div>
+<div id="summonBox" class="small summonBox hidden"></div>
 </div>
 
 <div class="card" id="jobPanel">
@@ -199,7 +201,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.1 大型系統修正版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.1 召喚師與深淵修正版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -904,9 +906,114 @@ function skillCardHtml(id){const m=skillMeta[id],sk=p.skills[id]||{lv:0,exp:0,un
 function backupSave(){try{touchOfflineTime();save(false);const data=JSON.stringify(p,null,2),blob=new Blob([data],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="chuan_cheng_save_"+new Date().toISOString().slice(0,10)+".json";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);log("📦 已匯出備份存檔")}catch(e){log("備份失敗")}}
 function importSaveFile(file){if(!file)return;const rd=new FileReader();rd.onload=()=>{try{const data=JSON.parse(rd.result);p=data;migrateSave();ensureNewSystems();save(true);log("📥 備份存檔匯入成功");spawnMain();show("main")}catch(e){log("匯入失敗：檔案格式錯誤")}};rd.readAsText(file)}
 function bindExtended(){if($("summon10Btn"))$("summon10Btn").onclick=()=>summonSkill(10);if($("summon100Btn"))$("summon100Btn").onclick=()=>summonSkill(100);if($("backupBtn"))$("backupBtn").onclick=backupSave;if($("importBtn"))$("importBtn").onclick=()=>$("importFile").click();if($("importFile"))$("importFile").onchange=e=>importSaveFile(e.target.files&&e.target.files[0])}
+
+
+/* ===== Beta 0.9.1 召喚師 / 英雄自動 / 深淵退出 修正補丁 ===== */
+Object.assign(JOBS,{
+ summoner:{icon:"🧙",name:"召喚師",lv:250,grade:"legendary",weapon:"cane",weaponName:"老奶奶過馬路杖",desc:"傳說職業。普攻強化撕裂、中毒、囚禁傷害，三種狀態皆可無限堆疊；每10秒召喚1名隨從，最多2名。隨從血量、攻擊、防禦為玩家50%，每5秒恢復5%最大生命值。專武每10秒可擊暈敵人3秒。"}
+});
+function ensureNewSystems(){
+ if(!p)return;
+ if(!p.jobFragments)p.jobFragments={};
+ for(const k of JOB_FRAGMENT_KEYS)p.jobFragments[k]=Math.max(0,Math.floor(Number(p.jobFragments[k]||0)));
+ if(!p.jobUnlocks)p.jobUnlocks={};
+ if(!p.specialWeapons)p.specialWeapons={};
+ for(const w of ["axe","spear","scythe","dagger","staff","bow","glove","gun","hammer","gauntlet","cane"]){p.specialWeapons[w]=Math.max(0,Math.floor(Number(p.specialWeapons[w]||0)))}
+ if(!p.heroes)p.heroes={active:null,time:0,globalCd:0,rikya:{lv:1,uses:0,cd:0},durien:{lv:1,uses:0,cd:0}};
+ for(const id of Object.keys(HEROES)){if(!p.heroes[id])p.heroes[id]={lv:1,uses:0,cd:0};p.heroes[id].lv=Math.max(1,Math.floor(Number(p.heroes[id].lv||1)));p.heroes[id].uses=Math.max(0,Math.floor(Number(p.heroes[id].uses||0)));p.heroes[id].cd=Math.max(0,Number(p.heroes[id].cd||0));}
+ p.heroes.time=Math.max(0,Number(p.heroes.time||0));p.heroes.globalCd=Math.max(0,Number(p.heroes.globalCd||0));
+ if(p.job==="archer"&&!p.jobUnlocks.archer&&p.lv>=350)p.jobUnlocks.archer=true;
+ if(!p.summoner)p.summoner={summons:[],summonTimer:0,healTimer:5,stunCd:0,attackTimer:1,nextId:1};
+ if(!Array.isArray(p.summoner.summons))p.summoner.summons=[];
+ p.summoner.summons=p.summoner.summons.slice(0,2).map(normalizeSummon);
+ p.summoner.summonTimer=Math.max(0,Number(p.summoner.summonTimer||0));
+ p.summoner.healTimer=Math.max(0,Number(p.summoner.healTimer||5));
+ p.summoner.stunCd=Math.max(0,Number(p.summoner.stunCd||0));
+ p.summoner.attackTimer=Math.max(0,Number(p.summoner.attackTimer||1));
+ p.summoner.nextId=Math.max(1,Math.floor(Number(p.summoner.nextId||1)));
+}
+function normalizeSummon(s){
+ s=s||{};
+ const max=Math.max(1,Math.floor(Number(s.max||s.hp||1)));
+ return {id:s.id||0,name:s.name||"隨從",hp:Math.max(0,Math.min(max,Number(s.hp==null?max:s.hp))),max,atk:Math.max(1,Math.floor(Number(s.atk||1))),def:Math.max(0,Math.floor(Number(s.def||0))),e:Object.assign({burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0,prisonStacks:0},s.e||{})}
+}
+function canUseJob(key){ensureNewSystems();const j=JOBS[key];if(!j)return false;if(p&&p.lv<j.lv)return false;if(j.unlockFrag&&!p.jobUnlocks[key])return false;return true}
+function setJob(key){ensureNewSystems();if(!JOBS[key])return;if(!canUseJob(key)){const j=JOBS[key];if(j.unlockFrag)return log(j.name+" 需要 Lv."+j.lv+" 並收集 "+(j.unlockNeed||30)+" 片"+JOB_GRADE_META[j.unlockFrag][1]+"合成");return log(j.name+" 需要 Lv."+j.lv+" 才能解鎖")}const old=currentJobKey();p.job=key;if(old==="summoner"&&key!=="summoner")clearSummons("切換職業，召喚師隨從已退場");resetCombo();save(false);log("切換職業："+JOBS[key].icon+" "+JOBS[key].name);render()}
+function jobStatusDamageBonus(kind){const job=currentJobKey(),lv=specialWeaponLevel();if(job==="berserker"&&kind==="burn")return .25+lv*.02;if(job==="summoner"&&["bleed","poison","prison"].includes(kind))return .50+lv*.03;return 0}
+function bleedRate(){const job=currentJobKey();if(job==="berserker")return .015;if(job==="reaper")return .0135;if(job==="summoner")return .014;return .01}
+function poisonRate(){return currentJobKey()==="summoner"?.012:.009}
+function prisonRate(){return currentJobKey()==="summoner"?.008:0}
+function canInfiniteBleed(){const job=currentJobKey();return job==="berserker"||job==="reaper"||job==="summoner"}
+function canInfinitePoison(){const job=currentJobKey();return job==="assassin"||job==="summoner"}
+function canInfinitePrison(){return currentJobKey()==="summoner"}
+function addPrison(target,seconds=5,stacks=1){const e=ensureEffectBag(target);e.prison=Math.max(e.prison||0,seconds);if(canInfinitePrison())e.prisonStacks=Math.max(0,Math.floor(e.prisonStacks||0))+Math.max(1,Math.floor(stacks));else e.prisonStacks=Math.min(1,Math.max(0,Math.floor(e.prisonStacks||0))+1)}
+function evadeRate(target=activeMonster()){const e=ensureEffectBag(target),prisonCut=e.prison>0?.10:0;return Math.max(0,Math.min(.90,baseEvade(target)+(target.extraEvade||0)+(e.dodge>0?.50:0)-prisonCut))}
+function rollEffects(target=activeMonster()){
+ const e=ensureEffectBag(target);const breakChance=target&&target.breakWeak?.22:.1;const breakAdd=.08*(currentJobKey()==="lancer"?1.35+specialWeaponLevel()*0.02:1);
+ const poisonStacks=currentJobKey()==="summoner"?2:1,bleedStacks=currentJobKey()==="summoner"?4:3,prisonStacks=currentJobKey()==="summoner"?1:1;
+ const a=[["burn",.12,1,"🔥燃燒"],["poison",.1,poisonStacks,"☠️中毒"],["freeze",.08,4,"❄️凍結"],["break",breakChance,breakAdd,"🛡️破甲"],["bleed",.13,bleedStacks,"🩸撕裂"],["prison",.20,5,"⛓️囚禁"]];
+ for(const [k,ch,v,msg] of a){if(Math.random()<ch){if(k==="break")e.break=Math.min(.95,e.break+v);else if(k==="bleed")addBleed(target,v);else if(k==="poison")addPoison(target,v);else if(k==="burn")addBurn(target,v);else if(k==="prison")addPrison(target,v,prisonStacks);else e[k]=Math.max(e[k],v);log(msg)}}
+}
+function tickEffects(dt){
+ const list=fight.monsters?aliveMonsters():[fight];fight.dotFloat=(fight.dotFloat||0)-dt;let msgs=[];
+ for(const target of list){
+  const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1),burnMul=dotMul*(target.burnTaken||1),inv=e.invincible>0;
+  if(e.burn>0){if(!inv){const d=atk()*burnRate()*Math.floor(e.burn)*dt*burnMul*(1+jobStatusDamageBonus("burn"));target.hp-=d;msgs.push(["🔥",d])}e.burnDecay=(e.burnDecay||5)-dt;if(e.burnDecay<=0){e.burn=Math.max(0,Math.floor(e.burn)-1);e.burnDecay=5}}
+  if(e.poison>0){if(!inv){const d=atk()*poisonRate()*Math.floor(e.poison)*dt*dotMul*(1+jobStatusDamageBonus("poison"));target.hp-=d;msgs.push(["☠️",d])}e.poisonDecay=(e.poisonDecay||5)-dt;if(e.poisonDecay<=0){e.poison=Math.max(0,Math.floor(e.poison)-1);e.poisonDecay=5}}
+  if(e.bleed>0){if(!inv){const d=atk()*bleedRate()*Math.floor(e.bleed)*dt*dotMul*(1+jobStatusDamageBonus("bleed"));target.hp-=d;msgs.push(["🩸",d])}e.bleed=Math.max(0,e.bleed-dt*.7)}
+  if((e.prisonStacks||0)>0&&e.prison>0&&prisonRate()>0){if(!inv){const d=atk()*prisonRate()*Math.floor(e.prisonStacks)*dt*dotMul*(1+jobStatusDamageBonus("prison"));target.hp-=d;msgs.push(["⛓️",d])}}
+  if(e.toxic>0){if(!inv){const d=(e.toxicDmg||1)*dt*dotMul;target.hp-=d;msgs.push(["☠️毒",d])}e.toxic=Math.max(0,e.toxic-dt);if(e.toxic<=0)e.toxicDmg=0}
+  if(e.freeze>0)e.freeze=Math.max(0,e.freeze-dt);if(e.shatter>0)e.shatter=Math.max(0,e.shatter-dt);if(e.prison>0)e.prison=Math.max(0,e.prison-dt);else e.prisonStacks=0;if(e.invincible>0)e.invincible=Math.max(0,e.invincible-dt);if(e.berserk>0)e.berserk=Math.max(0,e.berserk-dt);if(e.dodge>0)e.dodge=Math.max(0,e.dodge-dt);
+ }
+ if(fight.monsters){refreshTotalHp();settleFormationDeaths()}if(msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}if(p.buff&&p.buff.gale>0)p.buff.gale=Math.max(0,p.buff.gale-dt)
+}
+function statusHtml(){
+ if(!fight)return "<span class='small'>無狀態</span>";
+ const pool=[];if(fight)pool.push(fight);if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);const target=activeMonster();if(target&&!pool.includes(target))pool.push(target);
+ const sum={burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0,prisonStacks:0,invincible:0,berserk:0,dodge:0,toxic:0};
+ for(const t of pool.filter(Boolean)){if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;const e=ensureEffectBag(t);sum.burn=Math.max(sum.burn,Math.max(0,e.burn));sum.poison=Math.max(sum.poison,Math.max(0,e.poison));sum.freeze=Math.max(sum.freeze,Math.max(0,e.freeze));sum.break=Math.max(sum.break,Math.max(0,e.break));sum.bleed=Math.max(sum.bleed,Math.max(0,e.bleed));sum.shatter=Math.max(sum.shatter,Math.max(0,e.shatter));sum.prison=Math.max(sum.prison,Math.max(0,e.prison));sum.prisonStacks=Math.max(sum.prisonStacks,Math.max(0,e.prisonStacks||0));sum.invincible=Math.max(sum.invincible,Math.max(0,e.invincible));sum.berserk=Math.max(sum.berserk,Math.max(0,e.berserk));sum.dodge=Math.max(sum.dodge,Math.max(0,e.dodge));sum.toxic=Math.max(sum.toxic,Math.max(0,e.toxic));}
+ let h="";if(sum.burn>0)h+="<span class='badge burn'>🔥 燃燒 "+Math.floor(sum.burn)+"層</span>";if(sum.poison>0)h+="<span class='badge poison'>☠️ 中毒 "+Math.floor(sum.poison)+"層｜回血-"+Math.round(Math.min(1,Math.floor(sum.poison)*.001)*100)+"%</span>";if(sum.freeze>0)h+="<span class='badge freeze'>❄️ 冰凍 "+sum.freeze.toFixed(1)+"秒</span>";if(sum.break>0)h+="<span class='badge break'>🛡️ 破甲 "+Math.round(sum.break*100)+"%</span>";if(sum.bleed>0)h+="<span class='badge bleed'>🩸 撕裂 "+Math.round(sum.bleed)+"層</span>";if(sum.shatter>0)h+="<span class='badge break'>💥 破碎 "+sum.shatter.toFixed(1)+"秒</span>";if(sum.prison>0)h+="<span class='badge prison'>⛓️ 囚禁 "+(sum.prisonStacks>0?Math.floor(sum.prisonStacks)+"層｜":"")+sum.prison.toFixed(1)+"秒｜閃避-10%</span>";if(sum.berserk>0)h+="<span class='badge burn'>🐇 狂暴 "+sum.berserk.toFixed(1)+"秒</span>";if(sum.dodge>0)h+="<span class='badge freeze'>🐇 閃避 "+sum.dodge.toFixed(1)+"秒｜閃避+50%</span>";if(sum.invincible>0)h+="<span class='badge freeze'>🦕 無敵 "+sum.invincible.toFixed(1)+"秒</span>";if(sum.toxic>0)h+="<span class='badge poison'>☠️ 毒性傷害 "+sum.toxic.toFixed(1)+"秒</span>";return h||"<span class='small'>無狀態</span>"
+}
+function clearSummons(reason=""){
+ ensureNewSystems();
+ if(p.summoner.summons.length&&reason)log(reason);
+ p.summoner.summons=[];p.summoner.summonTimer=0;p.summoner.healTimer=5;p.summoner.attackTimer=1;
+}
+function livingSummons(){ensureNewSystems();return p.summoner.summons.filter(s=>s.hp>0)}
+function summonAlly(){ensureNewSystems();if(currentJobKey()!=="summoner")return;if(livingSummons().length>=2)return;const id=p.summoner.nextId++;const s=normalizeSummon({id,name:"隨從 "+id,max:Math.floor(playerMaxHp()*.5),hp:Math.floor(playerMaxHp()*.5),atk:Math.floor(atk()*.5),def:Math.floor(playerDef()*.5),e:{}});p.summoner.summons.push(s);floatText("🧓 召喚隨從",true);log("🧓 召喚師召喚 "+s.name+"：血量/攻擊/防禦為玩家50%")}
+function summonTarget(){const a=livingSummons();return a.length?a[Math.floor(Math.random()*a.length)]:null}
+function dealSummonDamage(s,raw,m=null){if(!s||s.hp<=0)return 0;const dmg=Math.max(1,Math.floor(Math.max(1,raw)*(100/(100+Math.max(0,s.def||0)))));s.hp=Math.max(0,s.hp-dmg);floatText((m&&m.emoji?m.emoji:"")+"🧓-"+dmg);if(s.hp<=0)log("🧓 "+s.name+" 已倒下，等待下一輪召喚");return dmg}
+function summonAttack(s){const target=activeMonster();if(!s||s.hp<=0||!target||target.hp<=0)return;const e=ensureEffectBag(target);if(e.invincible>0){floatText("🧓無敵");return}if(Math.random()<evadeRate(target)){floatText("🧓MISS");return}const d=Math.max(1,Math.floor((s.atk||1)-effDefForTarget(target)*.5));target.hp-=d;floatText("🧓"+d);if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;settleFormationDeaths();if(fight.hp<=0)killEnemy()}
+function triggerSummonerStun(target){ensureNewSystems();if(currentJobKey()!=="summoner"||!target||target.hp<=0)return;if((p.summoner.stunCd||0)>0)return;const dur=isBossLike(target)?1.5:3;ensureEffectBag(target).freeze=Math.max(ensureEffectBag(target).freeze||0,dur);p.summoner.stunCd=10;floatText("🦯暈眩"+dur+"秒",true);log("🦯 老奶奶過馬路杖擊暈敵人 "+dur+" 秒")}
+function tickSummoner(dt){
+ ensureNewSystems();
+ if(currentJobKey()!=="summoner"){if(p.summoner.summons.length)clearSummons("召喚師以外職業，隨從退場");return}
+ p.summoner.summons=p.summoner.summons.filter(s=>s.hp>0).slice(0,2);
+ p.summoner.summonTimer-=dt;if(p.summoner.summonTimer<=0){if(livingSummons().length<2)summonAlly();p.summoner.summonTimer=10}
+ p.summoner.healTimer-=dt;if(p.summoner.healTimer<=0){for(const s of livingSummons()){const heal=Math.max(1,Math.floor(s.max*.05));s.hp=Math.min(s.max,s.hp+heal)}if(livingSummons().length)floatText("🧓隨從回血",false);p.summoner.healTimer=5}
+ p.summoner.stunCd=Math.max(0,(p.summoner.stunCd||0)-dt);
+ p.summoner.attackTimer-=dt;if(p.summoner.attackTimer<=0){for(const s of livingSummons())summonAttack(s);p.summoner.attackTimer=1}
+}
+const __cc_oldMonsterNormalAttack=monsterNormalAttack;
+function monsterNormalAttack(m){
+ if(currentJobKey()==="summoner"&&livingSummons().length&&Math.random()<.45){const s=summonTarget();dealSummonDamage(s,m.mAtk||1,m);return true}
+ return __cc_oldMonsterNormalAttack(m)
+}
+const __cc_oldDamage=damage;
+function damage(mult=1,label="",opt={}){const before=activeMonster();__cc_oldDamage(mult,label,opt);if(!label&&!opt.skill&&!opt.forceSingle&&before&&before.hp>0){const still=(fight&&((fight===before)||((fight.monsters||[]).includes(before))));if(still)triggerSummonerStun(before)}}
+function summonStatusText(s){const e=s.e||{},out=[];if((e.burn||0)>0)out.push("🔥燃燒 "+Math.floor(e.burn)+"層");if((e.poison||0)>0)out.push("☠️中毒 "+Math.floor(e.poison)+"層");if((e.bleed||0)>0)out.push("🩸撕裂 "+Math.floor(e.bleed)+"層");if((e.freeze||0)>0)out.push("💫暈眩 "+Number(e.freeze).toFixed(1)+"秒");if((e.prison||0)>0)out.push("⛓️囚禁 "+(e.prisonStacks?Math.floor(e.prisonStacks)+"層 ":"")+Number(e.prison).toFixed(1)+"秒");return out.join(" / ")||"無狀態"}
+function renderSummonBox(){const el=$("summonBox");if(!el)return;ensureNewSystems();if(currentJobKey()!=="summoner"){el.classList.add("hidden");el.innerHTML="";return}const list=p.summoner.summons;if(!list.length){el.classList.remove("hidden");el.innerHTML="<div class='summonLine'>🧓 隨從：準備召喚中｜下一次 "+Math.ceil(p.summoner.summonTimer||0)+"秒</div>";return}el.classList.remove("hidden");el.innerHTML=list.map((s,i)=>{const pct=Math.max(0,Math.min(100,(s.hp||0)/(s.max||1)*100));return `<div class="summonLine ${s.hp<=0?"summonDead":""}"><span class="summonName">🧓 隨從 ${i+1}</span><div class="summonHpBar"><div class="summonHpFill" style="width:${pct}%"></div></div>血量 ${Math.floor(s.hp).toLocaleString()}/${Math.floor(s.max).toLocaleString()}｜攻擊 ${Math.floor(s.atk).toLocaleString()}｜防禦 ${Math.floor(s.def).toLocaleString()}<br>狀態：${summonStatusText(s)}</div>`}).join("")}
+function renderPlayerPanel(){const max=playerMaxHp(),hp=Math.max(0,Math.min(max,p.hp||max));if($("playerHp"))$("playerHp").textContent=Math.floor(hp).toLocaleString();if($("playerMaxHp"))$("playerMaxHp").textContent=max.toLocaleString();if($("playerHpBar"))$("playerHpBar").style.width=Math.max(0,Math.min(100,hp/max*100))+"%";if($("playerDef"))$("playerDef").textContent=playerDef().toLocaleString();if($("playerEffDef"))$("playerEffDef").textContent=effectivePlayerDef().toLocaleString();if($("playerRegen"))$("playerRegen").textContent=effectivePlayerRegen().toLocaleString();if($("playerStatusBox"))$("playerStatusBox").innerHTML=playerStatusHtml();renderSummonBox();if($("mapNow"))$("mapNow").textContent=currentMapName();if($("mapHud"))$("mapHud").textContent=currentMapId()==="forest"?"森林":"起源";if($("jobPanel"))$("jobPanel").innerHTML=jobPanelHtml();if($("artifactPanel"))$("artifactPanel").innerHTML=artifactPanelHtml()}
+function autoHeroSkills(){if(!p.autoSkill)return;ensureNewSystems();const id=heroActiveId();if(!id)return;const h=p.heroes[id];if(!h||h.cd>0)return;const target=activeMonster();if(!target||target.hp<=0)return;if(id==="rikya"&&target.hp>target.max*.08)useHeroSkill(id);else if(id==="durien")useHeroSkill(id)}
+function autoCastSkills(){if(!fight||isPlayerStunned())return;ensureNewSystems();if(p.lv>=45&&hasSkill("bloodShield")&&p.cd.bloodShield<=0&&(p.hp||0)<=playerMaxHp()*.10)bloodShield();if(p.lv>=35&&hasSkill("cleanse")&&p.cd.cleanse<=0&&countCleanseDebuffs()>=2)cleanse();if(!p.autoSkill)return;autoHeroSkills();if(hasSkill("gale")&&p.cd.gale<=0&&(!p.buff.gale||p.buff.gale<=0))gale();if(p.cd.shatter<=0&&p.lv>=60&&fight.hp>fight.max*.45)shatter();if(p.cd.force<=0&&p.lv>=100&&fight.hp>fight.max*.35)forceStrike();if(p.cd.slash<=0)slash()}
+function exitAbyss(){if(!isAbyss())return log("目前不在深淵中");resetLancerExecuteStack();dungeon.running=false;dungeon=null;p.queue=0;hold=false;budget=0;resetCombo();save(false);log("🌌 已退出深淵，回到正常關卡");spawnMain();show("main")}
+const __cc_oldRenderDungeon=renderDungeon;
+function renderDungeon(){__cc_oldRenderDungeon();if(isAbyss()){const btn=`<button class="red" onclick="window.exitAbyss()">退出深淵</button>`;if($("dungeonInfo")&&!$("dungeonInfo").innerHTML.includes("退出深淵"))$("dungeonInfo").innerHTML+="<div>"+btn+"</div>";if($("mainDungeonInfo")&&!$("mainDungeonInfo").innerHTML.includes("退出深淵"))$("mainDungeonInfo").innerHTML+="<div>"+btn+"</div>"}}
+function tick(dt){if(!fight)return;tickHero(dt);tickCombo();tickPlayer(dt);tickSummoner(dt);tickMonsterAI(dt);if(!fight)return;if(battleDebuff.slow>0)battleDebuff.slow=Math.max(0,battleDebuff.slow-dt);tickEffects(dt);if(fight.monsters){for(const m of aliveMonsters()){const e=ensureEffectBag(m);m.hp=Math.min(m.max,m.hp+m.reg*(e.freeze>0?.45:1)*poisonRegenMultiplier(m)*dt)}refreshTotalHp()}else fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){if(!isAbyss()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(isPlayerStunned()){p.queue=0;budget=0;hold=false}else{if(hold)request(dt*asp());if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
+
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
-window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setArtifact=setArtifact;window.upgradeArtifact=upgradeArtifact;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.cleanse=cleanse;window.bloodShield=bloodShield;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;
+window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setArtifact=setArtifact;window.upgradeArtifact=upgradeArtifact;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.cleanse=cleanse;window.bloodShield=bloodShield;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;window.exitAbyss=exitAbyss;
 if(!load())p=newPlayer();ensureNewSystems();normalizeSpeed();const pendingOffline=calculateOfflineRewards();bind();bindExtended();spawnMain();if(pendingOffline)showOfflineRewards();setInterval(()=>{touchOfflineTime();save(false)},10000);window.addEventListener("pagehide",()=>{touchOfflineTime();save(false)});window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){touchOfflineTime();save(false)}});requestAnimationFrame(loop);
 </script>
 

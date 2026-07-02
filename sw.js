@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.9.0-abyss-artifact-v1";
+const CACHE_NAME = "chuancheng-cache-v0.9.1-summoner-abyss-v2";
 const ASSETS = [
   "./",
   "index.html",
