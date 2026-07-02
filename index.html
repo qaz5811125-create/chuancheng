@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.1 召喚師與深淵修正版</title>
+<title>傳承 Beta 0.9.2 技能師七選一測試版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -201,7 +201,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.1 召喚師與深淵修正版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.2 技能師七選一測試版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -209,7 +209,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.1";
+const GAME_VERSION="0.9.2";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -995,12 +995,12 @@ function tickSummoner(dt){
  p.summoner.attackTimer-=dt;if(p.summoner.attackTimer<=0){for(const s of livingSummons())summonAttack(s);p.summoner.attackTimer=1}
 }
 const __cc_oldMonsterNormalAttack=monsterNormalAttack;
-function monsterNormalAttack(m){
+monsterNormalAttack=function(m){
  if(currentJobKey()==="summoner"&&livingSummons().length&&Math.random()<.45){const s=summonTarget();dealSummonDamage(s,m.mAtk||1,m);return true}
  return __cc_oldMonsterNormalAttack(m)
-}
+};
 const __cc_oldDamage=damage;
-function damage(mult=1,label="",opt={}){const before=activeMonster();__cc_oldDamage(mult,label,opt);if(!label&&!opt.skill&&!opt.forceSingle&&before&&before.hp>0){const still=(fight&&((fight===before)||((fight.monsters||[]).includes(before))));if(still)triggerSummonerStun(before)}}
+damage=function(mult=1,label="",opt={}){const before=activeMonster();__cc_oldDamage(mult,label,opt);if(!label&&!opt.skill&&!opt.forceSingle&&before&&before.hp>0){const still=(fight&&((fight===before)||((fight.monsters||[]).includes(before))));if(still)triggerSummonerStun(before)}};
 function summonStatusText(s){const e=s.e||{},out=[];if((e.burn||0)>0)out.push("🔥燃燒 "+Math.floor(e.burn)+"層");if((e.poison||0)>0)out.push("☠️中毒 "+Math.floor(e.poison)+"層");if((e.bleed||0)>0)out.push("🩸撕裂 "+Math.floor(e.bleed)+"層");if((e.freeze||0)>0)out.push("💫暈眩 "+Number(e.freeze).toFixed(1)+"秒");if((e.prison||0)>0)out.push("⛓️囚禁 "+(e.prisonStacks?Math.floor(e.prisonStacks)+"層 ":"")+Number(e.prison).toFixed(1)+"秒");return out.join(" / ")||"無狀態"}
 function renderSummonBox(){const el=$("summonBox");if(!el)return;ensureNewSystems();if(currentJobKey()!=="summoner"){el.classList.add("hidden");el.innerHTML="";return}const list=p.summoner.summons;if(!list.length){el.classList.remove("hidden");el.innerHTML="<div class='summonLine'>🧓 隨從：準備召喚中｜下一次 "+Math.ceil(p.summoner.summonTimer||0)+"秒</div>";return}el.classList.remove("hidden");el.innerHTML=list.map((s,i)=>{const pct=Math.max(0,Math.min(100,(s.hp||0)/(s.max||1)*100));return `<div class="summonLine ${s.hp<=0?"summonDead":""}"><span class="summonName">🧓 隨從 ${i+1}</span><div class="summonHpBar"><div class="summonHpFill" style="width:${pct}%"></div></div>血量 ${Math.floor(s.hp).toLocaleString()}/${Math.floor(s.max).toLocaleString()}｜攻擊 ${Math.floor(s.atk).toLocaleString()}｜防禦 ${Math.floor(s.def).toLocaleString()}<br>狀態：${summonStatusText(s)}</div>`}).join("")}
 function renderPlayerPanel(){const max=playerMaxHp(),hp=Math.max(0,Math.min(max,p.hp||max));if($("playerHp"))$("playerHp").textContent=Math.floor(hp).toLocaleString();if($("playerMaxHp"))$("playerMaxHp").textContent=max.toLocaleString();if($("playerHpBar"))$("playerHpBar").style.width=Math.max(0,Math.min(100,hp/max*100))+"%";if($("playerDef"))$("playerDef").textContent=playerDef().toLocaleString();if($("playerEffDef"))$("playerEffDef").textContent=effectivePlayerDef().toLocaleString();if($("playerRegen"))$("playerRegen").textContent=effectivePlayerRegen().toLocaleString();if($("playerStatusBox"))$("playerStatusBox").innerHTML=playerStatusHtml();renderSummonBox();if($("mapNow"))$("mapNow").textContent=currentMapName();if($("mapHud"))$("mapHud").textContent=currentMapId()==="forest"?"森林":"起源";if($("jobPanel"))$("jobPanel").innerHTML=jobPanelHtml();if($("artifactPanel"))$("artifactPanel").innerHTML=artifactPanelHtml()}
@@ -1008,8 +1008,228 @@ function autoHeroSkills(){if(!p.autoSkill)return;ensureNewSystems();const id=her
 function autoCastSkills(){if(!fight||isPlayerStunned())return;ensureNewSystems();if(p.lv>=45&&hasSkill("bloodShield")&&p.cd.bloodShield<=0&&(p.hp||0)<=playerMaxHp()*.10)bloodShield();if(p.lv>=35&&hasSkill("cleanse")&&p.cd.cleanse<=0&&countCleanseDebuffs()>=2)cleanse();if(!p.autoSkill)return;autoHeroSkills();if(hasSkill("gale")&&p.cd.gale<=0&&(!p.buff.gale||p.buff.gale<=0))gale();if(p.cd.shatter<=0&&p.lv>=60&&fight.hp>fight.max*.45)shatter();if(p.cd.force<=0&&p.lv>=100&&fight.hp>fight.max*.35)forceStrike();if(p.cd.slash<=0)slash()}
 function exitAbyss(){if(!isAbyss())return log("目前不在深淵中");resetLancerExecuteStack();dungeon.running=false;dungeon=null;p.queue=0;hold=false;budget=0;resetCombo();save(false);log("🌌 已退出深淵，回到正常關卡");spawnMain();show("main")}
 const __cc_oldRenderDungeon=renderDungeon;
-function renderDungeon(){__cc_oldRenderDungeon();if(isAbyss()){const btn=`<button class="red" onclick="window.exitAbyss()">退出深淵</button>`;if($("dungeonInfo")&&!$("dungeonInfo").innerHTML.includes("退出深淵"))$("dungeonInfo").innerHTML+="<div>"+btn+"</div>";if($("mainDungeonInfo")&&!$("mainDungeonInfo").innerHTML.includes("退出深淵"))$("mainDungeonInfo").innerHTML+="<div>"+btn+"</div>"}}
+renderDungeon=function(){__cc_oldRenderDungeon();if(isAbyss()){const btn=`<button class="red" onclick="window.exitAbyss()">退出深淵</button>`;if($("dungeonInfo")&&!$("dungeonInfo").innerHTML.includes("退出深淵"))$("dungeonInfo").innerHTML+="<div>"+btn+"</div>";if($("mainDungeonInfo")&&!$("mainDungeonInfo").innerHTML.includes("退出深淵"))$("mainDungeonInfo").innerHTML+="<div>"+btn+"</div>"}};
 function tick(dt){if(!fight)return;tickHero(dt);tickCombo();tickPlayer(dt);tickSummoner(dt);tickMonsterAI(dt);if(!fight)return;if(battleDebuff.slow>0)battleDebuff.slow=Math.max(0,battleDebuff.slow-dt);tickEffects(dt);if(fight.monsters){for(const m of aliveMonsters()){const e=ensureEffectBag(m);m.hp=Math.min(m.max,m.hp+m.reg*(e.freeze>0?.45:1)*poisonRegenMultiplier(m)*dt)}refreshTotalHp()}else fight.hp=Math.min(fight.max,fight.hp+effReg()*dt);if(fight.hp<=0)killEnemy();if(isDungeon()){if(!isAbyss()){dungeon.timer-=dt;if(dungeon.timer<=0)endDungeon()}}else if(fight.type==="boss"){fight.timer-=dt;if(fight.timer<=0&&fight.hp>0)bossFail()}for(const k in p.cd)p.cd[k]=Math.max(0,p.cd[k]-dt);autoCastSkills();if(isPlayerStunned()){p.queue=0;budget=0;hold=false}else{if(hold)request(dt*asp());if(p.auto)request(dt*asp());budget+=dt*asp();let hits=35;while(budget>=1&&p.queue>0&&hits>0){damage();p.queue--;budget--;hits--}}renderClock+=dt;if(renderClock>=1/20){render();renderClock=0}}
+
+
+/* ===== Beta 0.9.2 浮空 / 技能師 測試補丁 ===== */
+Object.assign(JOBS,{
+ skillmaster:{icon:"🪁",name:"技能師",lv:250,grade:"legendary",weapon:"glove",weaponName:"魔法手套",desc:"傳說職業。關閉普攻，改以特殊狀態傷害攻擊敵人；撕裂、中毒、擊暈、破甲、虛弱、混沌、禁錮皆可無限堆層。最大血量-50%，防禦歸0，回血正常。血量低於10%時自動浮空免傷3秒，並每秒恢復最大生命5%，持續5秒，冷卻15秒。專武使特殊狀態堆層翻倍。"}
+});
+const __cc092_oldEnsureNewSystems=ensureNewSystems;
+ensureNewSystems=function(){
+ __cc092_oldEnsureNewSystems();
+ if(!p)return;
+ if(!p.specialWeapons)p.specialWeapons={};
+ p.specialWeapons.glove=Math.max(0,Math.floor(Number(p.specialWeapons.glove||0)));
+ if(!p.skillmaster)p.skillmaster={floatCd:0,floatRegen:0};
+ p.skillmaster.floatCd=Math.max(0,Number(p.skillmaster.floatCd||0));
+ p.skillmaster.floatRegen=Math.max(0,Number(p.skillmaster.floatRegen||0));
+ const st=playerStatus();
+ for(const k of ["float","floatTime"]){if(typeof st[k]!=="number"||Number.isNaN(st[k]))st[k]=0}
+};
+const __cc092_oldPlayerStatus=playerStatus;
+playerStatus=function(){
+ const st=__cc092_oldPlayerStatus();
+ for(const k of ["float","floatTime"]){if(typeof st[k]!=="number"||Number.isNaN(st[k]))st[k]=0}
+ return st
+};
+const __cc092_oldEnsureEffectBag=ensureEffectBag;
+ensureEffectBag=function(target){
+ const e=__cc092_oldEnsureEffectBag(target);
+ for(const k of ["weak","weakStacks","chaos","chaosStacks","stunStacks","breakStacks","skillmasterMark"]){if(typeof e[k]!=="number"||Number.isNaN(e[k]))e[k]=0}
+ return e
+};
+const __cc092_oldPlayerMaxHp=playerMaxHp;
+playerMaxHp=function(){
+ const base=__cc092_oldPlayerMaxHp();
+ return currentJobKey()==="skillmaster"?Math.max(1,Math.floor(base*.5)):base
+};
+const __cc092_oldPlayerDef=playerDef;
+playerDef=function(){return currentJobKey()==="skillmaster"?0:__cc092_oldPlayerDef()};
+const __cc092_oldCanInfiniteBleed=canInfiniteBleed;
+canInfiniteBleed=function(){return currentJobKey()==="skillmaster"||__cc092_oldCanInfiniteBleed()};
+const __cc092_oldCanInfinitePoison=canInfinitePoison;
+canInfinitePoison=function(){return currentJobKey()==="skillmaster"||__cc092_oldCanInfinitePoison()};
+const __cc092_oldCanInfinitePrison=canInfinitePrison;
+canInfinitePrison=function(){return currentJobKey()==="skillmaster"||__cc092_oldCanInfinitePrison()};
+const __cc092_oldJobStatusDamageBonus=jobStatusDamageBonus;
+jobStatusDamageBonus=function(kind){
+ if(currentJobKey()==="skillmaster"&&["bleed","poison","prison","weak","chaos","stun","break"].includes(kind))return .75+specialWeaponLevel()*0.025;
+ return __cc092_oldJobStatusDamageBonus(kind)
+};
+const __cc092_oldBleedRate=bleedRate;
+bleedRate=function(){return currentJobKey()==="skillmaster"?.0125:__cc092_oldBleedRate()};
+const __cc092_oldPoisonRate=poisonRate;
+poisonRate=function(){return currentJobKey()==="skillmaster"?.0115:__cc092_oldPoisonRate()};
+const __cc092_oldPrisonRate=prisonRate;
+prisonRate=function(){return currentJobKey()==="skillmaster"?.0075:__cc092_oldPrisonRate()};
+function skillmasterStacks(base=1){return Math.max(1,Math.floor(base))*2}
+function addSkillmasterBreak(target,layers){
+ const e=ensureEffectBag(target),add=Math.max(1,Math.floor(layers));
+ e.breakStacks=Math.max(0,Math.floor(e.breakStacks||0))+add;
+ e.break=Math.min(.95,Math.max(e.break||0,e.breakStacks*.05));
+ e.skillmasterMark=1;
+}
+function addSkillmasterWeak(target,layers){const e=ensureEffectBag(target);e.weakStacks=Math.max(0,Math.floor(e.weakStacks||0))+Math.max(1,Math.floor(layers));e.weak=Math.max(e.weak||0,8);e.skillmasterMark=1}
+function addSkillmasterChaos(target,layers){const e=ensureEffectBag(target);e.chaosStacks=Math.max(0,Math.floor(e.chaosStacks||0))+Math.max(1,Math.floor(layers));e.chaos=Math.max(e.chaos||0,8);e.skillmasterMark=1}
+function addSkillmasterStun(target,layers){
+ if(isBossLike(target))return;
+ const e=ensureEffectBag(target),add=Math.max(1,Math.floor(layers));
+ e.stunStacks=Math.max(0,Math.floor(e.stunStacks||0))+add;
+ e.freeze=Math.max(e.freeze||0,Math.min(3,.35*add));
+ e.skillmasterMark=1;
+}
+const SKILLMASTER_STATUS_POOL=[
+ {key:"bleed",icon:"🩸",name:"撕裂",apply:(target,layers)=>addBleed(target,layers)},
+ {key:"poison",icon:"☠️",name:"中毒",apply:(target,layers)=>addPoison(target,layers,true)},
+ {key:"stun",icon:"💫",name:"擊暈",control:true,apply:(target,layers)=>addSkillmasterStun(target,layers)},
+ {key:"break",icon:"🛡️",name:"破甲",apply:(target,layers)=>addSkillmasterBreak(target,layers)},
+ {key:"weak",icon:"🥀",name:"虛弱",apply:(target,layers)=>addSkillmasterWeak(target,layers)},
+ {key:"chaos",icon:"🌀",name:"混沌",apply:(target,layers)=>addSkillmasterChaos(target,layers)},
+ {key:"prison",icon:"⛓️",name:"禁錮",control:true,apply:(target,layers)=>addPrison(target,5,layers)}
+];
+function pickSkillmasterStatus(){return SKILLMASTER_STATUS_POOL[Math.floor(Math.random()*SKILLMASTER_STATUS_POOL.length)]}
+function skillmasterAttack(mult=1){
+ if(!fight||isPlayerStunned()||p.hp<=0)return;
+ const target=activeMonster();
+ if(!target||target.hp<=0)return;
+ const e=ensureEffectBag(target);
+ if(e.invincible>0){showHitEffect("skill");floatText("無敵");sfx("boss");return}
+ if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");return}
+ const layers=skillmasterStacks(1);
+ const picked=pickSkillmasterStatus();
+ if(isBossLike(target)&&picked.control){
+  floatText((target.emoji||"")+picked.icon+picked.name+"免疫",true);
+  log("🪁 技能師抽中「"+picked.name+"」，但 Boss 免疫控制，本次不重新抽選");
+ }else{
+  picked.apply(target,layers);
+  e.skillmasterMark=1;
+  floatText((target.emoji||"")+picked.icon+picked.name+"+"+layers,true);
+  log("🪁 技能師七選一施加特殊狀態：「"+picked.name+"」 +"+layers+" 層");
+ }
+ addCombo();showHitEffect("skill");sfx("skill");
+ if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;
+ settleFormationDeaths();if(fight.hp<=0)killEnemy();
+}
+const __cc092_oldDamage=damage;
+damage=function(mult=1,label="",opt={}){
+ const normal=!label&&!opt.skill&&!opt.forceSingle;
+ if(currentJobKey()==="skillmaster"&&normal)return skillmasterAttack(mult);
+ return __cc092_oldDamage(mult,label,opt)
+};
+function triggerSkillmasterFloat(reason=""){
+ ensureNewSystems();
+ if(currentJobKey()!=="skillmaster"||p.hp<=0)return false;
+ if((p.skillmaster.floatCd||0)>0)return false;
+ const st=playerStatus();
+ st.float=3;st.floatTime=3;
+ p.skillmaster.floatRegen=5;
+ p.skillmaster.floatCd=15;
+ floatText("🪁浮空免疫",true);
+ log(reason||"🪁 技能師血量低於10%，自動觸發浮空：3秒免疫，5秒回血");
+ return true
+}
+function maybeTriggerSkillmasterFloat(){
+ if(currentJobKey()!=="skillmaster"||p.hp<=0)return;
+ if((p.hp||0)<=playerMaxHp()*.10)triggerSkillmasterFloat();
+}
+const __cc092_oldDealPlayerDamage=dealPlayerDamage;
+dealPlayerDamage=function(raw,opt={}){
+ const st=playerStatus();
+ if(st.float>0){floatText("🪁免疫");return 0}
+ const before=p.hp||0,real=__cc092_oldDealPlayerDamage(raw,opt);
+ if(currentJobKey()==="skillmaster"&&p.hp>0&&before>0&&(p.hp||0)<=playerMaxHp()*.10)triggerSkillmasterFloat();
+ return real
+};
+const __cc092_oldTickPlayer=tickPlayer;
+tickPlayer=function(dt){
+ ensureNewSystems();
+ maybeTriggerSkillmasterFloat();
+ __cc092_oldTickPlayer(dt);
+ const st=playerStatus();
+ if(st.float>0)st.float=Math.max(0,st.float-dt);
+ if(st.floatTime>0)st.floatTime=Math.max(0,st.floatTime-dt);
+ if(p.skillmaster){
+  if(p.skillmaster.floatCd>0)p.skillmaster.floatCd=Math.max(0,p.skillmaster.floatCd-dt);
+  if(p.skillmaster.floatRegen>0){
+   p.skillmaster.floatRegen=Math.max(0,p.skillmaster.floatRegen-dt);
+   if(currentJobKey()==="skillmaster"&&p.hp>0){p.hp=Math.min(playerMaxHp(),(p.hp||0)+playerMaxHp()*.05*dt)}
+  }
+ }
+};
+const __cc092_oldTickEffects=tickEffects;
+tickEffects=function(dt){
+ __cc092_oldTickEffects(dt);
+ if(!fight)return;
+ const list=fight.monsters?aliveMonsters():[fight];
+ let msgs=[];
+ for(const target of list){
+  if(!target||target.hp<=0)continue;
+  const e=ensureEffectBag(target),dotMul=(target.dotTaken||1)*(target.statusRes||1);
+  const inv=e.invincible>0;
+  if(!inv&&e.skillmasterMark>0){
+   const weakD=atk()*.0035*Math.floor(e.weakStacks||0)*dt*dotMul*(1+jobStatusDamageBonus("weak"));
+   const chaosD=atk()*.0035*Math.floor(e.chaosStacks||0)*dt*dotMul*(1+jobStatusDamageBonus("chaos"));
+   const stunD=atk()*.0025*Math.floor(e.stunStacks||0)*dt*dotMul*(1+jobStatusDamageBonus("stun"));
+   const breakD=atk()*.0025*Math.floor(e.breakStacks||0)*dt*dotMul*(1+jobStatusDamageBonus("break"));
+   const d=weakD+chaosD+stunD+breakD;
+   if(d>0){target.hp-=d;msgs.push(["🪁",d])}
+  }
+  if(e.weak>0)e.weak=Math.max(0,e.weak-dt);
+  if(e.chaos>0)e.chaos=Math.max(0,e.chaos-dt);
+ }
+ if(fight&&fight.monsters){refreshTotalHp();settleFormationDeaths()}else if(fight&&fight.hp<=0)killEnemy();
+ if(msgs.length&&fight&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)))}fight.dotFloat=.35}
+};
+const __cc092_oldMonsterNormalAttack=monsterNormalAttack;
+monsterNormalAttack=function(m){
+ if(m){
+  const e=ensureEffectBag(m);
+  const chaosChance=Math.min(.50,Math.floor(e.chaosStacks||0)*.01);
+  if(e.chaos>0&&chaosChance>0&&Math.random()<chaosChance){floatText((m.emoji||"")+"🌀混沌MISS");return true}
+  if(e.weak>0&&(e.weakStacks||0)>0){
+   const old=m.mAtk,cut=Math.min(.50,Math.floor(e.weakStacks||0)*.01);
+   m.mAtk=Math.max(1,Math.floor((old||1)*(1-cut)));
+   const r=__cc092_oldMonsterNormalAttack(m);
+   m.mAtk=old;
+   return r
+  }
+ }
+ return __cc092_oldMonsterNormalAttack(m)
+};
+const __cc092_oldPlayerStatusHtml=playerStatusHtml;
+playerStatusHtml=function(){
+ const st=playerStatus(),extra=[];
+ if(st.float>0)extra.push(`<span class="badge freeze">🪁 浮空免疫 ${st.float.toFixed(1)}秒</span>`);
+ if(p&&p.skillmaster&&p.skillmaster.floatRegen>0&&currentJobKey()==="skillmaster")extra.push(`<span class="badge poison">🪁 回氣回血 ${p.skillmaster.floatRegen.toFixed(1)}秒</span>`);
+ let base=__cc092_oldPlayerStatusHtml();
+ if(extra.length&&base==="玩家狀態：無")base="";
+ return base+extra.join("")
+};
+const __cc092_oldStatusHtml=statusHtml;
+statusHtml=function(){
+ let base=__cc092_oldStatusHtml();
+ if(!fight)return base;
+ const pool=[];if(fight)pool.push(fight);if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);const target=activeMonster();if(target&&!pool.includes(target))pool.push(target);
+ const sum={weakStacks:0,chaosStacks:0,stunStacks:0,breakStacks:0,weak:0,chaos:0};
+ for(const t of pool.filter(Boolean)){if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;const e=ensureEffectBag(t);sum.weakStacks=Math.max(sum.weakStacks,Math.max(0,e.weakStacks||0));sum.chaosStacks=Math.max(sum.chaosStacks,Math.max(0,e.chaosStacks||0));sum.stunStacks=Math.max(sum.stunStacks,Math.max(0,e.stunStacks||0));sum.breakStacks=Math.max(sum.breakStacks,Math.max(0,e.breakStacks||0));sum.weak=Math.max(sum.weak,Math.max(0,e.weak||0));sum.chaos=Math.max(sum.chaos,Math.max(0,e.chaos||0));}
+ let h="";
+ if(sum.stunStacks>0)h+=`<span class='badge freeze'>💫 擊暈 ${Math.floor(sum.stunStacks)}層</span>`;
+ if(sum.breakStacks>0)h+=`<span class='badge break'>🛡️ 破甲 ${Math.floor(sum.breakStacks)}層</span>`;
+ if(sum.weakStacks>0)h+=`<span class='badge poison'>🥀 虛弱 ${Math.floor(sum.weakStacks)}層｜攻擊-${Math.round(Math.min(.5,sum.weakStacks*.01)*100)}%</span>`;
+ if(sum.chaosStacks>0)h+=`<span class='badge freeze'>🌀 混沌 ${Math.floor(sum.chaosStacks)}層｜命中-${Math.round(Math.min(.5,sum.chaosStacks*.01)*100)}%</span>`;
+ if(h&&base==="<span class='small'>無狀態</span>")base="";
+ return base+h
+};
+const __cc092_oldSetJob=setJob;
+setJob=function(key){
+ const old=currentJobKey();
+ __cc092_oldSetJob(key);
+ if(old==="skillmaster"&&currentJobKey()!=="skillmaster"){
+  const st=playerStatus();st.float=0;st.floatTime=0;if(p.skillmaster)p.skillmaster.floatRegen=0;
+ }
+};
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
