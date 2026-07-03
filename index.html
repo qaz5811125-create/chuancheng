@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.2 狀態單位熱修版</title>
+<title>傳承 Beta 0.9.3 職業專武被動修正版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -126,7 +126,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 </div>
 
 <div class="card" id="jobPanel">
-<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.1</span></div>
+<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.3</span></div>
 <div class="small">職業系統載入中...</div>
 </div>
 
@@ -201,7 +201,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.2 狀態單位熱修版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.3 職業專武被動修正版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -209,7 +209,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.2";
+const GAME_VERSION="0.9.3";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -576,6 +576,7 @@ function damage(mult=1,label="",opt={}){
     const exRate=executeRate(target);
     if(Math.random()<exRate){
      executed=true;anyHit=true;
+     if(currentJobKey()==="lancer")p.lancerExecuteCd=15;
      if(isBossLike(target)&&currentJobKey()==="lancer"){
       const exDmg=Math.max(1,Math.floor(target.max*LANCER_BOSS_EXECUTE_DAMAGE));
       target.hp-=exDmg;totalDmg+=exDmg;
@@ -611,7 +612,7 @@ function damage(mult=1,label="",opt={}){
    if(normal&&currentJobKey()==="mage"&&ensureEffectBag(target).burn>0){const md=Math.max(1,Math.floor(atk()*.20));target.hp-=md;totalDmg+=md;floatText("🔥魔法+"+md)}
    if(normal&&currentJobKey()==="mage"&&ensureEffectBag(target).burn>0&&Math.random()<.20){const bd=Math.max(1,Math.floor(atk()*Math.floor(ensureEffectBag(target).burn||0)*.02));target.hp-=bd;totalDmg+=bd;floatText("🌋爆燃 "+bd,true)}
    if(normal&&currentJobKey()==="assassin"){addPoison(target,2,true);const tox=Math.max(1,Math.floor(atk()*.35-effDefForTarget(target)));te.toxic=5;te.toxicDmg=Math.max(te.toxicDmg||0,tox);floatText("☠️毒刃+2")}
-   if(normal&&currentJobKey()==="thief"&&Math.random()<(.20+specialWeaponLevel()*0.01)){stealMonsterBuff(target)}
+   if(normal&&currentJobKey()==="thief"&&Math.random()<(.40+specialWeaponLevel()*0.01)){stealMonsterBuff(target);applyDarkGloveBlind(target)}
    if(normal&&currentJobKey()==="gunner"){addBurn(target,1,true);const gd=Math.max(1,Math.floor(atk()*5));target.hp-=gd;totalDmg+=gd;floatText("🔫🔥燃燒 "+gd)}
    if(normal&&currentJobKey()==="hammer"&&Math.random()<(.20+specialWeaponLevel()*0.01)){const st=playerStatus();if((st.bloodShield||0)<=0){st.bloodShield=Math.floor(playerMaxHp());st.bloodShieldTime=10;floatText("🔨護盾+"+st.bloodShield)}ensureEffectBag(target).freeze=Math.max(ensureEffectBag(target).freeze||0,5);floatText("🔨暈眩5秒")}
    if(normal&&currentJobKey()==="colossus"){const gd=Math.max(1,Math.floor(target.max*.15));target.hp-=gd;totalDmg+=gd;floatText("🤜神兵 "+gd,true)}
@@ -1403,6 +1404,116 @@ statusHtml=function(){
  if(sum.toxic>0)h+="<span class='badge poison'>☠️ 毒性傷害 "+sum.toxic.toFixed(1)+"秒</span>";
  return h||"<span class='small'>無狀態</span>"
 };
+
+
+/* ===== Beta 0.9.3 職業 / 專武被動修正補丁 ===== */
+Object.assign(JOBS,{
+ berserker:Object.assign({},JOBS.berserker,{name:"狂戰",weapon:"axe",weaponName:"戰斧",desc:"傷害+10%；燃燒傷害+26%；燃燒效果隨職業等級每級+1%；可觸發不屈意志。專武：燃燒可無限疊加，造成傷害可疊加攻速。"}),
+ lancer:Object.assign({},JOBS.lancer,{name:"戰騎",weapon:"spear",weaponName:"長槍",desc:"傷害+5%；破甲/穿透+10%；普攻50%機率無視防禦；基礎秒殺率10%；Boss未觸發秒殺會疊加秒殺率；Boss觸發扣最大生命10%；觸發秒殺後冷卻15秒；可觸發不屈意志。"}),
+ reaper:Object.assign({},JOBS.reaper,{name:"戰鐮",weapon:"scythe",weaponName:"鐮刀",desc:"傷害+3%；普攻必定攻擊最多3個目標；撕裂傷害倍率提高；撕裂可無限疊加。專武：施加恐懼，達指定層數可使目標逃離。"}),
+ assassin:Object.assign({},JOBS.assassin,{name:"刺客",weapon:"dagger",weaponName:"帶毒匕首",desc:"中毒可無限疊加；受到一般傷害時35%閃避；普攻命中疊毒+2；普攻造成毒刃傷害；吸取實際傷害12%回血。專武：攻速+25%，降低目標回血，自身回血+50%。"}),
+ mage:Object.assign({},JOBS.mage,{name:"法師",weapon:"staff",weaponName:"元素法杖",desc:"燃燒可無限疊加；技能傷害倍率+50%；普攻有機率疊燃燒；攻擊燃燒目標追加魔法傷害；燃燒目標有機率爆燃；受到一般傷害時10%元素護盾減傷。專武：有機率召喚漩渦。"}),
+ archer:Object.assign({},JOBS.archer,{weapon:"bow",weaponName:"破碎之弓",desc:"多段攻擊、破碎散射與天災一擊。專武：增強穿透傷害。"}),
+ thief:Object.assign({},JOBS.thief,{weapon:"darkGlove",weaponName:"暗黑手套",desc:"攻速+20%；普攻20%偷取目標增益。專武：提高普攻偷取率20%，並降低目標70%命中5秒。"}),
+ gunner:Object.assign({},JOBS.gunner,{weapon:"gun",weaponName:"燙手的狙擊步槍",desc:"燃燒爆發=玩家傷害×500%，攻速-90%；專武改為目標目前血量低於最大生命30%時直接秒殺。"}),
+ skillmaster:Object.assign({},JOBS.skillmaster,{weapon:"magicGlove",weaponName:"魔法手套"})
+});
+
+function cc093_syncFightHp(target){if(!fight)return;if(fight.monsters)refreshTotalHp();else if(target)fight.hp=target.hp;}
+function cc093_targetEscapes(target,source="恐懼"){
+ if(!fight||!target||target.hp<=0)return false;
+ target.hp=0;target.escaped=1;
+ floatText((target.emoji||"")+"💀"+source+"逃離！",true);
+ log("💀 "+(target.name||"目標")+"因「"+source+"」逃離戰鬥，視為玩家勝利");
+ cc093_syncFightHp(target);
+ if(fight.monsters){settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}
+ else killEnemy();
+ return true;
+}
+function applyDarkGloveBlind(target){if(!target||target.hp<=0)return;const e=ensureEffectBag(target);e.darkBlind=Math.max(e.darkBlind||0,5);floatText((target.emoji||"")+"🧤命中-70%",true)}
+function cc093_triggerBerserkerAxeStacks(count=1){ensureNewSystems();if(currentJobKey()!=="berserker")return;if(count<=0)return;p.berserkerAxeStacks=Math.min(100,Math.max(0,Math.floor(p.berserkerAxeStacks||0))+count);if([1,25,50,100].includes(p.berserkerAxeStacks))log("🪓 戰斧狂熱 "+p.berserkerAxeStacks+" 層，攻速+"+(p.berserkerAxeStacks*.1).toFixed(1)+"%");}
+function cc093_triggerLancerPierce(target){ensureNewSystems();if(currentJobKey()!=="lancer"||!target||target.hp<=0)return false;if((p.lancerPierceCd||0)>0)return false;const e=ensureEffectBag(target);if(e.invincible>0)return false;const d=Math.max(1,Math.floor((target.max||target.hp||1)*.10));target.hp-=d;e.pierceRegenDown=Math.max(e.pierceRegenDown||0,10);p.lancerPierceCd=15;floatText((target.emoji||"")+"🐎穿刺 -"+d.toLocaleString(),true);log("🐎 長槍穿刺：造成目標最大生命10%傷害，回血降低50%持續10秒，冷卻15秒");cc093_syncFightHp(target);return true;}
+function cc093_addReaperFear(target,stacks=1){if(currentJobKey()!=="reaper"||!target||target.hp<=0)return false;const e=ensureEffectBag(target);e.fearStacks=Math.max(0,Math.floor(e.fearStacks||0))+Math.max(1,Math.floor(stacks));let escaped=false;for(const [need,chance] of [[100,.20],[150,.30],[200,.40]]){const key="fearTried"+need;if(e.fearStacks>=need&&!e[key]){e[key]=1;floatText((target.emoji||"")+"💀恐懼"+need+"層",true);log("🩸 鐮刀恐懼達 "+need+" 層，逃離判定 "+Math.round(chance*100)+"%（本門檻只判定一次）");if(Math.random()<chance){escaped=cc093_targetEscapes(target,"恐懼");break}else floatText((target.emoji||"")+"💀抵抗恐懼")}}
+ return escaped;
+}
+function cc093_applyAssassinDagger(target){if(currentJobKey()!=="assassin"||!target||target.hp<=0)return;const e=ensureEffectBag(target);e.assassinRegenDown=Math.max(e.assassinRegenDown||0,8);}
+function cc093_tryMageVortex(target){ensureNewSystems();if(currentJobKey()!=="mage"||!target||target.hp<=0)return;if((p.mageVortexCd||0)>0)return;if(Math.random()>=.35)return;const e=ensureEffectBag(target);e.vortex=Math.max(e.vortex||0,10);e.vortexDmg=Math.max(e.vortexDmg||0,Math.max(1,Math.floor(atk()*4.5)));p.mageVortexCd=30;floatText((target.emoji||"")+"🌪️漩渦10秒",true);log("🌪️ 元素法杖召喚漩渦：每秒造成玩家傷害×450%，持續10秒，冷卻30秒");}
+function cc093_applyArcherPierce(target){if(currentJobKey()!=="archer"||!target||target.hp<=0)return false;const lv=specialWeaponLevel();const d=Math.max(1,Math.floor(atk()*(.20+lv*.02)));target.hp-=d;floatText((target.emoji||"")+"🏹穿透 -"+d.toLocaleString(),true);cc093_syncFightHp(target);return true;}
+function cc093_tryGunnerExecute(target){if(currentJobKey()!=="gunner"||!target||target.hp<=0)return false;if((target.hp||0)>0&&(target.max||0)>0&&target.hp<target.max*.30){target.hp=0;floatText((target.emoji||"")+"🔫💀處刑線",true);log("🔫 槍手處刑：目標目前血量低於最大生命30%，直接秒殺");cc093_syncFightHp(target);if(fight.monsters){settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else killEnemy();return true}return false;}
+
+const __cc093_oldEnsureNewSystems=ensureNewSystems;
+ensureNewSystems=function(){
+ __cc093_oldEnsureNewSystems();
+ if(!p)return;
+ if(!p.specialWeapons)p.specialWeapons={};
+ const oldGlove=Math.max(0,Math.floor(Number(p.specialWeapons.glove||0)));
+ for(const w of ["darkGlove","magicGlove"]){
+  if(typeof p.specialWeapons[w]!=="number"||Number.isNaN(p.specialWeapons[w]))p.specialWeapons[w]=oldGlove;
+  p.specialWeapons[w]=Math.max(0,Math.floor(Number(p.specialWeapons[w]||0)));
+ }
+ for(const w of ["axe","spear","scythe","dagger","staff","bow","gun","hammer","gauntlet","cane"]){p.specialWeapons[w]=Math.max(0,Math.floor(Number(p.specialWeapons[w]||0)))}
+ p.specialWeapons.glove=oldGlove;
+ p.berserkerAxeStacks=Math.max(0,Math.min(100,Math.floor(Number(p.berserkerAxeStacks||0))));
+ p.lancerExecuteCd=Math.max(0,Number(p.lancerExecuteCd||0));
+ p.lancerPierceCd=Math.max(0,Number(p.lancerPierceCd||0));
+ p.mageVortexCd=Math.max(0,Number(p.mageVortexCd||0));
+};
+const __cc093_oldEnsureEffectBag=ensureEffectBag;
+ensureEffectBag=function(target){const e=__cc093_oldEnsureEffectBag(target);for(const k of ["darkBlind","pierceRegenDown","fearStacks","fearTried100","fearTried150","fearTried200","assassinRegenDown","vortex","vortexDmg"]){if(typeof e[k]!=="number"||Number.isNaN(e[k]))e[k]=0}return e};
+const __cc093_oldCanInfiniteBurn=canInfiniteBurn;
+canInfiniteBurn=function(){const job=currentJobKey();return job==="berserker"||job==="mage"||__cc093_oldCanInfiniteBurn()};
+canInfiniteBleed=function(){const job=currentJobKey();return job==="reaper"||job==="summoner"||job==="skillmaster"};
+const __cc093_oldJobStatusDamageBonus=jobStatusDamageBonus;
+jobStatusDamageBonus=function(kind){if(currentJobKey()==="berserker"&&kind==="burn")return .26+specialWeaponLevel()*0.01;return __cc093_oldJobStatusDamageBonus(kind)};
+const __cc093_oldBleedRate=bleedRate;
+bleedRate=function(){if(currentJobKey()==="berserker")return .01;return __cc093_oldBleedRate()};
+const __cc093_oldJobAtkBonus=jobAtkBonus;
+jobAtkBonus=function(){const job=currentJobKey();if(job==="berserker")return .10;if(job==="lancer")return .05;if(job==="reaper")return .03;return __cc093_oldJobAtkBonus()};
+const __cc093_oldJobAspdBonus=jobAspdBonus;
+jobAspdBonus=function(){let v=__cc093_oldJobAspdBonus();if(currentJobKey()==="berserker")v+=Math.min(100,Math.max(0,p.berserkerAxeStacks||0))*.001;if(currentJobKey()==="assassin")v+=.25;return v};
+const __cc093_oldPlayerRegen=playerRegen;
+playerRegen=function(){let v=__cc093_oldPlayerRegen();if(currentJobKey()==="assassin")v=Math.floor(v*1.5);return v};
+const __cc093_oldJobPenBonus=jobPenBonus;
+jobPenBonus=function(){if(currentJobKey()==="lancer")return .10;if(currentJobKey()==="archer")return Math.min(.75,specialWeaponLevel()*0.005);return __cc093_oldJobPenBonus()};
+executeRate=function(target=null){ensureNewSystems();if(currentJobKey()==="lancer"){if((p.lancerExecuteCd||0)>0)return 0;const stack=target&&isBossLike(target)?lancerExecuteStack():0;return Math.min(.95,LANCER_EXECUTE_BASE+stack)}if(currentJobKey()==="gunner")return 0;let v=Math.max(0,(p.execute||.000001)+(p.bonus.execute||0));return Math.min(.05,v)};
+const __cc093_oldPoisonRegenMultiplier=poisonRegenMultiplier;
+poisonRegenMultiplier=function(target){const e=ensureEffectBag(target);let v=__cc093_oldPoisonRegenMultiplier(target);if(e.pierceRegenDown>0)v*=.5;if(e.assassinRegenDown>0)v*=.6;return Math.max(0,v)};
+const __cc093_oldMonsterNormalAttack=monsterNormalAttack;
+monsterNormalAttack=function(m){if(m){const e=ensureEffectBag(m);if(e.darkBlind>0&&Math.random()<.70){floatText((m.emoji||"")+"🧤暗盲MISS");return true}}return __cc093_oldMonsterNormalAttack(m)};
+const __cc093_oldTickPlayer=tickPlayer;
+tickPlayer=function(dt){ensureNewSystems();if(p.lancerExecuteCd>0)p.lancerExecuteCd=Math.max(0,p.lancerExecuteCd-dt);if(p.lancerPierceCd>0)p.lancerPierceCd=Math.max(0,p.lancerPierceCd-dt);if(p.mageVortexCd>0)p.mageVortexCd=Math.max(0,p.mageVortexCd-dt);__cc093_oldTickPlayer(dt)};
+const __cc093_oldTickEffects=tickEffects;
+tickEffects=function(dt){__cc093_oldTickEffects(dt);if(!fight)return;const list=fight.monsters?aliveMonsters():[fight];let msgs=[];for(const target of list){if(!target||target.hp<=0)continue;const e=ensureEffectBag(target),inv=e.invincible>0,dotMul=(target.dotTaken||1)*(target.statusRes||1);if(e.darkBlind>0)e.darkBlind=Math.max(0,e.darkBlind-dt);if(e.pierceRegenDown>0)e.pierceRegenDown=Math.max(0,e.pierceRegenDown-dt);if(e.assassinRegenDown>0)e.assassinRegenDown=Math.max(0,e.assassinRegenDown-dt);if(e.vortex>0){if(!inv){const d=Math.max(1,(e.vortexDmg||atk()*4.5)*dt*dotMul);target.hp-=d;msgs.push(["🌪️",d])}e.vortex=Math.max(0,e.vortex-dt);if(e.vortex<=0)e.vortexDmg=0}}
+ if(fight&&fight.monsters){refreshTotalHp();settleFormationDeaths()}else if(fight&&fight.hp<=0)killEnemy();
+ if(fight&&msgs.length&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d)).toLocaleString())}fight.dotFloat=.35}
+};
+const __cc093_oldDamage=damage;
+damage=function(mult=1,label="",opt={}){
+ const normal=!label&&!opt.skill&&!opt.forceSingle;
+ const oldFight=fight;
+ const before=(fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean).map(t=>[t,Math.max(0,t.hp||0)]):[]);
+ __cc093_oldDamage(mult,label,opt);
+ if(!oldFight||fight!==oldFight)return;
+ let damagedTargets=[];
+ for(const [target,hpBefore] of before){if(!target||target.hp==null)continue;const lost=Math.max(0,hpBefore-Math.max(0,target.hp));if(lost>0)damagedTargets.push(target)}
+ if(!damagedTargets.length)return;
+ if(currentJobKey()==="berserker")cc093_triggerBerserkerAxeStacks(damagedTargets.length);
+ for(const target of damagedTargets){
+  if(!fight||fight!==oldFight)break;
+  if(currentJobKey()==="lancer")cc093_triggerLancerPierce(target);
+  if(!fight||fight!==oldFight)break;
+  if(currentJobKey()==="reaper"&&normal){cc093_addReaperFear(target,1)}
+  if(!fight||fight!==oldFight)break;
+  if(currentJobKey()==="assassin")cc093_applyAssassinDagger(target);
+  if(currentJobKey()==="mage")cc093_tryMageVortex(target);
+  if(currentJobKey()==="archer"&&normal)cc093_applyArcherPierce(target);
+  if(!fight||fight!==oldFight)break;
+  if(currentJobKey()==="gunner")cc093_tryGunnerExecute(target);
+ }
+ if(fight===oldFight){if(fight.monsters)refreshTotalHp();else if(damagedTargets[0])fight.hp=damagedTargets[0].hp;settleFormationDeaths&&settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy();render();}
+};
+const __cc093_oldStatusHtml=statusHtml;
+statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;const pool=[];if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);else pool.push(fight);const sum={darkBlind:0,pierceRegenDown:0,fearStacks:0,assassinRegenDown:0,vortex:0};for(const t of pool.filter(Boolean)){if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;const e=ensureEffectBag(t);sum.darkBlind=Math.max(sum.darkBlind,e.darkBlind||0);sum.pierceRegenDown=Math.max(sum.pierceRegenDown,e.pierceRegenDown||0);sum.fearStacks=Math.max(sum.fearStacks,e.fearStacks||0);sum.assassinRegenDown=Math.max(sum.assassinRegenDown,e.assassinRegenDown||0);sum.vortex=Math.max(sum.vortex,e.vortex||0)}let h="";if(sum.darkBlind>0)h+=`<span class='badge freeze'>🧤 暗盲 ${sum.darkBlind.toFixed(1)}秒｜命中-70%</span>`;if(sum.pierceRegenDown>0)h+=`<span class='badge break'>🐎 穿刺創口 ${sum.pierceRegenDown.toFixed(1)}秒｜回血-50%</span>`;if(sum.fearStacks>0)h+=`<span class='badge bleed'>💀 恐懼 ${Math.floor(sum.fearStacks)}層</span>`;if(sum.assassinRegenDown>0)h+=`<span class='badge poison'>🗡️ 淬毒傷口 ${sum.assassinRegenDown.toFixed(1)}秒｜回血-40%</span>`;if(sum.vortex>0)h+=`<span class='badge freeze'>🌪️ 漩渦 ${sum.vortex.toFixed(1)}秒</span>`;if(h&&base==="<span class='small'>無狀態</span>")base="";return base+h};
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
