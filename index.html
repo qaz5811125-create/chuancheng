@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.2 技能師七選一測試版</title>
+<title>傳承 Beta 0.9.2 狀態單位熱修版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -201,7 +201,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.2 技能師七選一測試版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.2 狀態單位熱修版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -1229,6 +1229,179 @@ setJob=function(key){
  if(old==="skillmaster"&&currentJobKey()!=="skillmaster"){
   const st=playerStatus();st.float=0;st.floatTime=0;if(p.skillmaster)p.skillmaster.floatRegen=0;
  }
+};
+
+
+/* ===== Beta 0.9.2 狀態單位修正 / 500層爆發熱修 ===== */
+const __cc092u_oldEnsureEffectBag=ensureEffectBag;
+ensureEffectBag=function(target){
+ const e=__cc092u_oldEnsureEffectBag(target);
+ for(const k of ["skillStun","weakPct","woundInflame","poisonBurstGate","bleedInflameGate","burnBurstGate"]){
+  if(typeof e[k]!=="number"||Number.isNaN(e[k]))e[k]=0;
+ }
+ if(typeof e.weakStacks==="number"&&e.weakStacks>0&&e.weakPct<=0)e.weakPct=Math.min(.50,e.weakStacks*.01);
+ if(e.break>1)e.break=1;
+ return e;
+};
+function cc092u_statusTargets(){
+ if(!fight)return [];
+ const out=[];
+ if(fight.monsters&&Array.isArray(fight.monsters))out.push(...fight.monsters);
+ else out.push(fight);
+ return out.filter(Boolean);
+}
+function cc092u_prepareStatusUnits(){
+ for(const target of cc092u_statusTargets()){
+  const e=ensureEffectBag(target);
+  if((e.stunStacks||0)>0){e.skillStun=Math.max(e.skillStun||0,e.stunStacks);e.stunStacks=0;}
+  if((e.chaosStacks||0)>0){e.chaos=Math.max(e.chaos||0,e.chaosStacks);e.chaosStacks=0;}
+  if((e.breakStacks||0)>0){e.break=Math.min(1,Math.max(e.break||0,e.breakStacks*.01));e.breakStacks=0;}
+  if((e.prisonStacks||0)>0&&currentJobKey()==="skillmaster"){e.prison=Math.max(e.prison||0,e.prisonStacks);e.prisonStacks=0;}
+  if((e.weakStacks||0)>0){e.weakPct=Math.min(.50,Math.max(e.weakPct||0,e.weakStacks*.01));e.weakStacks=Math.round(e.weakPct*100);}
+ }
+}
+function cc092u_percentDamage(target,pct,label,icon){
+ if(!target||target.hp<=0)return 0;
+ const e=ensureEffectBag(target);if((e.invincible||0)>0)return 0;
+ const d=Math.max(1,Math.floor((target.max||target.hp||1)*pct));
+ target.hp-=d;
+ floatText(icon+label+" -"+d.toLocaleString(),true);
+ log(icon+" "+label+"：造成最大生命 "+Math.round(pct*100)+"% 傷害");
+ if(fight&&fight.monsters)refreshTotalHp();else if(fight)fight.hp=target.hp;
+ return d;
+}
+function cc092u_checkStackMilestone(target,key,before,after,gateKey,each,handler){
+ const e=ensureEffectBag(target);
+ if(e[gateKey]===0&&before>=each)e[gateKey]=Math.floor(before/each);
+ const oldGate=Math.max(e[gateKey]||0,Math.floor(before/each));
+ const newGate=Math.floor(after/each);
+ if(newGate<=oldGate)return;
+ for(let g=oldGate+1;g<=newGate;g++)handler(g*each,g);
+ e[gateKey]=newGate;
+}
+const __cc092u_oldAddPoison=addPoison;
+addPoison=function(target,stacks=1,infinite=false){
+ const e=ensureEffectBag(target),before=Math.floor(e.poison||0);
+ __cc092u_oldAddPoison(target,stacks,infinite);
+ const after=Math.floor(e.poison||0);
+ cc092u_checkStackMilestone(target,"poison",before,after,"poisonBurstGate",500,()=>cc092u_percentDamage(target,.25,"毒性爆發","☠️"));
+};
+const __cc092u_oldAddBleed=addBleed;
+addBleed=function(target,stacks=1){
+ const e=ensureEffectBag(target),before=Math.floor(e.bleed||0);
+ __cc092u_oldAddBleed(target,stacks);
+ const after=Math.floor(e.bleed||0);
+ cc092u_checkStackMilestone(target,"bleed",before,after,"bleedInflameGate",500,()=>{e.woundInflame=20;floatText("🩸傷口發炎 20秒",true);log("🩸 傷口發炎：每秒損失最大生命 2%，持續 20 秒")});
+};
+const __cc092u_oldAddBurn=addBurn;
+addBurn=function(target,stacks=1,infinite=false){
+ const e=ensureEffectBag(target),before=Math.floor(e.burn||0);
+ __cc092u_oldAddBurn(target,stacks,infinite);
+ const after=Math.floor(e.burn||0);
+ cc092u_checkStackMilestone(target,"burn",before,after,"burnBurstGate",500,()=>cc092u_percentDamage(target,.15,"自身爆燃","🔥"));
+};
+const __cc092u_oldEffDefForTarget=effDefForTarget;
+effDefForTarget=function(t){const e=ensureEffectBag(t);if(e.shatter>0)return 0;return Math.floor((t.def||0)*(1-Math.min(1,pen()+(e.break||0))))};
+function cc092u_statusUnits(base=1){return Math.max(1,Math.floor(base))*2}
+function addSkillmasterBreak(target,units){const e=ensureEffectBag(target);e.break=Math.min(1,Math.max(0,e.break||0)+Math.max(1,Math.floor(units))*.01);e.breakStacks=0;e.skillmasterMark=1;}
+function addSkillmasterWeak(target,units){const e=ensureEffectBag(target);e.weakPct=Math.min(.50,Math.max(0,e.weakPct||0)+Math.max(1,Math.floor(units))*.01);e.weakStacks=Math.round(e.weakPct*100);e.weak=Math.max(e.weak||0,10);e.skillmasterMark=1;}
+function addSkillmasterChaos(target,units){const e=ensureEffectBag(target);e.chaos=Math.max(0,e.chaos||0)+Math.max(1,Math.floor(units));e.chaosStacks=0;e.skillmasterMark=1;}
+function addSkillmasterStun(target,units){if(isBossLike(target))return;const e=ensureEffectBag(target);e.skillStun=Math.max(0,e.skillStun||0)+Math.max(1,Math.floor(units));e.stunStacks=0;e.skillmasterMark=1;}
+function addSkillmasterPrison(target,units){if(isBossLike(target))return;const e=ensureEffectBag(target);e.prison=Math.max(0,e.prison||0)+Math.max(1,Math.floor(units));e.prisonStacks=0;e.skillmasterMark=1;}
+const CC092U_SKILLMASTER_STATUS_POOL=[
+ {key:"bleed",icon:"🩸",name:"撕裂",unit:"層",apply:(target,units)=>addBleed(target,units)},
+ {key:"poison",icon:"☠️",name:"中毒",unit:"層",apply:(target,units)=>addPoison(target,units,true)},
+ {key:"stun",icon:"💫",name:"擊暈",unit:"秒",control:true,apply:(target,units)=>addSkillmasterStun(target,units)},
+ {key:"break",icon:"🛡️",name:"破甲",unit:"%",apply:(target,units)=>addSkillmasterBreak(target,units)},
+ {key:"weak",icon:"🥀",name:"虛弱",unit:"%",apply:(target,units)=>addSkillmasterWeak(target,units)},
+ {key:"chaos",icon:"🌀",name:"混沌",unit:"秒",apply:(target,units)=>addSkillmasterChaos(target,units)},
+ {key:"prison",icon:"⛓️",name:"禁錮",unit:"秒",control:true,apply:(target,units)=>addSkillmasterPrison(target,units)}
+];
+function cc092u_pickSkillmasterStatus(){return CC092U_SKILLMASTER_STATUS_POOL[Math.floor(Math.random()*CC092U_SKILLMASTER_STATUS_POOL.length)]}
+skillmasterAttack=function(mult=1){
+ if(!fight||isPlayerStunned()||p.hp<=0)return;
+ cc092u_prepareStatusUnits();
+ const target=activeMonster();if(!target||target.hp<=0)return;
+ const e=ensureEffectBag(target);
+ if(e.invincible>0){showHitEffect("skill");floatText("無敵");sfx("boss");return}
+ if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");return}
+ const units=cc092u_statusUnits(1),picked=cc092u_pickSkillmasterStatus(),unitText=units+picked.unit;
+ if(isBossLike(target)&&picked.control){
+  floatText((target.emoji||"")+picked.icon+picked.name+"免疫",true);
+  log("🪁 技能師抽中「"+picked.name+"」，但 Boss 免疫控制，本次不重新抽選");
+ }else{
+  picked.apply(target,units);e.skillmasterMark=1;
+  floatText((target.emoji||"")+picked.icon+picked.name+"+"+unitText,true);
+  log("🪁 技能師七選一施加特殊狀態：「"+picked.name+"」 +"+unitText);
+ }
+ addCombo();showHitEffect("skill");sfx("skill");
+ if(fight.monsters)refreshTotalHp();else fight.hp=target.hp;
+ settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy();render();
+};
+const __cc092u_oldTickEffects=tickEffects;
+tickEffects=function(dt){
+ cc092u_prepareStatusUnits();
+ __cc092u_oldTickEffects(dt);
+ if(!fight)return;
+ cc092u_prepareStatusUnits();
+ const list=fight.monsters?aliveMonsters():[fight];let msgs=[];
+ for(const target of list){
+  if(!target||target.hp<=0)continue;
+  const e=ensureEffectBag(target),inv=e.invincible>0,dotMul=(target.dotTaken||1)*(target.statusRes||1);
+  if(e.skillStun>0)e.skillStun=Math.max(0,e.skillStun-dt);
+  if(e.woundInflame>0){
+   if(!inv){const d=(target.max||1)*.02*dt*dotMul;target.hp-=d;msgs.push(["🩸炎",d]);}
+   e.woundInflame=Math.max(0,e.woundInflame-dt);
+  }
+  if(e.breakStacks>0)e.breakStacks=0;
+  if(e.stunStacks>0)e.stunStacks=0;
+  if(e.chaosStacks>0)e.chaosStacks=0;
+  if(e.prisonStacks>0&&currentJobKey()==="skillmaster"){e.prison=Math.max(e.prison||0,e.prisonStacks);e.prisonStacks=0;}
+ }
+ if(fight&&fight.monsters){refreshTotalHp();settleFormationDeaths()}else if(fight&&fight.hp<=0)killEnemy();
+ if(msgs.length&&fight&&fight.dotFloat<=0){for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d/.35)).toLocaleString())}fight.dotFloat=.35}
+};
+const __cc092u_oldTickMonsterAI=tickMonsterAI;
+tickMonsterAI=function(dt){
+ if(!fight||(isDungeon()&&!isAbyss()))return;
+ for(const m of aliveMonsters()){
+  const e=ensureEffectBag(m);if(e.freeze>0||e.skillStun>0)continue;
+  if(!m.mAspd&&!m.skill)continue;
+  if(m.stunProcTimer>0)m.stunProcTimer=Math.max(0,m.stunProcTimer-dt);
+  if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);
+  m.attackTimer-=dt;let guard=0;
+  while(m.attackTimer<=0&&guard<2){if(!monsterNormalAttack(m))return;m.attackTimer+=monsterAttackInterval(m);guard++}
+  if(m.skill&&m.skillCd){if(m.skillTimer==null)m.skillTimer=m.skillCd;m.skillTimer-=dt;if(m.skillTimer<=0){monsterUseSkill(m);if(p.hp<=0)return;m.skillTimer=m.skillCd}}
+ }
+};
+const __cc092u_oldMonsterNormalAttack=monsterNormalAttack;
+monsterNormalAttack=function(m){
+ if(m){const e=ensureEffectBag(m);if(e.skillStun>0){floatText((m.emoji||"")+"💫暈眩");return true}if(e.chaos>0&&Math.random()<.50){floatText((m.emoji||"")+"🌀混沌MISS");return true}}
+ return __cc092u_oldMonsterNormalAttack(m)
+};
+statusHtml=function(){
+ if(!fight)return "<span class='small'>無狀態</span>";
+ cc092u_prepareStatusUnits();
+ const pool=[];if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);else pool.push(fight);
+ const sum={burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0,invincible:0,berserk:0,dodge:0,toxic:0,skillStun:0,chaos:0,weakPct:0,woundInflame:0};
+ for(const t of pool.filter(Boolean)){if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;const e=ensureEffectBag(t);sum.burn=Math.max(sum.burn,Math.max(0,e.burn||0));sum.poison=Math.max(sum.poison,Math.max(0,e.poison||0));sum.freeze=Math.max(sum.freeze,Math.max(0,e.freeze||0));sum.break=Math.max(sum.break,Math.max(0,e.break||0));sum.bleed=Math.max(sum.bleed,Math.max(0,e.bleed||0));sum.shatter=Math.max(sum.shatter,Math.max(0,e.shatter||0));sum.prison=Math.max(sum.prison,Math.max(0,e.prison||0));sum.invincible=Math.max(sum.invincible,Math.max(0,e.invincible||0));sum.berserk=Math.max(sum.berserk,Math.max(0,e.berserk||0));sum.dodge=Math.max(sum.dodge,Math.max(0,e.dodge||0));sum.toxic=Math.max(sum.toxic,Math.max(0,e.toxic||0));sum.skillStun=Math.max(sum.skillStun,Math.max(0,e.skillStun||0));sum.chaos=Math.max(sum.chaos,Math.max(0,e.chaos||0));sum.weakPct=Math.max(sum.weakPct,Math.max(0,e.weakPct||0));sum.woundInflame=Math.max(sum.woundInflame,Math.max(0,e.woundInflame||0));}
+ let h="";
+ if(sum.burn>0)h+="<span class='badge burn'>🔥 燃燒 "+Math.floor(sum.burn)+"層</span>";
+ if(sum.poison>0)h+="<span class='badge poison'>☠️ 中毒 "+Math.floor(sum.poison)+"層｜回血-"+Math.round(Math.min(1,Math.floor(sum.poison)*.001)*100)+"%</span>";
+ if(sum.bleed>0)h+="<span class='badge bleed'>🩸 撕裂 "+Math.floor(sum.bleed)+"層</span>";
+ if(sum.freeze>0)h+="<span class='badge freeze'>❄️ 冰凍 "+sum.freeze.toFixed(1)+"秒</span>";
+ if(sum.skillStun>0)h+="<span class='badge freeze'>💫 擊暈 "+sum.skillStun.toFixed(1)+"秒</span>";
+ if(sum.prison>0)h+="<span class='badge prison'>⛓️ 禁錮 "+sum.prison.toFixed(1)+"秒｜閃避-10%</span>";
+ if(sum.chaos>0)h+="<span class='badge freeze'>🌀 混沌 "+sum.chaos.toFixed(1)+"秒｜命中-50%</span>";
+ if(sum.break>0)h+="<span class='badge break'>🛡️ 破甲 "+Math.round(Math.min(1,sum.break)*100)+"%</span>";
+ if(sum.weakPct>0)h+="<span class='badge poison'>🥀 虛弱 攻擊-"+Math.round(Math.min(.5,sum.weakPct)*100)+"%</span>";
+ if(sum.woundInflame>0)h+="<span class='badge bleed'>🩸 傷口發炎 "+sum.woundInflame.toFixed(1)+"秒｜每秒-2%最大生命</span>";
+ if(sum.shatter>0)h+="<span class='badge break'>💥 破碎 "+sum.shatter.toFixed(1)+"秒</span>";
+ if(sum.berserk>0)h+="<span class='badge burn'>🐇 狂暴 "+sum.berserk.toFixed(1)+"秒</span>";
+ if(sum.dodge>0)h+="<span class='badge freeze'>🐇 閃避 "+sum.dodge.toFixed(1)+"秒｜閃避+50%</span>";
+ if(sum.invincible>0)h+="<span class='badge freeze'>🦕 無敵 "+sum.invincible.toFixed(1)+"秒</span>";
+ if(sum.toxic>0)h+="<span class='badge poison'>☠️ 毒性傷害 "+sum.toxic.toFixed(1)+"秒</span>";
+ return h||"<span class='small'>無狀態</span>"
 };
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
