@@ -1,4 +1,4 @@
-const CACHE_NAME = "chuancheng-cache-v0.9.1-summoner-abyss-v2";
+const CACHE_NAME = "chuancheng-cache-v0.9.3-number-gunner-hotfix-v2";
 const ASSETS = [
   "./",
   "index.html",
