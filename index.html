@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.3 職業專武被動修正版</title>
+<title>傳承 Beta 0.9.3 大數字與槍手熱修重包版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -59,6 +59,63 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .playerPanel .bar{margin:8px 0}.playerHp .hp{background:linear-gradient(90deg,#22c55e,#facc15,#fb7185)}.playerStatusBox{min-height:24px;margin-top:6px}.worldGrid{display:grid;grid-template-columns:1fr;gap:8px}.mapCard{background:rgba(15,23,42,.72);border:1px solid rgba(148,163,184,.24);border-radius:16px;padding:12px}.mapCard.open{border-color:rgba(34,197,94,.55)}.mapCard.current{box-shadow:0 0 0 2px rgba(250,204,21,.2);border-color:rgba(250,204,21,.72)}.mapCard.locked{opacity:.62}.mapCard.coming{opacity:.45}.mapTitle{display:flex;justify-content:space-between;gap:8px;align-items:center}.playerDmg{color:#fb7185;font-weight:1000;text-shadow:0 2px 6px #000}.battleStateLine{margin-top:6px}
 @keyframes hitSlash{0%{opacity:0;transform:translate(-50%,-50%) rotate(-34deg) scaleX(.15)}42%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(-14deg) scaleX(1.35)}}@keyframes hitSlash2{0%{opacity:0;transform:translate(-50%,-50%) rotate(30deg) scaleX(.18)}48%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(8deg) scaleX(1.18)}}@keyframes hitSlashCross{0%{opacity:0;transform:translate(-50%,-50%) rotate(28deg) scaleX(.18)}45%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) rotate(44deg) scaleX(1.28)}}@keyframes hitRing{0%{opacity:0;transform:translate(-50%,-50%) scale(.32)}45%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(2.35)}}@keyframes hitBurst{0%{opacity:0;transform:translate(-50%,-50%) scale(.25)}35%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(2.8)}}@keyframes comboToast{0%{opacity:0;transform:translate(-50%,-4px) scale(.82)}20%{opacity:1;transform:translate(-50%,0) scale(1.08)}100%{opacity:0;transform:translate(-50%,-34px) scale(1.18)}}@keyframes enemyShake{0%,100%{transform:translateX(-50%)}25%{transform:translateX(calc(-50% - 5px)) scale(.96)}75%{transform:translateX(calc(-50% + 5px)) scale(.96)}}
 .playerHand,.weaponGrip,.weaponForearm,.weaponModel,.slashArc,.weaponNameTag,#attackAnimLayer{display:none!important;visibility:hidden!important;pointer-events:none!important}
+
+/* ===== Beta 0.9.3-hotfix：大數字 / 戰鬥文字減負 ===== */
+.float{
+  font-size:13px!important;
+  max-width:82vw;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  animation:float .55s ease-out forwards!important;
+  text-shadow:0 1px 2px #000!important;
+  will-change:transform,opacity;
+}
+.float.bigFloat{
+  font-size:18px!important;
+  max-width:84vw;
+  animation:floatBig .68s ease-out forwards!important;
+  text-shadow:0 1px 3px #000!important;
+}
+@keyframes float{to{opacity:0;transform:translate(var(--x),-48px) scale(1.04)}}
+@keyframes floatBig{to{opacity:0;transform:translate(var(--x),-60px) scale(1.12)}}
+#enemyHp,#enemyMaxHp,#playerHp,#playerMaxHp{
+  display:inline-block;
+  max-width:42vw;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  vertical-align:bottom;
+}
+.monsterLine{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  overflow:hidden;
+}
+.monsterLine span:first-child{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.monsterLine span:last-child{
+  flex:0 0 auto;
+  max-width:48%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+}
+
+
+/* BUILD_TAG_093_REPACK: 強制縮小戰鬥大字與降低渲染負擔 */
+.float{font-size:16px!important;line-height:1.05!important;max-width:92vw!important;white-space:nowrap!important;text-shadow:0 1px 3px #000!important;animation:float .48s ease-out forwards!important;}
+.float.bigFloat{font-size:20px!important;line-height:1.05!important;text-shadow:0 1px 4px #000!important;animation:floatBig .6s ease-out forwards!important;}
+@keyframes float{to{opacity:0;transform:translate(var(--x),-42px) scale(1.02)}}
+@keyframes floatBig{to{opacity:0;transform:translate(var(--x),-52px) scale(1.06)}}
+.monsterLine span:last-child,#enemyHp,#enemyMaxHp,#playerHp,#playerMaxHp,#gold,#atk,#power{font-variant-numeric:tabular-nums;}
+
 </style>
 </head>
 <body>
@@ -126,7 +183,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 </div>
 
 <div class="card" id="jobPanel">
-<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.3</span></div>
+<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.3 最新熱修</span></div>
 <div class="small">職業系統載入中...</div>
 </div>
 
@@ -201,7 +258,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.3 職業專武被動修正版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.3 大數字與槍手熱修重包版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -210,6 +267,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.3";
+const BUILD_TAG_093_REPACK="0.9.3-number-gunner-hotfix-repack-v3";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -572,7 +630,7 @@ function damage(mult=1,label="",opt={}){
    if(te.invincible>0){showHitEffect(opt.hitType||"normal");floatText("無敵");sfx("boss");continue}
    if(Math.random()<evadeRate(target)){floatText((target.emoji||"")+"MISS");sfx("hit");continue}
    let executeMissed=false;
-   if(!opt.noExecute&&(!isBossLike(target)||currentJobKey()==="lancer"||currentJobKey()==="gunner")){
+   if(!opt.noExecute&&(!isBossLike(target)||currentJobKey()==="lancer")){
     const exRate=executeRate(target);
     if(Math.random()<exRate){
      executed=true;anyHit=true;
@@ -582,11 +640,6 @@ function damage(mult=1,label="",opt={}){
       target.hp-=exDmg;totalDmg+=exDmg;
       floatText((target.emoji||"")+"🐎💀破命 "+exDmg,true);
       log("🐎 戰騎破命觸發：Boss 扣除最大生命 10%");
-     }else if(isBossLike(target)&&currentJobKey()==="gunner"){
-      const exDmg=Math.max(1,Math.floor(target.max*.30));
-      target.hp-=exDmg;target.def=Math.max(0,Math.floor((target.def||0)*.70));totalDmg+=exDmg;
-      floatText((target.emoji||"")+"🔫💀貫殺 "+exDmg,true);
-      log("🔫 槍手秒殺機制觸發：Boss 扣除最大生命30%，永久削防30%");
      }else if(!isBossLike(target)){
       target.hp=0;
       floatText((target.emoji||"")+"💀 秒殺！",true);
@@ -834,7 +887,7 @@ const JOB_GRADE_META={common:["一般","一般升級碎片"],commonUp:["一般�
 const JOB_FRAGMENT_KEYS=Object.keys(JOB_GRADE_META);
 Object.assign(JOBS,{
  thief:{icon:"🧤",name:"盜賊",lv:1,grade:"common",weapon:"glove",weaponName:"暗黑手套",desc:"普攻20%偷取目標增益，攻速+20%；專武提高偷取概率。"},
- gunner:{icon:"🔫",name:"槍手",lv:80,grade:"commonUp",weapon:"gun",weaponName:"燙手的狙擊步槍",desc:"燃燒爆發=玩家傷害×500%，攻速-90%；專武秒殺率+50%，Boss觸發扣最大生命30%並永久削防。"},
+ gunner:{icon:"🔫",name:"槍手",lv:80,grade:"commonUp",weapon:"gun",weaponName:"燙手的狙擊步槍",desc:"燃燒爆發=玩家傷害×500%，攻速-90%；專武：目標目前血量低於最大生命30%時直接秒殺，Boss也可觸發。"},
  hammer:{icon:"🔨",name:"聖錘兵",lv:160,grade:"rareUp",weapon:"hammer",weaponName:"好重的錘子",desc:"普攻20%獲得最大血量護盾並暈眩目標5秒，攻速-60%；專武提高暈眩概率。"},
  colossus:{icon:"🤖",name:"巨神兵",lv:250,grade:"legendaryStar",weapon:"gauntlet",weaponName:"神兵•拳套",desc:"攻速-90%，血量/防禦/回血+2000%；專武普攻造成目標最大生命15%傷害。"}
 });
@@ -1415,7 +1468,7 @@ Object.assign(JOBS,{
  mage:Object.assign({},JOBS.mage,{name:"法師",weapon:"staff",weaponName:"元素法杖",desc:"燃燒可無限疊加；技能傷害倍率+50%；普攻有機率疊燃燒；攻擊燃燒目標追加魔法傷害；燃燒目標有機率爆燃；受到一般傷害時10%元素護盾減傷。專武：有機率召喚漩渦。"}),
  archer:Object.assign({},JOBS.archer,{weapon:"bow",weaponName:"破碎之弓",desc:"多段攻擊、破碎散射與天災一擊。專武：增強穿透傷害。"}),
  thief:Object.assign({},JOBS.thief,{weapon:"darkGlove",weaponName:"暗黑手套",desc:"攻速+20%；普攻20%偷取目標增益。專武：提高普攻偷取率20%，並降低目標70%命中5秒。"}),
- gunner:Object.assign({},JOBS.gunner,{weapon:"gun",weaponName:"燙手的狙擊步槍",desc:"燃燒爆發=玩家傷害×500%，攻速-90%；專武改為目標目前血量低於最大生命30%時直接秒殺。"}),
+ gunner:Object.assign({},JOBS.gunner,{weapon:"gun",weaponName:"燙手的狙擊步槍",desc:"燃燒爆發=玩家傷害×500%，攻速-90%；專武：目標目前血量低於最大生命30%時直接秒殺，Boss也可觸發。"}),
  skillmaster:Object.assign({},JOBS.skillmaster,{weapon:"magicGlove",weaponName:"魔法手套"})
 });
 
@@ -1439,7 +1492,28 @@ function cc093_addReaperFear(target,stacks=1){if(currentJobKey()!=="reaper"||!ta
 function cc093_applyAssassinDagger(target){if(currentJobKey()!=="assassin"||!target||target.hp<=0)return;const e=ensureEffectBag(target);e.assassinRegenDown=Math.max(e.assassinRegenDown||0,8);}
 function cc093_tryMageVortex(target){ensureNewSystems();if(currentJobKey()!=="mage"||!target||target.hp<=0)return;if((p.mageVortexCd||0)>0)return;if(Math.random()>=.35)return;const e=ensureEffectBag(target);e.vortex=Math.max(e.vortex||0,10);e.vortexDmg=Math.max(e.vortexDmg||0,Math.max(1,Math.floor(atk()*4.5)));p.mageVortexCd=30;floatText((target.emoji||"")+"🌪️漩渦10秒",true);log("🌪️ 元素法杖召喚漩渦：每秒造成玩家傷害×450%，持續10秒，冷卻30秒");}
 function cc093_applyArcherPierce(target){if(currentJobKey()!=="archer"||!target||target.hp<=0)return false;const lv=specialWeaponLevel();const d=Math.max(1,Math.floor(atk()*(.20+lv*.02)));target.hp-=d;floatText((target.emoji||"")+"🏹穿透 -"+d.toLocaleString(),true);cc093_syncFightHp(target);return true;}
-function cc093_tryGunnerExecute(target){if(currentJobKey()!=="gunner"||!target||target.hp<=0)return false;if((target.hp||0)>0&&(target.max||0)>0&&target.hp<target.max*.30){target.hp=0;floatText((target.emoji||"")+"🔫💀處刑線",true);log("🔫 槍手處刑：目標目前血量低於最大生命30%，直接秒殺");cc093_syncFightHp(target);if(fight.monsters){settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else killEnemy();return true}return false;}
+function cc093_tryGunnerExecute(target){
+ if(currentJobKey()!=="gunner"||!target||target.hp<=0)return false;
+ const max=Number(target.max||0),hp=Number(target.hp||0);
+ if(max>0&&hp>0&&hp<max*.30){
+  target.hp=0;
+  floatText((target.emoji||"")+"🔫💀處刑線",true);
+  log("🔫 燙手的狙擊步槍：目標目前血量低於最大生命30%，直接觸發秒殺（Boss也可觸發）");
+  cc093_syncFightHp(target);
+  if(fight&&fight.monsters){settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}
+  else if(fight)killEnemy();
+  return true
+ }
+ return false;
+}
+function cc093_tryGunnerExecuteAll(){
+ if(currentJobKey()!=="gunner"||!fight)return false;
+ const list=fight.monsters?aliveMonsters():[activeMonster()];
+ for(const target of list){
+  if(cc093_tryGunnerExecute(target))return true;
+ }
+ return false;
+}
 
 const __cc093_oldEnsureNewSystems=ensureNewSystems;
 ensureNewSystems=function(){
@@ -1514,6 +1588,84 @@ damage=function(mult=1,label="",opt={}){
 };
 const __cc093_oldStatusHtml=statusHtml;
 statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;const pool=[];if(fight.monsters&&Array.isArray(fight.monsters))pool.push(...fight.monsters);else pool.push(fight);const sum={darkBlind:0,pierceRegenDown:0,fearStacks:0,assassinRegenDown:0,vortex:0};for(const t of pool.filter(Boolean)){if(t.hp!==undefined&&t.max!==undefined&&t.hp<=0)continue;const e=ensureEffectBag(t);sum.darkBlind=Math.max(sum.darkBlind,e.darkBlind||0);sum.pierceRegenDown=Math.max(sum.pierceRegenDown,e.pierceRegenDown||0);sum.fearStacks=Math.max(sum.fearStacks,e.fearStacks||0);sum.assassinRegenDown=Math.max(sum.assassinRegenDown,e.assassinRegenDown||0);sum.vortex=Math.max(sum.vortex,e.vortex||0)}let h="";if(sum.darkBlind>0)h+=`<span class='badge freeze'>🧤 暗盲 ${sum.darkBlind.toFixed(1)}秒｜命中-70%</span>`;if(sum.pierceRegenDown>0)h+=`<span class='badge break'>🐎 穿刺創口 ${sum.pierceRegenDown.toFixed(1)}秒｜回血-50%</span>`;if(sum.fearStacks>0)h+=`<span class='badge bleed'>💀 恐懼 ${Math.floor(sum.fearStacks)}層</span>`;if(sum.assassinRegenDown>0)h+=`<span class='badge poison'>🗡️ 淬毒傷口 ${sum.assassinRegenDown.toFixed(1)}秒｜回血-40%</span>`;if(sum.vortex>0)h+=`<span class='badge freeze'>🌪️ 漩渦 ${sum.vortex.toFixed(1)}秒</span>`;if(h&&base==="<span class='small'>無狀態</span>")base="";return base+h};
+
+
+/* ===== Beta 0.9.3-hotfix：大數字縮寫、狙擊步槍、字體減負 ===== */
+(function(){
+ const units=[
+  [1e63,"Vg"],[1e60,"Nod"],[1e57,"Ocd"],[1e54,"Spd"],[1e51,"Sxd"],[1e48,"Qid"],[1e45,"Qad"],[1e42,"Td"],[1e39,"Dd"],[1e36,"Ud"],[1e33,"Dc"],[1e30,"No"],[1e27,"Oc"],[1e24,"Sp"],[1e21,"Sx"],[1e18,"Qi"],[1e15,"Qa"],[1e12,"T"],[1e9,"B"],[1e6,"M"],[1e3,"K"]
+ ];
+ const nativeToLocaleString=Number.prototype.toLocaleString;
+ function trimNumberText(v,decimals){
+  const fixed=v.toFixed(decimals);
+  return fixed.replace(/\.?0+$/,"");
+ }
+ window.formatShortNumber=function(value,decimals=2){
+  let num;
+  if(typeof value==="bigint")num=Number(value);
+  else if(typeof value==="string")num=Number(value.replace(/,/g,""));
+  else num=Number(value);
+  if(!Number.isFinite(num))return String(value);
+  const sign=num<0?"-":"";
+  const abs=Math.abs(num);
+  if(abs<1000){
+   return sign+(Number.isInteger(abs)?nativeToLocaleString.call(abs):trimNumberText(abs,decimals));
+  }
+  for(const [base,suffix] of units){
+   if(abs>=base)return sign+trimNumberText(abs/base,decimals)+suffix;
+  }
+  return sign+abs.toExponential(decimals).replace(/\.?0+e/,"e");
+ };
+ window.cc093FormatTextNumbers=function(text){
+  return String(text).replace(/-?\d[\d,]*(?:\.\d+)?(?:e[+-]?\d+)?/gi,function(match){
+   const raw=match.replace(/,/g,"");
+   const num=Number(raw);
+   if(!Number.isFinite(num)||Math.abs(num)<1000)return match;
+   return window.formatShortNumber(num);
+  });
+ };
+ if(!Number.prototype.__cc093ShortNumberPatched){
+  Object.defineProperty(Number.prototype,"__cc093ShortNumberPatched",{value:true,configurable:true});
+  Number.prototype.toLocaleString=function(...args){
+   const num=Number(this.valueOf());
+   if(Number.isFinite(num)&&Math.abs(num)>=1000)return window.formatShortNumber(num);
+   return nativeToLocaleString.apply(this,args);
+  };
+ }
+ const oldFloatText=floatText;
+ floatText=function(x,big=false){
+  return oldFloatText(window.cc093FormatTextNumbers(x),big);
+ };
+ window.floatText=floatText;
+
+ // 槍手專武處刑線改為常駐檢查：普通怪、精英怪、Boss 低於 30% 都可直接秒殺。
+ const __cc093hf_oldTickEffects=tickEffects;
+ tickEffects=function(dt){
+  __cc093hf_oldTickEffects(dt);
+  if(fight&&currentJobKey()==="gunner")cc093_tryGunnerExecuteAll();
+ };
+ const __cc093hf_oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  if(fight&&currentJobKey()==="gunner"&&cc093_tryGunnerExecuteAll()){render();return}
+  __cc093hf_oldDamage(mult,label,opt);
+  if(fight&&currentJobKey()==="gunner")cc093_tryGunnerExecuteAll();
+ };
+
+ if(typeof render==="function"){
+  const __cc093hf_oldRender=render;
+  render=function(){
+   __cc093hf_oldRender();
+   // 保險：有些舊 UI 直接塞完整數字，渲染後再掃一次常見數值欄位。
+   for(const id of ["enemyHp","enemyMaxHp","enemyDef","effDef","regen","playerHp","playerMaxHp","playerDef","playerEffDef","playerRegen","gold","money","soul","stone","atk","dmg","power","journal","forge","monsterList"]){
+    const el=document.getElementById(id);
+    if(el&&el.textContent)el.textContent=window.cc093FormatTextNumbers(el.textContent);
+   }
+   for(const el of document.querySelectorAll(".monsterLine,.float,.badge,.small,.pill")){
+    if(el&&el.childElementCount===0&&el.textContent)el.textContent=window.cc093FormatTextNumbers(el.textContent);
+   }
+  };
+ }
+})();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
