@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.4 獨立關卡版</title>
+<title>傳承 Beta 0.9.5 戰鐮恐懼版</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -183,7 +183,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 </div>
 
 <div class="card" id="jobPanel">
-<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.4 獨立關卡</span></div>
+<div class="row"><b>⚔️ 職業與專武</b><span class="pill">Beta 0.9.5 戰鐮恐懼</span></div>
 <div class="small">職業系統載入中...</div>
 </div>
 
@@ -258,7 +258,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.4 獨立關卡版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.5 戰鐮恐懼版</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -266,8 +266,8 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.4";
-const BUILD_TAG_093_REPACK="0.9.4-independent-map-stages";
+const GAME_VERSION="0.9.5";
+const BUILD_TAG_093_REPACK="0.9.5-reaper-fear";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -1503,7 +1503,7 @@ statusHtml=function(){
 Object.assign(JOBS,{
  berserker:Object.assign({},JOBS.berserker,{name:"狂戰",weapon:"axe",weaponName:"戰斧",desc:"傷害+10%；燃燒傷害+26%；燃燒效果隨職業等級每級+1%；可觸發不屈意志。專武：燃燒可無限疊加，造成傷害可疊加攻速。"}),
  lancer:Object.assign({},JOBS.lancer,{name:"戰騎",weapon:"spear",weaponName:"長槍",desc:"傷害+5%；破甲/穿透+10%；普攻50%機率無視防禦；基礎秒殺率10%；Boss未觸發秒殺會疊加秒殺率；Boss觸發扣最大生命10%；觸發秒殺後冷卻15秒；可觸發不屈意志。"}),
- reaper:Object.assign({},JOBS.reaper,{name:"戰鐮",weapon:"scythe",weaponName:"鐮刀",desc:"傷害+3%；普攻必定攻擊最多3個目標；撕裂傷害倍率提高；撕裂可無限疊加。專武：施加恐懼，達指定層數可使目標逃離。"}),
+ reaper:Object.assign({},JOBS.reaper,{name:"戰鐮",weapon:"scythe",weaponName:"鐮刀",desc:"傷害+3%；普攻必定攻擊最多3個目標；撕裂傷害倍率提高；撕裂可無限疊加。專武：普攻45%施加恐懼，最高300層；恐懼每秒造成目標最大生命0.1%傷害，100/200/300層有逃離判定。"}),
  assassin:Object.assign({},JOBS.assassin,{name:"刺客",weapon:"dagger",weaponName:"帶毒匕首",desc:"中毒可無限疊加；受到一般傷害時35%閃避；普攻命中疊毒+2；普攻造成毒刃傷害；吸取實際傷害12%回血。專武：攻速+25%，降低目標回血，自身回血+50%。"}),
  mage:Object.assign({},JOBS.mage,{name:"法師",weapon:"staff",weaponName:"元素法杖",desc:"燃燒可無限疊加；技能傷害倍率+50%；普攻有機率疊燃燒；攻擊燃燒目標追加魔法傷害；燃燒目標有機率爆燃；受到一般傷害時10%元素護盾減傷。專武：有機率召喚漩渦。"}),
  archer:Object.assign({},JOBS.archer,{weapon:"bow",weaponName:"破碎之弓",desc:"多段攻擊、破碎散射與天災一擊。專武：增強穿透傷害。"}),
@@ -1703,6 +1703,185 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
    for(const el of document.querySelectorAll(".monsterLine,.float,.badge,.small,.pill")){
     if(el&&el.childElementCount===0&&el.textContent)el.textContent=window.cc093FormatTextNumbers(el.textContent);
    }
+  };
+ }
+})();
+
+
+/* ===== Beta 0.9.5 戰鐮專屬狀態：恐懼 ===== */
+(function(){
+ const FEAR_MAX_STACKS=300;
+ const FEAR_PROC_CHANCE=.45;
+ const FEAR_DOT_RATE=.001; // 每秒造成目標最大生命 0.1%
+ const FEAR_THRESHOLDS=[[100,.20],[200,.25],[300,.30]];
+ function fearTargets(){
+  if(!fight)return[];
+  if(fight.monsters&&Array.isArray(fight.monsters))return aliveMonsters().filter(Boolean);
+  return fight&&fight.hp>0?[fight]:[];
+ }
+ function fearEnsure(target){
+  const e=ensureEffectBag(target);
+  for(const k of ["fearStacks","fearTried100","fearTried200","fearTried300","fearFailedCount","fearBroken","escapedByFear"]){
+   if(typeof e[k]!=="number"||Number.isNaN(e[k]))e[k]=0;
+  }
+  // 舊測試版曾使用 150 / 200 門檻，0.9.5 正式改成 100 / 200 / 300。
+  if(e.fearTried150&&!e.__fear095Migrated){e.__fear095Migrated=1;}
+  e.fearStacks=Math.max(0,Math.min(FEAR_MAX_STACKS,Math.floor(e.fearStacks||0)));
+  e.fearFailedCount=Math.max(0,Math.min(3,Math.floor(e.fearFailedCount||0)));
+  return e;
+ }
+ function fearSyncFightHp(target){
+  if(!fight)return;
+  if(fight.monsters)refreshTotalHp();
+  else if(target)fight.hp=Math.max(0,target.hp||0);
+ }
+ function fearMaybeClearStage(){
+  if(!fight)return;
+  if(fight.monsters){
+   refreshTotalHp();
+   settleFormationDeaths();
+   if(fight&&fight.hp<=0)killEnemy();
+  }else if(fight&&fight.hp<=0)killEnemy();
+ }
+ window.cc095_targetEscapesByFear=function(target){
+  if(!fight||!target||target.hp<=0)return false;
+  const e=fearEnsure(target);
+  e.escapedByFear=1;
+  target.escapedByFear=1;
+  target.escaped=1;
+  target.rewarded=true; // 逃離不算死亡，不給金幣/經驗/裝備/強化石/傳承之魂。
+  target.hp=0;
+  floatText((target.emoji||"")+"😱恐懼逃離！",true);
+  log("😱 "+(target.name||"目標")+"因恐懼逃離戰鬥：不算死亡，不給任何獎勵");
+  fearSyncFightHp(target);
+  fearMaybeClearStage();
+  return true;
+ };
+ // 覆蓋舊版逃離流程：避免把逃離目標送進死亡獎勵流程。
+ window.cc093_targetEscapes=function(target,source="恐懼"){
+  if(source==="恐懼")return window.cc095_targetEscapesByFear(target);
+  if(!fight||!target||target.hp<=0)return false;
+  target.hp=0;target.escaped=1;target.rewarded=true;
+  floatText((target.emoji||"")+"💨"+source+"離場",true);
+  log((target.name||"目標")+"因「"+source+"」離場，不給死亡獎勵");
+  fearSyncFightHp(target);fearMaybeClearStage();return true;
+ };
+ // 逃離怪物永遠不發放死亡獎勵，做第二層保險。
+ const __cc095_oldRewardMonster=rewardMonster;
+ rewardMonster=function(m,dropState){
+  if(m&&(m.escapedByFear||m.escaped)){m.rewarded=true;return;}
+  return __cc095_oldRewardMonster(m,dropState);
+ };
+ cc093_addReaperFear=function(target,stacks=1){
+  if(currentJobKey()!=="reaper"||!target||target.hp<=0)return false;
+  if(Math.random()>=FEAR_PROC_CHANCE)return false;
+  const e=fearEnsure(target);
+  const before=Math.floor(e.fearStacks||0);
+  const add=Math.max(1,Math.floor(stacks||1));
+  e.fearStacks=Math.min(FEAR_MAX_STACKS,before+add);
+  floatText((target.emoji||"")+"😱恐懼+"+add);
+  let escaped=false;
+  for(const [need,chance] of FEAR_THRESHOLDS){
+   const key="fearTried"+need;
+   if(e.fearStacks>=need&&!e[key]){
+    e[key]=1;
+    floatText((target.emoji||"")+"😱恐懼"+need+"層",true);
+    log("🩸 戰鐮恐懼達 "+need+" 層：逃離判定 "+Math.round(chance*100)+"%（本門檻只判定一次）");
+    if(Math.random()<chance){
+     escaped=window.cc095_targetEscapesByFear(target);
+     break;
+    }else{
+     e.fearFailedCount=Math.min(3,Math.floor(e.fearFailedCount||0)+1);
+     floatText((target.emoji||"")+"😱抵抗恐懼");
+     if(e.fearFailedCount>=3&&!e.fearBroken){
+      e.fearBroken=1;
+      floatText((target.emoji||"")+"😱恐懼崩潰！",true);
+      log("😱 "+(target.name||"目標")+"三次逃離判定皆失敗，進入恐懼崩潰：攻速/回血 -40%，無法使用技能，持續到戰鬥結束");
+     }
+    }
+   }
+  }
+  return escaped;
+ };
+ const __cc095_oldEnsureEffectBag=ensureEffectBag;
+ ensureEffectBag=function(target){
+  const e=__cc095_oldEnsureEffectBag(target);
+  for(const k of ["fearStacks","fearTried100","fearTried200","fearTried300","fearFailedCount","fearBroken","escapedByFear"]){
+   if(typeof e[k]!=="number"||Number.isNaN(e[k]))e[k]=0;
+  }
+  return e;
+ };
+ const __cc095_oldTickEffects=tickEffects;
+ tickEffects=function(dt){
+  __cc095_oldTickEffects(dt);
+  if(!fight)return;
+  const list=fearTargets();
+  let msgs=[];
+  for(const target of list){
+   if(!target||target.hp<=0||target.escapedByFear)continue;
+   const e=fearEnsure(target);
+   if((e.fearStacks||0)>0&&!(e.invincible>0)){
+    const dotMul=(target.dotTaken||1)*(target.statusRes||1);
+    const d=Math.max(1,(target.max||target.hp||1)*FEAR_DOT_RATE*dt*dotMul);
+    target.hp-=d;
+    msgs.push(["😱恐懼",d]);
+   }
+  }
+  if(fight&&fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy();}
+  else if(fight&&fight.hp<=0)killEnemy();
+  if(fight&&msgs.length&&fight.dotFloat<=0){
+   for(const [em,d] of msgs){if(d>0)floatText(em+"-"+Math.max(1,Math.floor(d)).toLocaleString())}
+   fight.dotFloat=.35;
+  }
+ };
+ const __cc095_oldMonsterAttackInterval=monsterAttackInterval;
+ monsterAttackInterval=function(m){
+  const base=__cc095_oldMonsterAttackInterval(m);
+  if(m&&fearEnsure(m).fearBroken>0)return base/.6; // 攻速 -40%，攻擊間隔增加為 1/0.6。
+  return base;
+ };
+ const __cc095_oldPoisonRegenMultiplier=poisonRegenMultiplier;
+ poisonRegenMultiplier=function(target){
+  let v=__cc095_oldPoisonRegenMultiplier(target);
+  if(target&&fearEnsure(target).fearBroken>0)v*=.6;
+  return Math.max(0,v);
+ };
+ const __cc095_oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){
+  if(m&&fearEnsure(m).fearBroken>0){
+   floatText((m.emoji||"")+"😱無法施法");
+   return;
+  }
+  return __cc095_oldMonsterUseSkill(m);
+ };
+ const __cc095_oldStatusHtml=statusHtml;
+ statusHtml=function(){
+  let base=__cc095_oldStatusHtml();
+  if(!fight)return base;
+  const pool=fearTargets();
+  let fear=0,broken=false;
+  for(const t of pool){const e=fearEnsure(t);fear=Math.max(fear,Math.floor(e.fearStacks||0));if(e.fearBroken>0)broken=true;}
+  base=String(base||"").replace(/💀 恐懼 (\d+)層/g,"😱 恐懼 $1/300");
+  let h="";
+  if(fear>0&&!/😱 恐懼 \d+\/300/.test(base))h+=`<span class='badge bleed'>😱 恐懼 ${fear}/300｜每秒最大生命0.1%</span>`;
+  else if(fear>0)base=base.replace(/(😱 恐懼 \d+\/300)(<\/span>)/,`$1｜每秒最大生命0.1%$2`);
+  if(broken)h+=`<span class='badge break'>😱 恐懼崩潰｜攻速/回血 -40%，無法使用技能</span>`;
+  if(h&&base==="<span class='small'>無狀態</span>")base="";
+  return base+h;
+ };
+ // 讓怪物列表也看得到每隻怪的恐懼層數。
+ if(typeof render==="function"){
+  const __cc095_oldRender=render;
+  render=function(){
+   __cc095_oldRender();
+   if(!fight||!fight.monsters||!Array.isArray(fight.monsters)||!$("monsterList"))return;
+   const target=activeMonster();
+   const targetIndex=fight.monsters.indexOf(target);
+   $("monsterList").innerHTML=fight.monsters.map((m,i)=>{
+    const e=fearEnsure(m);
+    const fearLine=(e.fearStacks>0?`<span class="monsterAffixes">😱 恐懼 ${Math.floor(e.fearStacks)}/300${e.fearBroken>0?"｜崩潰":""}</span>`:"");
+    return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===targetIndex?"🎯 ":""}${m.emoji} ${m.name}${m.rabbitRampStacks?`<span class="monsterAffixes">狂咬 ${m.rabbitRampStacks}層</span>`:""}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}${fearLine}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`;
+   }).join("");
   };
  }
 })();
