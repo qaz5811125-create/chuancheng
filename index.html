@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.7 Hotfix 主畫面清場與稱號展示</title>
+<title>傳承 Beta 0.9.7 Hotfix Bugfix 裝備稱號與清場修正</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -139,6 +139,20 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .equippedTitleHud{font-weight:900;text-align:left;color:#fde68a;text-shadow:0 2px 10px rgba(250,204,21,.25);margin-bottom:6px;font-size:1.05rem;letter-spacing:.02em}
 .titleEquipBox{border:1px solid rgba(250,204,21,.25);background:rgba(250,204,21,.06);border-radius:14px;padding:10px;margin:10px 0}.titleEquipBox select{width:100%;margin-top:6px;background:#0f172a;color:#fff;border:1px solid #475569;border-radius:10px;padding:9px}
 .cc097UtilityOpen{animation:cc097PanelPop .18s ease-out}@keyframes cc097PanelPop{from{transform:translateY(-6px);opacity:.45}to{transform:translateY(0);opacity:1}}
+
+
+/* ===== Beta 0.9.7 Bugfix：稱號選擇 / 清場點擊 / 裝備橫排 ===== */
+.featureDockBtn{touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.featureDrawer,.featureDrawer button{touch-action:manipulation}
+.cc097UtilityOpen{animation:none!important}
+.titleEquipList{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.titleChoice{border:1px solid rgba(148,163,184,.28);background:rgba(15,23,42,.82);color:#e5e7eb;border-radius:999px;padding:8px 10px;font-weight:800;box-shadow:none;margin:0;line-height:1.1;max-width:100%;white-space:normal;text-align:left}
+.titleChoice.active{background:#facc15;color:#111;border-color:#fde68a;box-shadow:0 0 0 2px rgba(250,204,21,.2)}
+.titleChoice.none{background:rgba(71,85,105,.88);color:#fff}
+.titleEquipHint{margin-top:8px;color:#cbd5e1}
+.gearMetaLine{display:flex;flex-wrap:wrap;gap:5px 6px;align-items:center;margin:4px 0;line-height:1.2}
+.gearChip{display:inline-flex;align-items:center;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.45);border-radius:999px;padding:2px 7px;white-space:nowrap}
+.slot .gearMetaLine{justify-content:center}.slot .gearChip{font-size:.78rem;padding:2px 5px}.item .gearMetaLine{margin-top:6px}.cc097TitleBadge{display:inline-block;margin:2px 4px 2px 0}
 
 </style>
 </head>
@@ -301,7 +315,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-clean-ui-title-display-hotfix-v1";
+const BUILD_TAG_093_REPACK="0.9.7-clean-ui-title-display-bugfix-v2";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -1959,7 +1973,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.6 刺盾 / 後援 / 稱號系統 ===== */
 (function(){
- document.title="傳承 Beta 0.9.7 Hotfix 主畫面清場與稱號展示";
+ document.title="傳承 Beta 0.9.7 Hotfix Bugfix 裝備稱號與清場修正";
  Object.assign(JOBS,{
   spikeshield:{icon:"🐢",name:"刺盾",lv:100,grade:"epic",weapon:"turtleShell",weaponName:"無敵龜殼",desc:"史詩職業。無法主動攻擊、無法主動施加異常狀態；血量+5000%，防禦+500%，每秒恢復最大生命1%；受到攻擊獲得荊棘，靠反傷與嘲諷讓敵人自毀。"}
  });
@@ -2159,7 +2173,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Hotfix：升階重置 / 鏡像門神平衡 / 功能收納 / 新稱號 ===== */
 (function(){
- const HF_TAG="0.9.7-clean-ui-title-display-hotfix-v1";
+ const HF_TAG="0.9.7-clean-ui-title-display-bugfix-v2";
  const HF_TIERS=[
   {equip:"普通階",player:"普通玩家",req:100},
   {equip:"精良階",player:"有點厲害玩家",req:300},
@@ -2321,8 +2335,8 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Hotfix2：主畫面清場 / 裝備稱號 / 巨神兵稱號 ===== */
 (function(){
- document.title="傳承 Beta 0.9.7 Hotfix 主畫面清場與稱號展示";
- const CLEAN_BUILD="0.9.7-clean-ui-title-display-hotfix-v1";
+ document.title="傳承 Beta 0.9.7 Hotfix Bugfix 裝備稱號與清場修正";
+ const CLEAN_BUILD="0.9.7-clean-ui-title-display-bugfix-v2";
  const DISPLAY_TITLES=[
   ["rookie","初估茅廬"],["dead","我掛了"],["revived","我復活了"],["firstKill","我的首殺"],["bossMeet","這個好可怕"],["bossKill","我覺得還好"],["strong50","我變強了"],["bossStuck","我卡關了！"],["walk100","我可以自己走路了"],["fly500","我要起飛啦"],["immortal1000","我要成仙了"],["sage5000","我得道成仙了"],
   ["reaperScary","我好恐怖"],["lancerUntouchable","你打不到我~"],
@@ -2440,12 +2454,20 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  }
  function renderTitleSelector(){
   const el=$("titlePanel");if(!el)return;const t=titleState();checkExtraTitles();
-  let box=$("equippedTitleBox");if(box)box.remove();
-  const options=['<option value="">不顯示稱號</option>'].concat(DISPLAY_TITLES.filter(x=>hasTitle(x[0])).map(x=>`<option value="${x[0]}" ${t.equipped===x[0]?"selected":""}>${x[1]}</option>`)).join("");
-  const progress=`<div class="small"><b>巨神兵稱號</b><br>${hasTitle("colossus15Years")?"✅":"⬛"} 我一拳15年功力｜巨神兵擊殺 ${t.progress.colossusKills}/10000<br>${hasTitle("grandpaLovePunch")?"✅":"⬛"} 阿公愛心拳｜巨神兵未命中 ${t.progress.colossusMisses}/100<br>${hasTitle("onePunchGod")?"✅":"⬛"} 一拳超神｜巨神兵Boss擊殺 ${t.progress.colossusBossKills}/10000<br>${currentJobKey()==="colossus"&&hasTitle("grandpaLovePunch")?"目前阿公愛心拳命中加成："+Math.round((t.colossusHitBuff||0)*100)+"%<br>":""}</div>`;
-  box=document.createElement("div");box.id="equippedTitleBox";box.className="titleEquipBox small";box.innerHTML=`<b>裝備稱號</b><br>稱號效果解鎖後永久生效，裝備稱號只負責顯示在玩家生存欄血量上方。<select id="equippedTitleSelect">${options}</select>${progress}`;
-  el.appendChild(box);
-  const sel=$("equippedTitleSelect");if(sel)sel.onchange=e=>window.cc097SetEquippedTitle(e.target.value);
+  const unlocked=DISPLAY_TITLES.filter(x=>hasTitle(x[0]));
+  const key=[t.equipped||"",unlocked.map(x=>x[0]).join(","),t.progress.colossusKills,t.progress.colossusMisses,t.progress.colossusBossKills,Math.round((t.colossusHitBuff||0)*100)].join("|");
+  let box=$("equippedTitleBox");
+  if(box&&box.dataset.key===key)return;
+  if(!box){box=document.createElement("div");box.id="equippedTitleBox";box.className="titleEquipBox small";el.appendChild(box)}
+  box.dataset.key=key;
+  const choices=[["","不顯示稱號"],...unlocked];
+  const buttons=choices.map(([id,name])=>`<button type="button" class="titleChoice ${id===(t.equipped||"")?"active":""} ${id===""?"none":""}" data-title-id="${id}">${id===""?"🚫 ":"🏷️ "}${name}</button>`).join("");
+  const progress=`<div class="small"><br><b>巨神兵稱號</b><br>${hasTitle("colossus15Years")?"✅":"⬛"} 我一拳15年功力｜巨神兵擊殺 ${t.progress.colossusKills}/10000<br>${hasTitle("grandpaLovePunch")?"✅":"⬛"} 阿公愛心拳｜巨神兵未命中 ${t.progress.colossusMisses}/100<br>${hasTitle("onePunchGod")?"✅":"⬛"} 一拳超神｜巨神兵Boss擊殺 ${t.progress.colossusBossKills}/10000<br>${currentJobKey()==="colossus"&&hasTitle("grandpaLovePunch")?"目前阿公愛心拳命中加成："+Math.round((t.colossusHitBuff||0)*100)+"%<br>":""}</div>`;
+  box.innerHTML=`<b>裝備稱號</b><br><div class="titleEquipHint">稱號效果解鎖後永久生效，裝備稱號只負責顯示在玩家生存欄血量上方。</div><div class="titleEquipList">${buttons}</div>${progress}`;
+  box.querySelectorAll("[data-title-id]").forEach(b=>{
+    b.addEventListener("pointerdown",ev=>{ev.stopPropagation()});
+    b.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();window.cc097SetEquippedTitle(b.getAttribute("data-title-id")||"")});
+  });
  }
  // 裝備掉落保險：所有進背包的裝備都鎖定玩家目前階段。
  const oldProcessItemDrop=processItemDrop;
@@ -2479,6 +2501,93 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  const oldEnsure=ensureNewSystems;
  ensureNewSystems=function(){oldEnsure();if(p){titleState();if(!p.progression)p.progression={rank:0,potential:0};}};
  window.cc097CleanUiMain=mainOnly;
+})();
+
+
+/* ===== Beta 0.9.7 Bugfix3：稱號選擇、掉落階段、技能閃爍、收納點擊、裝備橫排 ===== */
+(function(){
+ const BUGFIX_TAG="0.9.7-clean-ui-title-display-bugfix-v2";
+ const RANK_NAMES=["普通玩家","有點厲害玩家","自信玩家","高階玩家","神級玩家","傳承者","真•傳承者"];
+ const TIER_NAMES=["普通階","精良階","稀有階","史詩階","傳說階","神話階","遠古階"];
+ function n(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function rank(){return Math.max(0,Math.min(6,Math.floor(n(p&&p.progression&&p.progression.rank,0))))}
+ function unlocked(id){return !!(p&&p.titles&&p.titles.unlocked&&p.titles.unlocked[id])}
+ function job(){try{return currentJobKey()}catch(e){return p&&p.job||""}}
+ function migrateItemToRank(it){
+  if(!it)return it;
+  try{if(typeof cc097MigrateItem==="function")it=cc097MigrateItem(it)}catch(e){}
+  it.tier=rank();
+  if(typeof it.star!=="number")it.star=0;
+  if(typeof it.bt!=="number")it.bt=0;
+  if(typeof it.starPity!=="number")it.starPity=0;
+  return it;
+ }
+ function normalizeAllGearTiers(){
+  if(!p)return;
+  if(Array.isArray(p.bag))for(const it of p.bag)migrateItemToRank(it);
+  if(p.equips)for(const k of Object.keys(p.equips))if(p.equips[k])migrateItemToRank(p.equips[k]);
+ }
+ // 再加一層保險：任何進背包、離線、穿脫裝時，都強制等於玩家目前階段。
+ const oldProcess=processItemDrop;
+ processItemDrop=function(it,source="掉落"){return oldProcess(migrateItemToRank(it),source)};
+ const oldMake=makeDropItem;
+ makeDropItem=function(stage=p.stage,source=fight){return migrateItemToRank(oldMake(stage,source))};
+ if(typeof makeOfflineItem==="function"){
+  const oldOff=makeOfflineItem;
+  makeOfflineItem=function(stage){return migrateItemToRank(oldOff(stage))};
+ }
+ const oldEquip=equipItem;
+ equipItem=function(id){normalizeAllGearTiers();return oldEquip(id)};
+ const oldUnequip=unequip;
+ unequip=function(slot){normalizeAllGearTiers();return oldUnequip(slot)};
+ // 裝備顯示改為橫向 chip，避免升星文字擠爆。
+ function gearMeta(it){
+  const tier=(typeof cc097Tier==="function"?cc097Tier(it.tier):{equip:TIER_NAMES[it.tier||0]||"普通階"}).equip;
+  const star=typeof cc097StarText==="function"?cc097StarText(it.star||0):((it.star||0)+"星");
+  const cap=typeof cc097EnhanceCap==="function"?cc097EnhanceCap(it):20;
+  const starCap=typeof cc097StarCap==="function"?cc097StarCap(it):5;
+  return `<div class="gearMetaLine"><span class="gearChip">${tier}</span><span class="gearChip">${star||"0星"}</span><span class="gearChip">突破${it.bt||0}</span><span class="gearChip">強化上限${cap}</span><span class="gearChip">升星上限${starCap}</span></div>`;
+ }
+ itemHtml=function(it,equipped=false){it=migrateItemToRank(it);return `<div class="item"><div class="row"><b class="${it.rar}">+${it.enh} ${slotMeta[it.slot][0]} ${it.name}</b><span>${slotMeta[it.slot][1]}・${it.rn}</span></div>${gearMeta(it)}<div class="small">${itemStatsHtml(it)}｜強化保底${Math.round((it.pity||0)*100)}%｜升星保底${Math.round((it.starPity||0)*100)}%</div>${equipped?`<button onclick="window.unequip('${it.slot}')">卸下</button>`:`<button onclick="window.equipItem(${it.id})">穿戴</button><button onclick="window.sellItem(${it.id})">賣${it.price}</button>`}</div>`};
+ equipSlotsHtml=function(){normalizeAllGearTiers();return slots.map(k=>{const it=p.equips[k],m=slotMeta[k],sel=p.selectedSlot===k?" active":"";return `<div class="slot${sel}" onclick="window.selectSlot('${k}')"><div class="emoji">${m[0]}</div><b>${m[1]}</b>${it?`<div class="${it.rar}">+${it.enh} ${it.name.replace(/^.*－/,"")}</div>${gearMeta(it)}<div class="small">${itemStatsHtml(it)}</div><button onclick="event.stopPropagation();window.unequip('${k}')">卸下</button>`:`<div class="small">空槽</div>`}</div>`}).join("")};
+ // 職業稱號效果顯示在玩家狀態欄。
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){
+  let base=oldPlayerStatus();
+  let add="";
+  const j=job();
+  if(j==="reaper"&&unlocked("reaperScary"))add+=`<span class="badge bleed cc097TitleBadge">🏷️ 我好恐怖｜戰鐮恐懼+2層</span>`;
+  if(j==="lancer"&&unlocked("lancerUntouchable"))add+=`<span class="badge freeze cc097TitleBadge">🏷️ 你打不到我~｜閃避+90%</span>`;
+  if(j==="colossus"&&unlocked("colossus15Years"))add+=`<span class="badge burn cc097TitleBadge">🏷️ 我一拳15年功力｜攻速-15%，當前生命-5%</span>`;
+  if(j==="colossus"&&unlocked("grandpaLovePunch")){const v=Math.round(n(p&&p.titles&&p.titles.colossusHitBuff,0)*100);add+=`<span class="badge break cc097TitleBadge">🏷️ 阿公愛心拳｜命中+${v}%</span>`;}
+  if(j==="colossus"&&unlocked("onePunchGod"))add+=`<span class="badge poison cc097TitleBadge">🏷️ 一拳超神｜野怪/精英20%秒殺</span>`;
+  if(add&&base==="玩家狀態：無")base="";
+  return base+add;
+ };
+ // 英雄/技能畫面降頻重繪，避免整個列表每秒20次重建造成閃爍。
+ const oldRenderSkills=renderSkills;let skillRenderKey="",skillRenderAt=0;
+ renderSkills=function(){
+  const now=Date.now();
+  let key="";
+  try{key=JSON.stringify({view,lv:p.lv,soul:Math.floor(p.soul||0),auto:p.autoSkill,frag:p.fragments,skills:p.skills,heroes:p.heroes,cd:p.cd})}catch(e){key=String(now)}
+  if(view==="skill"&&key===skillRenderKey&&now-skillRenderAt<700)return;
+  skillRenderKey=key;skillRenderAt=now;return oldRenderSkills();
+ };
+ // 收納按鈕改用 pointerdown，減少手機上偶發點擊無反應。
+ function bindDrawerPointerFix(){
+  const btn=document.getElementById("featureDockBtn"),panel=document.getElementById("featureDrawer");
+  if(btn&&!btn.dataset.bugfixPointer){
+   btn.dataset.bugfixPointer="1";
+   btn.addEventListener("pointerdown",ev=>{ev.preventDefault();ev.stopPropagation();const p0=document.getElementById("featureDrawer");if(!p0)return;const open=!p0.classList.contains("hidden");p0.classList.toggle("hidden",open);},{passive:false});
+   btn.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();},{passive:false});
+  }
+  if(panel&&!panel.dataset.bugfixPointer){panel.dataset.bugfixPointer="1";panel.addEventListener("pointerdown",ev=>ev.stopPropagation());panel.addEventListener("click",ev=>ev.stopPropagation())}
+ }
+ const oldRender=render;
+ render=function(){normalizeAllGearTiers();oldRender();bindDrawerPointerFix();};
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();normalizeAllGearTiers();};
+ window.cc097NormalizeGearTiers=normalizeAllGearTiers;
 })();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
