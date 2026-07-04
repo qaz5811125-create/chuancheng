@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.7 Hotfix Bugfix 裝備稱號與清場修正</title>
+<title>傳承 Beta 0.9.7 Hotfix Flicker Fix</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -153,6 +153,12 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 .gearMetaLine{display:flex;flex-wrap:wrap;gap:5px 6px;align-items:center;margin:4px 0;line-height:1.2}
 .gearChip{display:inline-flex;align-items:center;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.45);border-radius:999px;padding:2px 7px;white-space:nowrap}
 .slot .gearMetaLine{justify-content:center}.slot .gearChip{font-size:.78rem;padding:2px 5px}.item .gearMetaLine{margin-top:6px}.cc097TitleBadge{display:inline-block;margin:2px 4px 2px 0}
+
+/* ===== Beta 0.9.7 Flicker Fix：限制打擊特效重繪範圍 ===== */
+.combatStage,#hitFxLayer,#enemyEmoji{contain:layout paint style;backface-visibility:hidden;transform:translateZ(0)}
+.hitFx{will-change:transform,opacity;contain:layout paint style}
+#skillView,#heroPanel,#skillList,#jobSummonPanel,#fragmentBag,.featureDrawer{backface-visibility:hidden;transform:translateZ(0)}
+body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 </style>
 </head>
@@ -315,7 +321,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-clean-ui-title-display-bugfix-v4";
+const BUILD_TAG_093_REPACK="0.9.7-hit-effect-flicker-fix-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2627,6 +2633,68 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  render=function(){const r=oldRender();hardBindDrawer();return r};
  setTimeout(hardBindDrawer,0);
 })();
+
+
+
+/* ===== Beta 0.9.7 Hotfix：打擊音效 / 命中特效造成介面閃爍修正 ===== */
+(function(){
+ const FLICKER_FIX_TAG="0.9.7-hit-effect-flicker-fix-v1";
+ function by(id){return document.getElementById(id)}
+ try{document.body&&document.body.classList.add("cc097NoGlobalHitFlash")}catch(e){}
+ // 命中特效只允許出現在戰鬥舞台內，避免怪物受擊時整個 UI 或技能/英雄面板一起重繪閃爍。
+ const oldShowHitEffect=showHitEffect;
+ let lastFxAt=0;
+ showHitEffect=function(kind="normal"){
+  const now=(performance&&performance.now)?performance.now():Date.now();
+  const stage=by("combatStage"),layer=by("hitFxLayer"),emoji=by("enemyEmoji");
+  if(!stage||!layer){return oldShowHitEffect?oldShowHitEffect(kind):undefined;}
+  // 高攻速時只保留視覺回饋頻率，不影響傷害與音效。
+  if(now-lastFxAt<55){
+   if(emoji){emoji.classList.remove("cc097LocalHurt"); void emoji.offsetWidth; emoji.classList.add("cc097LocalHurt"); setTimeout(()=>emoji.classList.remove("cc097LocalHurt"),120);}
+   return;
+  }
+  lastFxAt=now;
+  const d=document.createElement("div");
+  d.className="hitFx "+kind;
+  d.style.left=(48+Math.random()*10-5)+"%";
+  d.style.top=(44+Math.random()*12-6)+"%";
+  layer.appendChild(d);
+  if(emoji){
+   emoji.classList.remove("cc097LocalHurt");
+   void emoji.offsetWidth;
+   emoji.classList.add("cc097LocalHurt");
+   setTimeout(()=>emoji.classList.remove("cc097LocalHurt"),140);
+  }
+  const fx=layer.querySelectorAll(".hitFx");
+  if(fx.length>8)fx[0].remove();
+  setTimeout(()=>d.remove(),480);
+ };
+ // 英雄/技能面板不要因攻擊命中音效、連擊、冷卻小數變化而整塊重建。
+ const oldRenderSkills=renderSkills;
+ let lastKey="",lastAt=0;
+ function stableSkillKey(){
+  const cd={};
+  try{for(const id of skillIds)cd[id]=Math.ceil((p.cd&&p.cd[id])||0)}catch(e){}
+  const hero={};
+  try{if(p.heroes){hero.active=p.heroes.active;hero.time=Math.ceil(p.heroes.time||0);hero.globalCd=Math.ceil(p.heroes.globalCd||0);for(const id of Object.keys(HEROES||{})){const h=p.heroes[id]||{};hero[id]={lv:h.lv||1,uses:h.uses||0,cd:Math.ceil(h.cd||0)}}}}catch(e){}
+  const skills={};
+  try{for(const id of skillIds){const s=(p.skills&&p.skills[id])||{};skills[id]={lv:s.lv||0,exp:s.exp||0,unlocked:!!s.unlocked,frag:(p.fragments&&p.fragments[id])||0,cd:cd[id]||0}}}catch(e){}
+  return JSON.stringify({view,lv:p.lv,soul:Math.floor(p.soul||0),auto:!!p.autoSkill,skills,hero,jobFragments:p.jobFragments});
+ }
+ renderSkills=function(){
+  const now=Date.now();
+  const key=stableSkillKey();
+  if(view==="skill"&&key===lastKey&&now-lastAt<1200){return;}
+  lastKey=key;lastAt=now;
+  return oldRenderSkills();
+ };
+ // CSS for local emoji hurt animation, injected here to keep patch self-contained.
+ const st=document.createElement("style");
+ st.textContent=`#enemyEmoji.cc097LocalHurt{animation:enemyShake .12s linear 1;filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}`;
+ document.head.appendChild(st);
+ console.log("傳承",FLICKER_FIX_TAG);
+})();
+
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
