@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.6 刺盾、後援與稱號系統 Hotfix</title>
+<title>傳承 Beta 0.9.7 鏡像門神與裝備養成</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -275,7 +275,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.6 刺盾、後援與稱號系統</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.7 鏡像門神與裝備養成</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -283,8 +283,8 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.6";
-const BUILD_TAG_093_REPACK="0.9.6-spikeshield-pets-titles-hotfix1";
+const GAME_VERSION="0.9.7";
+const BUILD_TAG_093_REPACK="0.9.7-mirror-gear-rank-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -1942,7 +1942,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.6 刺盾 / 後援 / 稱號系統 ===== */
 (function(){
- document.title="傳承 Beta 0.9.6 刺盾、後援與稱號系統 Hotfix";
+ document.title="傳承 Beta 0.9.7 鏡像門神與裝備養成";
  Object.assign(JOBS,{
   spikeshield:{icon:"🐢",name:"刺盾",lv:100,grade:"epic",weapon:"turtleShell",weaponName:"無敵龜殼",desc:"史詩職業。無法主動攻擊、無法主動施加異常狀態；血量+5000%，防禦+500%，每秒恢復最大生命1%；受到攻擊獲得荊棘，靠反傷與嘲諷讓敵人自毀。"}
  });
@@ -2055,6 +2055,88 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  window.cc096SetPet=cc096SetPet;
  window.cc096TitlePanelHtml=cc096TitlePanelHtml;
  window.cc096SupportPanelHtml=cc096SupportPanelHtml;
+})();
+
+
+
+/* ===== Beta 0.9.7 鏡像門神 / 裝備養成 / 副本刷新 ===== */
+(function(){
+ const CC097_TIERS=[
+  {key:"common",equip:"普通階",player:"普通玩家",bonus:.10,req:100},
+  {key:"fine",equip:"精良階",player:"有點厲害玩家",bonus:.15,req:300},
+  {key:"rare",equip:"稀有階",player:"自信玩家",bonus:.25,req:500},
+  {key:"epic",equip:"史詩階",player:"高階玩家",bonus:.50,req:600},
+  {key:"legend",equip:"傳說階",player:"神級玩家",bonus:1.00,req:700},
+  {key:"myth",equip:"神話階",player:"傳承者",bonus:5.00,req:800},
+  {key:"ancient",equip:"遠古階",player:"真•傳承者",bonus:10.00,req:1000}
+ ];
+ const CC097_STATUS_POOL=["burn","poison","bleed","break"];
+ function cc097Num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function cc097ClampInt(v,min,max,d=min){v=Math.floor(cc097Num(v,d));return Math.max(min,Math.min(max,v))}
+ function cc097Tier(i){return CC097_TIERS[cc097ClampInt(i,0,CC097_TIERS.length-1,0)]}
+ function cc097Rank(){cc097EnsureSystems();return cc097ClampInt(p.progression.rank,0,CC097_TIERS.length-1,0)}
+ function cc097TierBonus(i){return cc097Tier(i).bonus}
+ function cc097RankName(){const t=cc097Tier(cc097Rank());return t.equip+" / "+t.player}
+ function cc097NextRankIndex(){return Math.min(CC097_TIERS.length-1,cc097Rank()+1)}
+ function cc097CanAscend(){return cc097Rank()<CC097_TIERS.length-1&&p.lv>=cc097Tier(cc097Rank()).req}
+ function cc097StarText(star){star=cc097ClampInt(star,0,20,0);if(star<=0)return "0星";if(star<=5)return "⭐".repeat(star);if(star<=10)return "✳️".repeat(star-5)+"⭐".repeat(10-star);return "✳️✳️✳️✳️✳️*"+(star-10)}
+ function cc097StarCap(it){it=cc097MigrateItem(it);return [5,10,15,20][cc097ClampInt(it.bt,0,3,0)]}
+ function cc097EnhanceCap(it){it=cc097MigrateItem(it);return (it.bt||0)>=1?40:20}
+ function cc097ItemMult(it){it=cc097MigrateItem(it);return (1+(it.enh||0)*.08)*(1+cc097TierBonus(it.tier||0))*(1+(it.star||0)*.10)}
+ function cc097ItemStat(it,k){it=cc097MigrateItem(it);return (it[k]||0)*cc097ItemMult(it)}
+ function cc097StarStoneCost(fromStar){fromStar=cc097ClampInt(fromStar,0,19,0);if(fromStar<10)return Math.floor(2*Math.pow(2,fromStar));return Math.floor(2048*Math.pow(1.5,fromStar-10))}
+ function cc097BreakStoneCost(bt){bt=cc097ClampInt(bt,0,2,0);return 10*Math.pow(2,bt)}
+ function cc097StarChance(targetStar){targetStar=cc097ClampInt(targetStar,1,20,1);if(targetStar<=5)return Math.max(.83,.95-(targetStar-1)*.03);if(targetStar<=10)return Math.max(.58,.78-(targetStar-6)*.05);if(targetStar<=15)return Math.max(.32,.48-(targetStar-11)*.04);return Math.max(.18,.30-(targetStar-16)*.03)}
+ function cc097SameStarNeed(fromStar){if(fromStar<=0)return 0;return Math.min(5,Math.max(2,fromStar+1))}
+ function cc097EnsureDungeonRefresh(){if(!p||!p.dun)return;const now=Date.now(),day=24*60*60*1000;if(!p.dun.dailyRefreshAt){p.dun.goldRuns=3;p.dun.expRuns=3;p.dun.dailyRefreshAt=now+day;return}if(now>=p.dun.dailyRefreshAt){let next=p.dun.dailyRefreshAt;while(now>=next)next+=day;p.dun.goldRuns=3;p.dun.expRuns=3;p.dun.dailyRefreshAt=next;log("🎫 金幣/經驗副本進入機會已刷新為 3 次")}}
+ function cc097MigrateItem(it){if(!it)return it;if(typeof it.star!=="number"||Number.isNaN(it.star))it.star=0;if(typeof it.tier!=="number"||Number.isNaN(it.tier))it.tier=0;if(typeof it.bt!=="number"||Number.isNaN(it.bt))it.bt=0;if(typeof it.starPity!=="number"||Number.isNaN(it.starPity))it.starPity=0;it.star=cc097ClampInt(it.star,0,20,0);it.tier=cc097ClampInt(it.tier,0,CC097_TIERS.length-1,0);it.bt=cc097ClampInt(it.bt,0,3,0);it.starPity=Math.max(0,Math.min(.25,Number(it.starPity)||0));return it}
+ function cc097EnsureSystems(){if(!p)return;if(!p.progression)p.progression={rank:0};p.progression.rank=cc097ClampInt(p.progression.rank,0,CC097_TIERS.length-1,0);p.starStone=Math.max(0,Math.floor(cc097Num(p.starStone,0)));p.breakStone=Math.max(0,Math.floor(cc097Num(p.breakStone,0)));if(!p.dun)p.dun={};if(typeof p.dun.goldRuns!=="number")p.dun.goldRuns=3;if(typeof p.dun.expRuns!=="number")p.dun.expRuns=3;cc097EnsureDungeonRefresh();if(p.equips)for(const k of Object.keys(p.equips))cc097MigrateItem(p.equips[k]);if(Array.isArray(p.bag))for(const it of p.bag)cc097MigrateItem(it);if(p.offline&&p.offline.pending&&Array.isArray(p.offline.pending.items))for(const it of p.offline.pending.items)cc097MigrateItem(it)}
+ const __cc097_oldEnsureNewSystems=ensureNewSystems;
+ ensureNewSystems=function(){__cc097_oldEnsureNewSystems();cc097EnsureSystems()};
+ const __cc097_oldMigrateItem=migrateItem;
+ migrateItem=function(it){it=__cc097_oldMigrateItem(it);return cc097MigrateItem(it)};
+ const __cc097_oldExpNeed=expNeed;
+ expNeed=function(){cc097EnsureSystems();return Math.floor(__cc097_oldExpNeed()*(1+cc097Rank()*.25))};
+ const __cc097_oldEquipStat=equipStat;
+ equipStat=function(k){cc097EnsureSystems();return equippedItems().reduce((a,it)=>a+cc097ItemStat(it,k),0)};
+ function cc097ItemStatsHtml(it){it=cc097MigrateItem(it);let out=[];const show=(label,val,kind="num")=>{if(!val)return;if(kind==="pct")out.push(label+"+"+(val*100).toFixed(1)+"%");else if(kind==="pct0")out.push(label+"+"+Math.round(val*100)+"%");else out.push(label+"+"+Math.floor(val).toLocaleString())};show("攻擊",cc097ItemStat(it,"atk"));show("暴傷",cc097ItemStat(it,"critDmg"),"pct0");show("暴擊",cc097ItemStat(it,"crit"),"pct");show("冷卻-",cc097ItemStat(it,"cdr"),"pct");show("防禦",cc097ItemStat(it,"def"));show("回血",cc097ItemStat(it,"regen"));show("攻速",cc097ItemStat(it,"aspd"),"pct");show("金幣",cc097ItemStat(it,"gold"),"pct0");show("經驗",cc097ItemStat(it,"exp"),"pct0");show("破甲",cc097ItemStat(it,"pen"),"pct");return out.join(" ｜ ")||"特殊裝備"}
+ itemStatsHtml=function(it){return cc097ItemStatsHtml(it)};
+ itemHtml=function(it,equipped=false){it=migrateItem(it);const tier=cc097Tier(it.tier);const tags=`${tier.equip}｜${cc097StarText(it.star)}｜突破${it.bt}｜強化上限${cc097EnhanceCap(it)}｜升星上限${cc097StarCap(it)}`;return `<div class="item"><div class="row"><b class="${it.rar}">+${it.enh} ${slotMeta[it.slot][0]} ${it.name}</b><span>${slotMeta[it.slot][1]}・${it.rn}</span></div><div class="small">${tags}<br>${itemStatsHtml(it)}｜強化保底${Math.round((it.pity||0)*100)}%｜升星保底${Math.round((it.starPity||0)*100)}%</div>${equipped?`<button onclick="window.unequip('${it.slot}')">卸下</button>`:`<button onclick="window.equipItem(${it.id})">穿戴</button><button onclick="window.sellItem(${it.id})">賣${it.price}</button>`}</div>`};
+ equipSlotsHtml=function(){return slots.map(k=>{const it=p.equips[k],m=slotMeta[k],sel=p.selectedSlot===k?" active":"";return `<div class="slot${sel}" onclick="window.selectSlot('${k}')"><div class="emoji">${m[0]}</div><b>${m[1]}</b>${it?`<div class="${it.rar}">+${it.enh} ${cc097Tier(it.tier).equip} ${cc097StarText(it.star)}<br>${it.name.replace(/^.*－/,"")}</div><div class="small">${itemStatsHtml(it)}</div><button onclick="event.stopPropagation();window.unequip('${k}')">卸下</button>`:`<div class="small">空槽</div>`}</div>`}).join("")};
+ const __cc097_oldMakeDropItem=makeDropItem;
+ makeDropItem=function(stage=p.stage,source=fight){cc097EnsureSystems();const it=__cc097_oldMakeDropItem(stage,source);it.tier=cc097Rank();it.star=0;it.bt=0;it.starPity=0;return cc097MigrateItem(it)};
+ const __cc097_oldMakeOfflineItem=makeOfflineItem;
+ makeOfflineItem=function(stage){cc097EnsureSystems();const it=__cc097_oldMakeOfflineItem(stage);it.tier=cc097Rank();it.star=0;it.bt=0;it.starPity=0;return cc097MigrateItem(it)};
+ const __cc097_oldEnhance=enhance;
+ enhance=function(){cc097EnsureSystems();const it=p.equips[p.selectedSlot||"weapon"];if(!it)return log("這格沒有裝備");cc097MigrateItem(it);if((it.enh||0)>=cc097EnhanceCap(it))return log("已達目前突破強化上限 +"+cc097EnhanceCap(it));return __cc097_oldEnhance()};
+ function cc097ConsumeSameStarItems(star,need){if(need<=0)return false;const idx=[];for(let i=0;i<p.bag.length;i++){const it=cc097MigrateItem(p.bag[i]);if(it.star===star)idx.push(i);if(idx.length>=need)break}if(idx.length<need)return false;for(const i of idx.reverse())p.bag.splice(i,1);return true}
+ function cc097UpgradeStar(){cc097EnsureSystems();const it=p.equips[p.selectedSlot||"weapon"];if(!it)return log("這格沒有裝備");cc097MigrateItem(it);if(it.star>=cc097StarCap(it))return log("已達目前升星上限："+cc097StarText(cc097StarCap(it)));const from=it.star,target=from+1,stone=cc097StarStoneCost(from),sameNeed=cc097SameStarNeed(from);let paid="";if((p.starStone||0)>=stone){p.starStone-=stone;paid="升星石 x"+stone}else if(sameNeed>0&&cc097ConsumeSameStarItems(from,sameNeed)){paid=cc097StarText(from)+" 裝備 x"+sameNeed}else{return log(`升星需要 升星石 x${stone}`+(sameNeed?`，或 ${cc097StarText(from)} 裝備 x${sameNeed}`:""))}const ch=Math.min(.98,cc097StarChance(target)+(it.starPity||0));if(Math.random()<ch){it.star=target;it.starPity=0;sfx("success");log("⭐ 升星成功："+cc097StarText(it.star)+"（"+paid+"）")}else{it.starPity=Math.min(.25,(it.starPity||0)+.03);let drop=0;if(target>10){drop=Math.random()<.05?2:1;it.star=Math.max(0,it.star-drop)}log("⭐ 升星失敗"+(drop?`，下降 ${drop} 星 → ${cc097StarText(it.star)}`:"")+"，保底+"+Math.round(it.starPity*100)+"%") }save(false);render()}
+ function cc097Breakthrough(){cc097EnsureSystems();const it=p.equips[p.selectedSlot||"weapon"];if(!it)return log("這格沒有裝備");cc097MigrateItem(it);if(it.bt>=3)return log("此裝備已突破至最高階段");const cost=cc097BreakStoneCost(it.bt);if((p.breakStone||0)<cost)return log("突破需要 突破石 x"+cost);p.breakStone-=cost;it.bt++;if(it.bt>=2&&!it.extraAffix)it.extraAffix="額外詞條已解鎖";if(it.bt>=3&&!it.specialPassive)it.specialPassive="特殊被動已解鎖";sfx("success");log("💠 突破成功：突破"+it.bt+"｜升星上限 "+cc097StarCap(it)+" 星");save(false);render()}
+ function cc097SelectedEquipPanel(){cc097EnsureSystems();const it=p.equips[p.selectedSlot||"weapon"];const mats=`升星石：${Math.floor(p.starStone||0).toLocaleString()}｜突破石：${Math.floor(p.breakStone||0).toLocaleString()}｜玩家階段：${cc097RankName()}`;if(!it)return `<div class="small">${mats}<br>選中裝備槽後，可進行升星與突破。</div>`;cc097MigrateItem(it);const nextStar=it.star+1,starCost=it.star<cc097StarCap(it)?cc097StarStoneCost(it.star):0,same=cc097SameStarNeed(it.star),brCost=it.bt<3?cc097BreakStoneCost(it.bt):0;return `<div class="small">${mats}<br>選中：<b>${it.name}</b>｜${cc097Tier(it.tier).equip}｜${cc097StarText(it.star)}｜突破${it.bt}<br>升星成功率：${it.star<cc097StarCap(it)?Math.round(Math.min(.98,cc097StarChance(nextStar)+(it.starPity||0))*100)+"%":"已滿"}｜升星需求：${it.star<cc097StarCap(it)?"升星石 x"+starCost+(same?" 或同星裝備 x"+same:""):"已達上限"}<br>突破需求：${it.bt<3?"突破石 x"+brCost:"已滿突破"}</div><button class="purple" onclick="window.cc097UpgradeStar()" ${it.star>=cc097StarCap(it)?"disabled":""}>裝備升星</button><button class="green" onclick="window.cc097Breakthrough()" ${it.bt>=3?"disabled":""}>裝備突破</button>`}
+ function cc097RefreshForge(){const el=$("forge");if(el)el.innerHTML=cc097SelectedEquipPanel()}
+ function cc097CreateMixEnemy(count){const hp=120000+count*65000+Math.floor(playerMaxHp()*.35),def=9000+count*2200,name=count%10===9?"混合副本守衛":"材料魔偶",emoji=count%10===9?"💠":"🧪";return enemy({mode:"dungeon",dungeonType:"mix",type:"dungeon",name,emoji,hp,def,reg:0,gold:0,xp:0,drop:0,timer:0})}
+ function cc097CreateMirrorBoss(targetRank){const snap={hp:playerMaxHp(),atk:atk(),def:playerDef()},tier=cc097Tier(targetRank),status=CC097_STATUS_POOL[Math.floor(Math.random()*CC097_STATUS_POOL.length)],aspd=targetRank+1;const hp=Math.max(1,Math.floor(snap.hp*50)),atkV=Math.max(1,Math.floor(snap.atk*30)),defV=Math.max(0,Math.floor(snap.def*50));const m=enemy({mode:"dungeon",dungeonType:"ascend",type:"boss",name:"鏡像門神・"+tier.equip,emoji:"👤",hp,def:defV,reg:0,gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:aspd,mirrorBoss:true,mirrorStatus:status,mirrorRank:targetRank,targetKey:"mirror"});return finalizeMonster(m)}
+ function cc097StatusName(k){return k==="burn"?"燃燒":k==="poison"?"中毒":k==="bleed"?"撕裂":"破甲"}
+ function cc097ApplyMirrorStatus(m){if(!m||!m.mirrorBoss||Math.random()>=.45)return;const st=playerStatus(),k=m.mirrorStatus||"burn";if(k==="burn")st.burn=Math.max(0,Math.floor(st.burn||0))+2;else if(k==="poison")st.poison=Math.max(0,Math.floor(st.poison||0))+2;else if(k==="bleed")applyPlayerBleed(20,2,true);else{st.cc097BreakStacks=Math.max(0,Math.floor(st.cc097BreakStacks||0))+2;st.armorBreak=Math.min(playerDef()*9,(st.armorBreak||0)+Math.max(2,Math.floor(playerDef()*.02)))}floatText("👤"+cc097StatusName(k)+"+2",true)}
+ const __cc097_oldPlayerStatus=playerStatus;
+ playerStatus=function(){const st=__cc097_oldPlayerStatus();if(typeof st.cc097BreakStacks!=="number"||Number.isNaN(st.cc097BreakStacks))st.cc097BreakStacks=0;return st};
+ const __cc097_oldStartDungeon=startDungeon;
+ startDungeon=function(kind){cc097EnsureSystems();if(kind==="mix"){if(isDungeon())return log("副本進行中，不能重複進入");if(p.high<70)return log("70關開啟混合副本");dungeon={type:"mix",timer:60,kills:0,gain:0,running:true};fight=cc097CreateMixEnemy(0);p.queue=0;hold=false;budget=0;show("main");log("🧪 混合副本開始：60秒內擊殺材料魔偶");save(false);render();return}if(kind==="ascend"){if(isDungeon())return log("副本進行中，不能重複進入");if(cc097Rank()>=CC097_TIERS.length-1)return log("已達最高玩家階段");const cur=cc097Tier(cc097Rank()),target=cc097NextRankIndex();if(p.lv<cur.req)return log("挑戰鏡像門神需要 Lv."+cur.req+"，目前 Lv."+p.lv);dungeon={type:"ascend",timer:120,kills:0,gain:0,running:true,targetRank:target,status:null};fight=cc097CreateMirrorBoss(target);dungeon.status=fight.mirrorStatus;p.queue=0;hold=false;budget=0;show("main");log("👤 鏡像門神出現："+cc097Tier(target).equip+"｜狀態 "+cc097StatusName(dungeon.status)+"｜120秒內擊敗");save(false);render();return}cc097EnsureDungeonRefresh();return __cc097_oldStartDungeon(kind)};
+ const __cc097_oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(!dungeon)return;if(dungeon.type==="mix"){dungeon.kills++;const amt=rand(1,10);if(Math.random()<.5){p.breakStone=(p.breakStone||0)+amt;dungeon.gain+=amt;log("🧪 混合副本 第"+dungeon.kills+"隻：突破石 +"+amt)}else{p.starStone=(p.starStone||0)+amt;dungeon.gain+=amt;log("🧪 混合副本 第"+dungeon.kills+"隻：升星石 +"+amt)}save(false);fight=cc097CreateMixEnemy(dungeon.kills);return}if(dungeon.type==="ascend"){const target=dungeon.targetRank;cc097EnsureSystems();p.progression.rank=cc097ClampInt(target,0,CC097_TIERS.length-1,0);p.lv=0;p.exp=0;p.hp=playerMaxHp();clearPlayerStatus();log("👤 鏡像門神擊破！玩家升階為 "+cc097RankName()+"，等級清為 0");dungeon.running=false;dungeon=null;save(false);spawnMain();return}return __cc097_oldDungeonKill()};
+ const __cc097_oldEndDungeon=endDungeon;
+ endDungeon=function(){if(dungeon&&dungeon.type==="ascend"){log("👤 鏡像門神挑戰失敗，未能在120秒內通關");dungeon.running=false;dungeon=null;save(false);spawnMain();return}if(dungeon&&dungeon.type==="mix"){resetCombo();p.queue=0;hold=false;budget=0;dungeon.running=false;log("混合副本結束，擊殺 "+dungeon.kills+"，材料收益 "+dungeon.gain);dungeon=null;save(false);spawnMain();return}return __cc097_oldEndDungeon()};
+ const __cc097_oldDungeonName=dungeonName;
+ dungeonName=function(kind){return kind==="mix"?"混合":kind==="ascend"?"鏡像門神":__cc097_oldDungeonName(kind)};
+ const __cc097_oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){if(dungeon&&dungeon.type==="ascend"&&fight){const m=fight;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<3){monsterNormalAttack(m);cc097ApplyMirrorStatus(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}return}return __cc097_oldTickMonsterAI(dt)};
+ const __cc097_oldRenderDungeon=renderDungeon;
+ renderDungeon=function(){cc097EnsureSystems();cc097EnsureDungeonRefresh();__cc097_oldRenderDungeon();const running=isDungeon();const next=cc097Rank()<CC097_TIERS.length-1?cc097Tier(cc097NextRankIndex()):null,cur=cc097Tier(cc097Rank());const refresh=p.dun.dailyRefreshAt?Math.max(0,Math.ceil((p.dun.dailyRefreshAt-Date.now())/1000)):0;const h=Math.floor(refresh/3600),mi=Math.floor((refresh%3600)/60);const daily=`<div class="card notice"><b>🎫 副本次數刷新</b><div class="small">金幣/經驗副本每24小時刷新為3次｜下次約 ${h}時${mi}分</div></div>`;const asc=`<div class="card ${running||!next||p.lv<cur.req?'lock':''}"><div class="row"><div><b>👤 升階副本：鏡像門神</b><div class="small">目前：${cc097RankName()}<br>${next?`下一階：${next.equip} / ${next.player}｜需求 Lv.${cur.req}<br>Boss=進場前玩家數值快照：血量×50 / 攻擊×30 / 防禦×50 / 攻速 ${cc097NextRankIndex()+1}/秒<br>狀態：45%機率一次+2層，單場隨機燃燒/中毒/撕裂/破甲`:"已達最高階段"}</div></div><button ${!running&&next&&p.lv>=cur.req?`onclick="window.startDungeon('ascend')"`:"disabled"}>${running?"副本進行中":(next?(p.lv>=cur.req?"挑戰":"等級不足"):"已滿階")}</button></div></div>`;const mix=`<div class="card ${running||p.high<70?'lock':''}"><div class="row"><div><b>🧪 混合副本</b><div class="small">60秒擊殺怪物｜隨機獲得突破石1-10或升星石1-10<br>目前：突破石 ${Math.floor(p.breakStone||0)}｜升星石 ${Math.floor(p.starStone||0)}</div><div class="small">解鎖：70關</div></div><button ${!running&&p.high>=70?`onclick="window.startDungeon('mix')"`:"disabled"}>${running?"副本進行中":(p.high>=70?"進入":"鎖定")}</button></div></div>`;if($("dungeonList"))$("dungeonList").innerHTML=daily+$("dungeonList").innerHTML+asc+mix};
+ const __cc097_oldRender=render;
+ render=function(){__cc097_oldRender();cc097RefreshForge();if($("enemyType")&&dungeon&&dungeon.type==="ascend")$("enemyType").textContent="升階副本｜鏡像門神｜狀態 "+cc097StatusName(dungeon.status||fight.mirrorStatus)+"｜攻速 "+(fight.mAspd||0)+"/秒"};
+ const __cc097_oldPlayerStatusHtml=playerStatusHtml;
+ playerStatusHtml=function(){let base=__cc097_oldPlayerStatusHtml();const st=playerStatus();let h="";if((st.cc097BreakStacks||0)>0)h+=`<span class="badge break">👤鏡像破甲 ${Math.floor(st.cc097BreakStacks)}層</span>`;if(h&&base==="玩家狀態：無")base="";return base+h};
+ window.cc097UpgradeStar=cc097UpgradeStar;window.cc097Breakthrough=cc097Breakthrough;
 })();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
