@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.6 刺盾、後援與稱號系統</title>
+<title>傳承 Beta 0.9.6 刺盾、後援與稱號系統 Hotfix</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -115,6 +115,13 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 @keyframes float{to{opacity:0;transform:translate(var(--x),-42px) scale(1.02)}}
 @keyframes floatBig{to{opacity:0;transform:translate(var(--x),-52px) scale(1.06)}}
 .monsterLine span:last-child,#enemyHp,#enemyMaxHp,#playerHp,#playerMaxHp,#gold,#atk,#power{font-variant-numeric:tabular-nums;}
+
+
+/* Beta 0.9.6 hotfix: 八方向傷害飄字，降低高攻速 DOM 雪崩 */
+.float.cc096LaneFloat{z-index:35!important;font-size:13px!important;line-height:1!important;max-width:190px!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;will-change:transform,opacity!important;animation:cc096FloatLane .56s ease-out forwards!important;text-shadow:0 1px 4px #000,0 0 8px rgba(2,6,23,.8)!important;}
+.float.cc096LaneFloat.bigFloat{font-size:18px!important;color:#facc15!important;animation:cc096FloatLaneBig .72s ease-out forwards!important;}
+@keyframes cc096FloatLane{to{opacity:0;transform:translate(var(--fx),var(--fy)) scale(1.04)}}
+@keyframes cc096FloatLaneBig{to{opacity:0;transform:translate(var(--fx),var(--fy)) scale(1.12)}}
 
 </style>
 </head>
@@ -277,7 +284,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.6";
-const BUILD_TAG_093_REPACK="0.9.6-spikeshield-pets-titles";
+const BUILD_TAG_093_REPACK="0.9.6-spikeshield-pets-titles-hotfix1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -641,7 +648,42 @@ function showHitEffect(kind="normal"){const layer=$("hitFxLayer")||$("combatStag
 function affixNames(target){return target&&Array.isArray(target.affixes)?target.affixes.map(a=>a.name):[]}
 function affixLabel(target){return affixNames(target).join("・")}
 function affixHtml(target){const names=affixNames(target);return names.length?names.map(n=>`<span class="affixBadge">${n}</span>`).join(""):"<span class='small'>無詞綴</span>"}
-function floatText(x,big=false){const d=document.createElement("div");d.className="float"+(big?" bigFloat":"");d.textContent=x;d.style.setProperty("--x",(Math.random()*100-50)+"px");$("enemyCard").appendChild(d);setTimeout(()=>d.remove(),big?1100:850)}
+function floatText(x,big=false){
+ const host=$("combatStage")||$("enemyCard")||document.body;
+ if(!window.__cc096FloatState)window.__cc096FloatState={slot:0,lastNormal:0,skip:0,skipText:"",flush:0};
+ const fs=window.__cc096FloatState,now=(performance&&performance.now)?performance.now():Date.now();
+ const make=(txt,isBig=false)=>{
+  if(!txt)return;
+  const slots=[
+   {l:"20%",t:"27%",x:"-44px",y:"-38px"},
+   {l:"50%",t:"17%",x:"0px",y:"-52px"},
+   {l:"80%",t:"27%",x:"44px",y:"-38px"},
+   {l:"86%",t:"50%",x:"56px",y:"0px"},
+   {l:"80%",t:"72%",x:"44px",y:"38px"},
+   {l:"50%",t:"82%",x:"0px",y:"52px"},
+   {l:"20%",t:"72%",x:"-44px",y:"38px"},
+   {l:"14%",t:"50%",x:"-56px",y:"0px"}
+  ];
+  const pos=slots[fs.slot++%slots.length];
+  const d=document.createElement("div");
+  d.className="float cc096LaneFloat"+(isBig?" bigFloat":"");
+  d.textContent=txt;
+  d.style.left=pos.l;d.style.top=pos.t;
+  d.style.setProperty("--fx",pos.x);d.style.setProperty("--fy",pos.y);d.style.setProperty("--x",pos.x);
+  host.appendChild(d);
+  const floats=host.querySelectorAll(".cc096LaneFloat");
+  if(floats.length>24)floats[0].remove();
+  setTimeout(()=>d.remove(),isBig?780:620);
+ };
+ // 高攻速時一般傷害飄字限流，避免一次上百個 DOM 擠爆畫面；大字仍優先顯示。
+ if(!big&&now-fs.lastNormal<42){
+  fs.skip++;fs.skipText=String(x||"");
+  if(!fs.flush){fs.flush=setTimeout(()=>{const n=fs.skip,last=fs.skipText;fs.skip=0;fs.skipText="";fs.flush=0;make((n>1?"連擊傷害×"+n:last),false)},72)}
+  return;
+ }
+ fs.lastNormal=now;
+ make(String(x||""),big);
+}
 function addBleed(target,stacks=1){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));if(canInfiniteBleed())e.bleed=Math.max(0,Math.floor(e.bleed||0))+add;else e.bleed=Math.min(20,Math.max(0,Math.floor(e.bleed||0))+add)}
 function addPoison(target,stacks=1,infinite=false){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));const uncapped=infinite||canInfinitePoison();e.poison=uncapped?Math.max(0,Math.floor(e.poison||0))+add:Math.min(20,Math.max(0,Math.floor(e.poison||0))+add);e.poisonDecay=e.poisonDecay||5}
 function addBurn(target,stacks=1,infinite=false){const e=ensureEffectBag(target);const add=Math.max(1,Math.floor(stacks));const uncapped=infinite||canInfiniteBurn();e.burn=uncapped?Math.max(0,Math.floor(e.burn||0))+add:Math.min(20,Math.max(0,Math.floor(e.burn||0))+add);e.burnDecay=e.burnDecay||5}
@@ -1900,7 +1942,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.6 刺盾 / 後援 / 稱號系統 ===== */
 (function(){
- document.title="傳承 Beta 0.9.6 刺盾、後援與稱號系統";
+ document.title="傳承 Beta 0.9.6 刺盾、後援與稱號系統 Hotfix";
  Object.assign(JOBS,{
   spikeshield:{icon:"🐢",name:"刺盾",lv:100,grade:"epic",weapon:"turtleShell",weaponName:"無敵龜殼",desc:"史詩職業。無法主動攻擊、無法主動施加異常狀態；血量+5000%，防禦+500%，每秒恢復最大生命1%；受到攻擊獲得荊棘，靠反傷與嘲諷讓敵人自毀。"}
  });
@@ -1909,7 +1951,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
   {id:"dead",name:"我掛了",unlock:"角色死亡一次解鎖",desc:"血量 -1%"},
   {id:"revived",name:"我復活了",unlock:"角色復活一次解鎖",desc:"復活時自動無敵3秒"},
   {id:"firstKill",name:"我的首殺",unlock:"擊敗第一隻野怪解鎖",desc:"攻擊 +0.001%"},
-  {id:"bossMeet",name:"這個好可怕",unlock:"第一次遇到Boss解鎖",desc:"每20秒對自身施加1層恐懼"},
+  {id:"bossMeet",name:"這個好可怕",unlock:"第一次遇到Boss解鎖",desc:"只限Boss關，每20秒自身恐懼+1；30層挑戰失敗，離開Boss關清除"},
   {id:"bossKill",name:"我覺得還好",unlock:"第一次擊敗Boss解鎖",desc:"擊敗Boss額外獲得10金幣"},
   {id:"strong50",name:"我變強了",unlock:"Lv.50解鎖",desc:"命中 +1%"},
   {id:"bossStuck",name:"我卡關了！",unlock:"Boss關計時歸0時解鎖",desc:"同Boss失敗每次命中 -1%，通關後清0"},
@@ -1932,6 +1974,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  }}
  function cc096FormatPct(x){return (Math.round(x*100000)/1000).toFixed(3).replace(/\.000$/,".000")+"%"}
  function cc096CurrentStageKey(){return currentMapId()+":"+(p.stage||1)}
+ function cc096IsTitleBossFight(){return !!(fight&&fight.mode==="main"&&fight.type==="boss"&&!isDungeon())}
  function cc096ResetPerStageTitleState(){const t=cc096Titles(),key=cc096CurrentStageKey();if(t.floatTriggeredKey!==key){t.floatTriggeredKey=key;t.floatTriggered=false;t.floatTime=0}}
  function cc096ClearNegativeStatuses(){const st=playerStatus();for(const k of ["defDown","armorBreak","bleed","weak","chaos","regenDown","terror","poison","burn"]){if(k==="bleed"){st.bleed=0;st.bleedStacks=0}else st[k]=0}log("🧘 稱號觸發：自身負面狀態已清除")}
  function cc096Pet(){if(!p.pet)p.pet={selected:"none",attackTimer:0};if(!["none","cat","dog"].includes(p.pet.selected))p.pet.selected="none";p.pet.attackTimer=Math.max(0,cc096Num(p.pet.attackTimer,0));return p.pet}
@@ -1955,7 +1998,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  function cc096SupportPanelHtml(){ensureNewSystems();const pet=cc096Pet();const cards=["cat","dog"].map(id=>{const ps=cc096PetStats(id),locked=!cc096PetUnlocked(id),cur=pet.selected===id;return `<button class="${cur?"active":"tab"}" onclick="window.cc096SetPet('${id}')" ${locked?"disabled":""}>${ps.icon} ${ps.name}<br>${locked?"Lv100解鎖":(cur?"出戰中":"出戰")}</button>`}).join("");const none=`<button class="${pet.selected==="none"?"active":"tab"}" onclick="window.cc096SetPet('none')">不派後援</button>`;let info="目前沒有後援出戰。";if(pet.selected!=="none"){const ps=cc096PetStats(pet.selected);info=`${ps.icon} <b>${ps.name}</b>｜血量 ${ps.hp.toLocaleString()}｜攻擊 ${ps.atk.toLocaleString()}｜攻速 ${ps.aspd}/秒｜防禦 ${ps.def.toLocaleString()}<br>${ps.desc}`}
   return `<div class="row"><b>🐾 寵物後援</b><span class="pill">多選一｜Lv100</span></div><div class="multiBtns">${none}${cards}</div><div class="small">${info}</div>`
  }
- function cc096TitlePanelHtml(){ensureNewSystems();cc096CheckLevelTitles();const t=cc096Titles(),r=cc096TitleRates(),un=TITLE_DEFS.filter(x=>cc096Unlocked(x.id)).length;let pass=[],neg=[];if(cc096Unlocked("revived"))pass.push("我復活了：復活時自動無敵3秒");if(cc096Unlocked("bossKill"))pass.push("我覺得還好：擊敗Boss額外獲得10金幣");if(cc096Unlocked("fly500"))pass.push("我要起飛啦："+(t.floatTime>0?`浮空中 ${t.floatTime.toFixed(1)}秒`:(t.floatTriggered?"本關已觸發":"本關尚未觸發")));if(cc096Unlocked("immortal1000"))pass.push("我要成仙了：每秒0.01%機率清除自身負面狀態");if(cc096Unlocked("sage5000"))pass.push("我得道成仙了：無視所有狀態傷害");if(cc096Unlocked("dead"))neg.push("我掛了：血量 -1%");if(cc096Unlocked("bossMeet"))neg.push("這個好可怕：自身恐懼 "+(t.playerFearStacks||0)+" 層，每20秒+1");if(cc096Unlocked("bossStuck")&&(t.bossFailPenalty||0)>0)neg.push("我卡關了！：目前命中 -"+(t.bossFailPenalty||0)+"%");const list=TITLE_DEFS.map(x=>`${cc096Unlocked(x.id)?"✅":"⬛"} ${x.name}｜${x.unlock}｜${x.desc}`).join("<br>");return `<div class="row"><b>🏷️ 稱號系統</b><span class="pill">已解鎖 ${un}/${TITLE_DEFS.length}</span></div><div class="small"><b>目前稱號總加成</b><br>攻擊：+${cc096FormatPct(r.atkPos)} / -${cc096FormatPct(r.atkNeg)}<br>血量：+${cc096FormatPct(r.hpPos)} / -${cc096FormatPct(r.hpNeg)}<br>攻速：+${cc096FormatPct(r.aspPos)} / -${cc096FormatPct(r.aspNeg)}<br>命中：+${cc096FormatPct(r.hitPos)} / -${cc096FormatPct(r.hitNeg)}<br>閃避：+${cc096FormatPct(r.evaPos)} / -${cc096FormatPct(r.evaNeg)}<br><br><b>被動增益</b><br>${pass.length?pass.join("<br>"):"目前無稱號被動觸發"}<br><br><b>負面效果</b><br>${neg.length?neg.join("<br>"):"目前無稱號負面效果"}<br><br><b>稱號列表</b><br>${list}</div>`}
+ function cc096TitlePanelHtml(){ensureNewSystems();cc096CheckLevelTitles();const t=cc096Titles(),r=cc096TitleRates(),un=TITLE_DEFS.filter(x=>cc096Unlocked(x.id)).length;let pass=[],neg=[];if(cc096Unlocked("revived"))pass.push("我復活了：復活時自動無敵3秒");if(cc096Unlocked("bossKill"))pass.push("我覺得還好：擊敗Boss額外獲得10金幣");if(cc096Unlocked("fly500"))pass.push("我要起飛啦："+(t.floatTime>0?`浮空中 ${t.floatTime.toFixed(1)}秒`:(t.floatTriggered?"本關已觸發":"本關尚未觸發")));if(cc096Unlocked("immortal1000"))pass.push("我要成仙了：每秒0.01%機率清除自身負面狀態");if(cc096Unlocked("sage5000"))pass.push("我得道成仙了：無視所有狀態傷害");if(cc096Unlocked("dead"))neg.push("我掛了：血量 -1%");if(cc096Unlocked("bossMeet")&&(cc096IsTitleBossFight()||(t.playerFearStacks||0)>0))neg.push("這個好可怕：Boss關自身恐懼 "+(t.playerFearStacks||0)+"/30 層，每20秒+1，滿30層挑戰失敗");if(cc096Unlocked("bossStuck")&&(t.bossFailPenalty||0)>0)neg.push("我卡關了！：目前命中 -"+(t.bossFailPenalty||0)+"%");const list=TITLE_DEFS.map(x=>`${cc096Unlocked(x.id)?"✅":"⬛"} ${x.name}｜${x.unlock}｜${x.desc}`).join("<br>");return `<div class="row"><b>🏷️ 稱號系統</b><span class="pill">已解鎖 ${un}/${TITLE_DEFS.length}</span></div><div class="small"><b>目前稱號總加成</b><br>攻擊：+${cc096FormatPct(r.atkPos)} / -${cc096FormatPct(r.atkNeg)}<br>血量：+${cc096FormatPct(r.hpPos)} / -${cc096FormatPct(r.hpNeg)}<br>攻速：+${cc096FormatPct(r.aspPos)} / -${cc096FormatPct(r.aspNeg)}<br>命中：+${cc096FormatPct(r.hitPos)} / -${cc096FormatPct(r.hitNeg)}<br>閃避：+${cc096FormatPct(r.evaPos)} / -${cc096FormatPct(r.evaNeg)}<br><br><b>被動增益</b><br>${pass.length?pass.join("<br>"):"目前無稱號被動觸發"}<br><br><b>負面效果</b><br>${neg.length?neg.join("<br>"):"目前無稱號負面效果"}<br><br><b>稱號列表</b><br>${list}</div>`}
  function cc096RenderPanels(){if($("supportPanel"))$("supportPanel").innerHTML=cc096SupportPanelHtml();if($("titlePanel"))$("titlePanel").innerHTML=cc096TitlePanelHtml()}
  const __cc096_oldEnsureNewSystems=ensureNewSystems;
  ensureNewSystems=function(){__cc096_oldEnsureNewSystems();if(!p)return;Object.assign(JOBS.spikeshield,{grade:"epic",weapon:"turtleShell"});if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.turtleShell=Math.max(0,Math.floor(cc096Num(p.specialWeapons.turtleShell,0)));cc096Pet();cc096Thorns();cc096Titles();cc096CheckLevelTitles();const st=playerStatus();for(const k of ["float"]){if(typeof st[k]!=="number"||Number.isNaN(st[k]))st[k]=0}}
@@ -1988,7 +2031,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  shatter=function(){if(currentJobKey()==="spikeshield")return log("🐢 刺盾無法主動施加異常狀態");return __cc096_oldShatter()};
  forceStrike=function(){if(currentJobKey()==="spikeshield")return log("🐢 刺盾無法主動攻擊");return __cc096_oldForceStrike()};
  const __cc096_oldTickPlayer=tickPlayer;
- tickPlayer=function(dt){ensureNewSystems();const sh=cc096Thorns();if(sh.tauntCd>0)sh.tauntCd=Math.max(0,sh.tauntCd-dt);__cc096_oldTickPlayer(dt);if(!p||p.hp<=0)return;const t=cc096Titles();cc096ResetPerStageTitleState();if(cc096Unlocked("bossMeet")){t.playerFearTimer-=dt;if(t.playerFearTimer<=0){t.playerFearTimer+=20;t.playerFearStacks++;floatText("🏷️😱自身恐懼+1")}}if(cc096Unlocked("fly500")&&!t.floatTriggered&&t.floatTime<=0&&Math.random()<.0005*dt){t.floatTriggered=true;t.floatTime=5;playerStatus().float=Math.max(playerStatus().float||0,5);floatText("🏷️我要起飛啦！",true);log("🏷️ 稱號觸發：浮空 5 秒")}if(t.floatTime>0)t.floatTime=Math.max(0,t.floatTime-dt);if(cc096Unlocked("immortal1000")&&Math.random()<.0001*dt)cc096ClearNegativeStatuses();cc096TickPet(dt)};
+ tickPlayer=function(dt){ensureNewSystems();const sh=cc096Thorns();if(sh.tauntCd>0)sh.tauntCd=Math.max(0,sh.tauntCd-dt);__cc096_oldTickPlayer(dt);if(!p||p.hp<=0)return;const t=cc096Titles();cc096ResetPerStageTitleState();if(cc096Unlocked("bossMeet")){if(cc096IsTitleBossFight()){t.playerFearTimer-=dt;if(t.playerFearTimer<=0){t.playerFearTimer+=20;t.playerFearStacks=Math.min(30,Math.floor(t.playerFearStacks||0)+1);floatText("🏷️😱Boss恐懼 "+t.playerFearStacks+"/30");if(t.playerFearStacks>=30){floatText("🏷️😱恐懼滿30，退出Boss關！",true);log("🏷️ 這個好可怕：自身恐懼累積30層，Boss挑戰失敗");t.playerFearStacks=0;t.playerFearTimer=20;save(false);bossFail();return}}}else{if((t.playerFearStacks||0)>0||(t.playerFearTimer||20)!==20){t.playerFearStacks=0;t.playerFearTimer=20}}}if(cc096Unlocked("fly500")&&!t.floatTriggered&&t.floatTime<=0&&Math.random()<.0005*dt){t.floatTriggered=true;t.floatTime=5;playerStatus().float=Math.max(playerStatus().float||0,5);floatText("🏷️我要起飛啦！",true);log("🏷️ 稱號觸發：浮空 5 秒")}if(t.floatTime>0)t.floatTime=Math.max(0,t.floatTime-dt);if(cc096Unlocked("immortal1000")&&Math.random()<.0001*dt)cc096ClearNegativeStatuses();cc096TickPet(dt)};
  const __cc096_oldDealPlayerDamage=dealPlayerDamage;
  dealPlayerDamage=function(raw,opt={}){if(opt&&opt.status&&cc096Unlocked("sage5000")){floatText("🧘狀態無效");return 0}return __cc096_oldDealPlayerDamage(raw,opt)};
  const __cc096_oldTickEffects=tickEffects;
@@ -2002,9 +2045,9 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  const __cc096_oldLevelUp=levelUp;
  levelUp=function(){__cc096_oldLevelUp();cc096CheckLevelTitles()};
  const __cc096_oldSpawnMain=spawnMain;
- spawnMain=function(){__cc096_oldSpawnMain();ensureNewSystems();cc096ResetPerStageTitleState();if(fight&&(fight.type==="boss"||(fight.monsters||[]).some(m=>m.type==="boss"))){if(cc096Unlock("bossMeet"))save(false)}};
+ spawnMain=function(){__cc096_oldSpawnMain();ensureNewSystems();cc096ResetPerStageTitleState();const t=cc096Titles();if(cc096IsTitleBossFight()){if(cc096Unlock("bossMeet"))save(false)}else{t.playerFearStacks=0;t.playerFearTimer=20}};
  const __cc096_oldPlayerStatusHtml=playerStatusHtml;
- playerStatusHtml=function(){let base=__cc096_oldPlayerStatusHtml();const t=cc096Titles();let h="";if(currentJobKey()==="spikeshield"){const sh=cc096Thorns();h+=`<span class="badge break">🌵 荊棘 ${sh.thorns}層｜反傷 ${Math.round(cc096ThornsRate()*100)}%</span>`;if(sh.tauntCd>0)h+=`<span class="badge freeze">🗯️ 嘲諷冷卻 ${sh.tauntCd.toFixed(1)}秒</span>`}if(t.playerFearStacks>0)h+=`<span class="badge bleed">🏷️😱 自身恐懼 ${t.playerFearStacks}層</span>`;if(t.floatTime>0)h+=`<span class="badge freeze">🏷️ 浮空 ${t.floatTime.toFixed(1)}秒</span>`;if(h&&base==="玩家狀態：無")base="";return base+h};
+ playerStatusHtml=function(){let base=__cc096_oldPlayerStatusHtml();const t=cc096Titles();let h="";if(currentJobKey()==="spikeshield"){const sh=cc096Thorns();h+=`<span class="badge break">🌵 荊棘 ${sh.thorns}層｜反傷 ${Math.round(cc096ThornsRate()*100)}%</span>`;if(sh.tauntCd>0)h+=`<span class="badge freeze">🗯️ 嘲諷冷卻 ${sh.tauntCd.toFixed(1)}秒</span>`}if(t.playerFearStacks>0)h+=`<span class="badge bleed">🏷️😱 Boss恐懼 ${t.playerFearStacks}/30</span>`;if(t.floatTime>0)h+=`<span class="badge freeze">🏷️ 浮空 ${t.floatTime.toFixed(1)}秒</span>`;if(h&&base==="玩家狀態：無")base="";return base+h};
  const __cc096_oldStatusHtml=statusHtml;
  statusHtml=function(){let base=__cc096_oldStatusHtml();if(!fight)return base;const list=fight.monsters?aliveMonsters():[fight];let taunt=0,petBleed=0;for(const m of list){const e=ensureEffectBag(m);taunt=Math.max(taunt,e.taunt||0);petBleed=Math.max(petBleed,Math.floor(e.petBleed||0))}let h="";if(taunt>0)h+=`<span class='badge freeze'>🗯️ 嘲諷 ${taunt.toFixed(1)}秒｜傷害/防禦/回血-60%，攻速+50%</span>`;if(petBleed>0)h+=`<span class='badge bleed'>🐱 撕裂 ${petBleed}層｜後援獨立</span>`;if(h&&base==="<span class='small'>無狀態</span>")base="";return base+h};
  const __cc096_oldRender=render;
