@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.7 鏡像門神與裝備養成</title>
+<title>傳承 Beta 0.9.7 Hotfix 升階重置與功能收納</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -123,6 +123,13 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 @keyframes cc096FloatLane{to{opacity:0;transform:translate(var(--fx),var(--fy)) scale(1.04)}}
 @keyframes cc096FloatLaneBig{to{opacity:0;transform:translate(var(--fx),var(--fy)) scale(1.12)}}
 
+
+/* Beta 0.9.7 hotfix: 功能收納系統 */
+.featureDockBtn{position:fixed;right:14px;top:50%;transform:translateY(-50%);z-index:80;width:48px;height:48px;border-radius:18px;background:#facc15;color:#111;font-size:26px;line-height:1;box-shadow:0 6px 0 #a16207,0 10px 28px rgba(0,0,0,.35);padding:0;margin:0}
+.featureDrawer{position:fixed;right:12px;top:calc(50% + 34px);transform:translateY(-50%);z-index:79;width:min(250px,78vw);max-height:72vh;overflow:auto;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(30,41,59,.98));border:1px solid rgba(250,204,21,.35);border-radius:20px;padding:10px;box-shadow:0 20px 70px rgba(0,0,0,.48);backdrop-filter:blur(10px)}
+.featureDrawer.hidden{display:none!important}.featureDrawerTitle{font-weight:900;color:#fde68a;margin:4px 6px 8px}.featureDrawer button{display:block;width:100%;text-align:left;margin:6px 0;padding:10px 12px;background:#334155;color:#fff;box-shadow:0 3px 0 #0f172a;border-radius:12px}.featureDrawer button.primary{background:#ffd166;color:#111;box-shadow:0 3px 0 #9f6b18}.tabs.cc097HotfixHidden{display:none!important}
+.playerPanel .pill{margin-left:3px}
+
 </style>
 </head>
 <body>
@@ -182,7 +189,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 </div>
 
 <div class="card playerPanel">
-<div class="row"><b>🧍 玩家生存</b><span id="mapNow" class="pill">起源主線</span></div>
+<div class="row"><b>🧍 玩家生存</b><span><span id="playerRankHud" class="pill">階段：普通玩家</span> <span id="mapNow" class="pill">起源主線</span></span></div>
 <div class="bar playerHp"><div id="playerHpBar" class="hp"></div></div>
 <div class="small">血量 <b id="playerHp">10000</b>/<b id="playerMaxHp">10000</b>｜防禦 <b id="playerDef">500</b>（實際 <b id="playerEffDef">500</b>）｜回血 <b id="playerRegen">500</b>/秒</div>
 <div id="playerStatusBox" class="small playerStatusBox">玩家狀態：無</div>
@@ -275,7 +282,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.7 鏡像門神與裝備養成</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.7 Hotfix 升階重置與功能收納</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -284,7 +291,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-mirror-gear-rank-v1";
+const BUILD_TAG_093_REPACK="0.9.7-mirror-gatekeeper-ui-reset-hotfix-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -1942,7 +1949,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.6 刺盾 / 後援 / 稱號系統 ===== */
 (function(){
- document.title="傳承 Beta 0.9.7 鏡像門神與裝備養成";
+ document.title="傳承 Beta 0.9.7 Hotfix 升階重置與功能收納";
  Object.assign(JOBS,{
   spikeshield:{icon:"🐢",name:"刺盾",lv:100,grade:"epic",weapon:"turtleShell",weaponName:"無敵龜殼",desc:"史詩職業。無法主動攻擊、無法主動施加異常狀態；血量+5000%，防禦+500%，每秒恢復最大生命1%；受到攻擊獲得荊棘，靠反傷與嘲諷讓敵人自毀。"}
  });
@@ -2137,6 +2144,168 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  const __cc097_oldPlayerStatusHtml=playerStatusHtml;
  playerStatusHtml=function(){let base=__cc097_oldPlayerStatusHtml();const st=playerStatus();let h="";if((st.cc097BreakStacks||0)>0)h+=`<span class="badge break">👤鏡像破甲 ${Math.floor(st.cc097BreakStacks)}層</span>`;if(h&&base==="玩家狀態：無")base="";return base+h};
  window.cc097UpgradeStar=cc097UpgradeStar;window.cc097Breakthrough=cc097Breakthrough;
+})();
+
+
+/* ===== Beta 0.9.7 Hotfix：升階重置 / 鏡像門神平衡 / 功能收納 / 新稱號 ===== */
+(function(){
+ const HF_TAG="0.9.7-mirror-gatekeeper-ui-reset-hotfix-v1";
+ const HF_TIERS=[
+  {equip:"普通階",player:"普通玩家",req:100},
+  {equip:"精良階",player:"有點厲害玩家",req:300},
+  {equip:"稀有階",player:"自信玩家",req:500},
+  {equip:"史詩階",player:"高階玩家",req:600},
+  {equip:"傳說階",player:"神級玩家",req:700},
+  {equip:"神話階",player:"傳承者",req:800},
+  {equip:"遠古階",player:"真•傳承者",req:1000}
+ ];
+ function hfNum(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function hfRank(){return Math.max(0,Math.min(HF_TIERS.length-1,Math.floor(hfNum(p&&p.progression&&p.progression.rank,0))))}
+ function hfRankName(){return HF_TIERS[hfRank()].player}
+ function hfTitleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(!p.titles.progress)p.titles.progress={reaperFearEscape:0,lancerDodge:0};p.titles.progress.reaperFearEscape=Math.max(0,Math.floor(hfNum(p.titles.progress.reaperFearEscape,0)));p.titles.progress.lancerDodge=Math.max(0,Math.floor(hfNum(p.titles.progress.lancerDodge,0)));return p.titles}
+ function hfUnlockTitle(id,name){const t=hfTitleState();if(t.unlocked[id])return false;t.unlocked[id]=Date.now();log("🏷️ 解鎖稱號：「"+name+"」");save(false);return true}
+ function hfHasTitle(id){const t=hfTitleState();return !!t.unlocked[id]}
+ function hfCheckNewTitles(){const t=hfTitleState();if(t.progress.reaperFearEscape>=100)hfUnlockTitle("reaperScary","我好恐怖");if(t.progress.lancerDodge>=100)hfUnlockTitle("lancerUntouchable","你打不到我~")}
+ function hfPotentialRate(){if(!p||!p.progression)return 0;return Math.min(10,Math.max(0,hfNum(p.progression.potential,0))*.001)}
+ function hfPotentialGain(){
+  const baseBonus=p&&p.bonus?p.bonus:{};
+  let score=0;
+  score+=Math.max(0,(hfNum(p.baseAtk,50)-50)/50);
+  score+=Math.max(0,(hfNum(p.aspd,1)-1)*8);
+  score+=Math.max(0,(hfNum(p.crit,.05)-.05)*80);
+  score+=Math.max(0,hfNum(p.pen,0)*80);
+  score+=Math.max(0,(hfNum(p.maxHp,10000)-10000)/5000);
+  score+=Math.max(0,(hfNum(p.baseDef,500)-500)/300);
+  score+=Math.max(0,(hfNum(p.baseRegen,500)-500)/300);
+  score+=Math.max(0,hfNum(baseBonus.atk,0)/40);
+  score+=Math.max(0,hfNum(baseBonus.aspd,0)*6);
+  score+=Math.max(0,hfNum(baseBonus.hp,0)/1000);
+  score+=Math.max(0,hfNum(baseBonus.def,0)/100);
+  score+=Math.max(0,hfNum(baseBonus.regen,0)/100);
+  score+=Math.max(0,hfNum(baseBonus.gold,0)*20+hfNum(baseBonus.drop,0)*20+hfNum(baseBonus.exp,0)*20);
+  return Math.max(0,Math.floor(score));
+ }
+ function hfResetCost(){return{atk:10,aspd:25,crit:50,pen:80,execute:50000,click:120,bag:150,hp:200,def:160,regen:180}}
+ function hfResetMaps(){
+  const maps={origin:1,forest:1,desert:1,sea:1,sky:1,hell:1,__cc094:true};
+  p.mapStages=Object.assign({},maps);p.mapHighs=Object.assign({},maps);p.mapRetries={origin:0,forest:0,desert:0,sea:0,sky:0,hell:0,__cc094:true};
+  p.world=p.world||{};p.world.current="origin";p.stage=1;p.high=1;p.retryBoss=0;if(p.j)p.j.high=1;
+ }
+ function hfSellAllEquipment(){
+  let gold=0,count=0;
+  const sell=(it)=>{if(!it)return;gold+=Math.max(1,Math.floor(hfNum(it.price,10)));count++};
+  if(p.equips){for(const k of Object.keys(p.equips)){sell(p.equips[k]);p.equips[k]=null}}
+  if(Array.isArray(p.bag)){for(const it of p.bag)sell(it);p.bag=[]}
+  p.gold=(p.gold||0)+gold;if(p.j)p.j.gold=(p.j.gold||0)+gold;
+  return{gold,count};
+ }
+ function hfFullAscendReset(targetRank){
+  if(!p.progression)p.progression={rank:0,potential:0};
+  const gain=hfPotentialGain();
+  p.progression.potential=Math.max(0,Math.floor(hfNum(p.progression.potential,0)))+gain;
+  p.progression.rank=Math.max(0,Math.min(HF_TIERS.length-1,Math.floor(targetRank||0)));
+  const sold=hfSellAllEquipment();
+  p.lv=0;p.exp=0;p.points=0;
+  p.baseAtk=50;p.aspd=1;p.crit=.05;p.pen=0;p.execute=.000001;p.lancerExecuteBonus=0;
+  p.maxHp=10000;p.baseDef=500;p.baseRegen=500;p.bagCap=12;p.cost=hfResetCost();
+  p.bonus={atk:0,aspd:0,crit:0,pen:0,execute:0,gold:0,drop:0,exp:0,cdr:0,critDmg:0,def:0,regen:0,hp:0};
+  p.queue=0;hold=false;budget=0;resetCombo();clearPlayerStatus();hfResetMaps();
+  if(!canUseJob(p.job))p.job="warrior";
+  p.hp=playerMaxHp();
+  log("👤 升階轉生完成：進入 "+hfRankName()+"，等級/經驗/地圖/養成/能力重置");
+  log("⚒️ 舊階裝備自動賣出 "+sold.count+" 件，金幣 +"+sold.gold.toLocaleString());
+  log("✨ 舊階養成壓縮為階段潛能 +"+gain+"，目前 "+Math.floor(p.progression.potential||0));
+ }
+ function hfIsMirror(m){return !!(m&&m.mirrorBoss)}
+ function hfMirrorTick(m,dt){
+  if(!hfIsMirror(m))return;const e=ensureEffectBag(m);
+  m.mirrorInvCd=Math.max(0,hfNum(m.mirrorInvCd,0)-dt);
+  m.mirrorStunCd=Math.max(0,hfNum(m.mirrorStunCd,0)-dt);
+  m.mirrorRegenBoost=Math.max(0,hfNum(m.mirrorRegenBoost,0)-dt);
+  if(m.hp>0&&m.hp<=m.max*.02&&m.mirrorInvCd<=0){e.invincible=Math.max(e.invincible||0,3);m.mirrorRegenBoost=10;m.mirrorInvCd=30;floatText("👤鏡像無敵3秒",true);log("👤 鏡像門神低血觸發無敵：3秒無敵，10秒內持續回血，冷卻30秒")}
+  if(m.mirrorRegenBoost>0&&m.hp>0){const heal=Math.max(1,Math.floor(m.max*.01*dt));m.hp=Math.min(m.max,m.hp+heal);if(fight)fight.hp=m.hp;}
+  // 鏡像門神無視恐懼與控制殘留。
+  for(const k of ["fearStacks","fearTried100","fearTried200","fearTried300","fearFailedCount","fearBroken","escapedByFear","freeze","prison"]){if(k in e)e[k]=0}
+ }
+ function hfRenderRankHud(){const el=$("playerRankHud");if(el)el.textContent="階段："+hfRankName()+"｜潛能 "+Math.floor((p.progression&&p.progression.potential)||0)}
+ function hfFeatureButton(label,fn,primary=false){const b=document.createElement("button");b.textContent=label;if(primary)b.classList.add("primary");b.onclick=()=>{try{fn()}finally{hfToggleFeatureMenu(false)}};return b}
+ function hfScrollTo(id){show("main");setTimeout(()=>{const el=$(id);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60)}
+ function hfSetupFeatureMenu(){
+  if($("featureDockBtn"))return;
+  const tabs=document.querySelector(".tabs");if(tabs)tabs.classList.add("cc097HotfixHidden");
+  const btn=document.createElement("button");btn.id="featureDockBtn";btn.className="featureDockBtn";btn.textContent="⋯";document.body.appendChild(btn);
+  const panel=document.createElement("div");panel.id="featureDrawer";panel.className="featureDrawer hidden";
+  const title=document.createElement("div");title.className="featureDrawerTitle";title.textContent="功能選單";panel.appendChild(title);
+  panel.appendChild(hfFeatureButton("⚔️ 主線 / 戰鬥",()=>show("main"),true));
+  panel.appendChild(hfFeatureButton("職業",()=>hfScrollTo("jobPanel")));
+  panel.appendChild(hfFeatureButton("世界地圖",()=>show("world")));
+  panel.appendChild(hfFeatureButton("英雄 / 技能",()=>show("skill")));
+  panel.appendChild(hfFeatureButton("後援（寵物）",()=>hfScrollTo("supportPanel")));
+  panel.appendChild(hfFeatureButton("稱號",()=>hfScrollTo("titlePanel")));
+  panel.appendChild(hfFeatureButton("神器",()=>hfScrollTo("artifactPanel")));
+  panel.appendChild(hfFeatureButton("副本",()=>show("dungeon")));
+  panel.appendChild(hfFeatureButton("裝備 / 強化",()=>hfScrollTo("equipBox")));
+  panel.appendChild(hfFeatureButton("背包",()=>hfScrollTo("bagBox")));
+  document.body.appendChild(panel);
+  btn.onclick=(ev)=>{ev.stopPropagation();hfToggleFeatureMenu()};panel.onclick=ev=>ev.stopPropagation();
+  document.addEventListener("click",()=>hfToggleFeatureMenu(false));
+ }
+ function hfToggleFeatureMenu(force){const p0=$("featureDrawer");if(!p0)return;const open=!p0.classList.contains("hidden");const next=force==null?!open:!!force;p0.classList.toggle("hidden",!next)}
+ function hfRenderTitleExtra(){
+  const el=$("titlePanel");if(!el)return;const t=hfTitleState();hfCheckNewTitles();
+  const scary=hfHasTitle("reaperScary"),untouch=hfHasTitle("lancerUntouchable");
+  const extra=`<div class="small" id="cc097TitleExtra"><br><b>職業稱號</b><br>${scary?"✅":"⬛"} 我好恐怖｜戰鐮恐懼逃離 ${t.progress.reaperFearEscape}/100｜使用戰鐮時恐懼普攻 +2層<br>${untouch?"✅":"⬛"} 你打不到我~｜戰騎閃避 ${t.progress.lancerDodge}/100｜使用戰騎時閃避 +90%</div>`;
+  const old=$("cc097TitleExtra");if(old)old.remove();el.insertAdjacentHTML("beforeend",extra);
+ }
+ // 系統初始化補值。
+ const __hf_oldEnsureNewSystems=ensureNewSystems;
+ ensureNewSystems=function(){__hf_oldEnsureNewSystems();if(!p)return;if(!p.progression)p.progression={rank:0};if(typeof p.progression.potential!=="number")p.progression.potential=0;hfTitleState();};
+ const __hf_oldExpNeed=expNeed;
+ expNeed=function(){const base=40+p.lv*25;return Math.max(1,Math.floor(base*Math.pow(1.3,hfRank())))};
+ const __hf_oldAtk=atk;atk=function(){return Math.max(1,__hf_oldAtk()*(1+hfPotentialRate()))};
+ const __hf_oldPlayerMaxHp=playerMaxHp;playerMaxHp=function(){return Math.max(1,Math.floor(__hf_oldPlayerMaxHp()*(1+hfPotentialRate())))};
+ const __hf_oldRawPlayerDef=rawPlayerDef;rawPlayerDef=function(){return Math.max(0,Math.floor(__hf_oldRawPlayerDef()*(1+hfPotentialRate())))};
+ const __hf_oldPlayerRegen=playerRegen;playerRegen=function(){return Math.max(0,Math.floor(__hf_oldPlayerRegen()*(1+hfPotentialRate())))};
+ // 經驗副本平衡：怪物依玩家等級/階段生成，獎勵依 expNeed 計算，避免低等暴衝。
+ const __hf_oldCreateDungeonEnemy=createDungeonEnemy;
+ createDungeonEnemy=function(kind,count){
+  if(kind==="exp"){const rank=hfRank(),lv=Math.max(1,p.lv||1);const hp=Math.max(6000,Math.floor(playerMaxHp()*(1.15+rank*.35)*(1+count*.18)+atk()*asp()*8));const def=Math.max(0,Math.floor(playerDef()*(.28+rank*.08)+lv*12+count*180));return enemy({mode:"dungeon",dungeonType:"exp",type:"dungeon",name:count%10===9?"經驗守衛":"經驗史萊姆",emoji:count%10===9?"📚":"📖",hp,def,reg:Math.floor(playerMaxHp()*.002*(rank+1)),gold:0,xp:0,drop:0,timer:0})}
+  return __hf_oldCreateDungeonEnemy(kind,count);
+ };
+ const __hf_oldDungeonKill=dungeonKill;
+ dungeonKill=function(){
+  if(!dungeon)return;
+  if(dungeon.type==="exp"){dungeon.kills++;const xp=Math.max(8,Math.floor(expNeed()*(.075+hfRank()*.012)+dungeon.kills*(4+hfRank()*3)));p.exp+=Math.floor(xp*(1+expBonus()));dungeon.gain+=xp;levelUp();log("經驗副本 第"+dungeon.kills+"隻 +"+xp+"EXP");save(false);fight=createDungeonEnemy("exp",dungeon.kills);return}
+  if(dungeon.type==="ascend"){
+   if(fight&&fight.mirrorBoss&&fight.hp<=0&&(fight.mirrorInvCd||0)<=0){const e=ensureEffectBag(fight);fight.hp=Math.max(1,Math.floor(fight.max*.02));e.invincible=Math.max(e.invincible||0,3);fight.mirrorRegenBoost=10;fight.mirrorInvCd=30;floatText("👤鏡像門神鎖血反撲！",true);log("👤 鏡像門神低血觸發無敵：3秒無敵，10秒內持續回血，冷卻30秒");save(false);render();return}
+   const target=dungeon.targetRank;hfFullAscendReset(target);dungeon.running=false;dungeon=null;save(false);spawnMain();return}
+  return __hf_oldDungeonKill();
+ };
+ // 鏡像門神抗性：秒殺/處刑/恐懼/最大生命傷害/浮空免疫。
+ const __hf_oldExecuteRate=executeRate;executeRate=function(target=null){if(hfIsMirror(target))return 0;return __hf_oldExecuteRate(target)};
+ if(typeof cc093_tryGunnerExecute==="function"){const __hf_oldGunner=cc093_tryGunnerExecute;cc093_tryGunnerExecute=function(target){if(hfIsMirror(target)){floatText("👤處刑無效");return false}return __hf_oldGunner(target)}}
+ if(typeof cc093_triggerLancerPierce==="function"){const __hf_oldPierce=cc093_triggerLancerPierce;cc093_triggerLancerPierce=function(target){if(hfIsMirror(target)){floatText("👤最大生命傷害無效");return false}return __hf_oldPierce(target)}}
+ if(typeof cc092u_percentDamage==="function"){const __hf_oldPct=cc092u_percentDamage;cc092u_percentDamage=function(target,pct,label,icon){if(hfIsMirror(target)){floatText("👤最大生命傷害無效");return 0}return __hf_oldPct(target,pct,label,icon)}}
+ if(typeof cc093_addReaperFear==="function"){const __hf_oldFear=cc093_addReaperFear;cc093_addReaperFear=function(target,stacks=1){if(hfIsMirror(target)){floatText("👤恐懼無效");return false}return __hf_oldFear(target,hfHasTitle("reaperScary")?Math.max(1,Math.floor(stacks||1))*2:stacks)}}
+ if(window.cc095_targetEscapesByFear){const __hf_oldEsc=window.cc095_targetEscapesByFear;window.cc095_targetEscapesByFear=function(target){if(hfIsMirror(target)){floatText("👤恐懼逃離無效");return false}const ok=__hf_oldEsc(target);if(ok&&currentJobKey()==="reaper"){const t=hfTitleState();t.progress.reaperFearEscape++;hfCheckNewTitles()}return ok}}
+ const __hf_oldEnsureEffectBag=ensureEffectBag;ensureEffectBag=function(target){const e=__hf_oldEnsureEffectBag(target);if(hfIsMirror(target)){for(const k of ["fearStacks","fearTried100","fearTried200","fearTried300","fearFailedCount","fearBroken","escapedByFear"]){if(k in e)e[k]=0}}return e};
+ const __hf_oldPlayerTakeDamage=playerTakeDamage;
+ playerTakeDamage=function(raw,source="怪物",m=null){
+  // 戰騎稱號：解鎖後使用戰騎閃避+90%；未解鎖時保留1%訓練閃避以累積成就。
+  if(currentJobKey()==="lancer"&&m&&raw>0){const chance=hfHasTitle("lancerUntouchable")?.90:.01;if(Math.random()<chance){const t=hfTitleState();t.progress.lancerDodge++;hfCheckNewTitles();floatText("🐎你打不到我~");return 0}}
+  if(hfIsMirror(m)){const st=playerStatus();const oldFloat=st.float||0,oldFloatTime=st.floatTime||0;st.float=0;st.floatTime=0;const d=__hf_oldPlayerTakeDamage(raw,source,m);st.float=oldFloat;st.floatTime=oldFloatTime;return d}
+  const before=p.hp, d=__hf_oldPlayerTakeDamage(raw,source,m);if(currentJobKey()==="lancer"&&m&&raw>0&&d===0&&p.hp===before){const t=hfTitleState();t.progress.lancerDodge++;hfCheckNewTitles()}return d;
+ };
+ const __hf_oldMonsterNormalAttack=monsterNormalAttack;
+ monsterNormalAttack=function(m){const ok=__hf_oldMonsterNormalAttack(m);if(ok&&hfIsMirror(m)&&p.hp>0){if(Math.random()<.05){const heal=Math.max(1,Math.floor(m.max*.01));m.hp=Math.min(m.max,m.hp+heal);if(fight)fight.hp=m.hp;floatText("👤普攻回血+"+heal.toLocaleString(),true)}if((m.mirrorStunCd||0)<=0&&Math.random()<.05){m.mirrorStunCd=10;applyPlayerStun(3,"👤 鏡像門神觸發擊暈，玩家暈眩3秒");floatText("👤擊暈3秒",true)}}return ok};
+ const __hf_oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){if(dungeon&&dungeon.type==="ascend"&&fight)hfMirrorTick(fight,dt);return __hf_oldTickMonsterAI(dt)};
+ const __hf_oldRenderDungeon=renderDungeon;
+ renderDungeon=function(){__hf_oldRenderDungeon();if($("dungeonList")){const el=$("dungeonList");el.innerHTML=el.innerHTML.replace("狀態：45%機率一次+2層，單場隨機燃燒/中毒/撕裂/破甲","狀態：45%機率一次+2層；無視秒殺/最大生命傷害/恐懼/浮空；低血會無敵反撲")}};
+ const __hf_oldRender=render;
+ function hfStatusName(k){return k==="burn"?"燃燒":k==="poison"?"中毒":k==="bleed"?"撕裂":k==="break"?"破甲":(k||"?")}
+ render=function(){__hf_oldRender();hfRenderRankHud();hfSetupFeatureMenu();hfRenderTitleExtra();if($("enemyType")&&dungeon&&dungeon.type==="ascend"&&fight)$("enemyType").textContent="升階副本｜鏡像門神｜狀態 "+hfStatusName(dungeon.status||fight.mirrorStatus)+"｜抗性：秒殺/恐懼/浮空/最大生命傷害無效"};
+ window.cc097HotfixToggleMenu=hfToggleFeatureMenu;
 })();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
