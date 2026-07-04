@@ -160,6 +160,32 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 #skillView,#heroPanel,#skillList,#jobSummonPanel,#fragmentBag,.featureDrawer{backface-visibility:hidden;transform:translateZ(0)}
 body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
+
+
+/* ===== Beta 0.9.7 Hotfix：收納可滾動 + 怪物命中不左右位移 ===== */
+.featureDrawer{
+  top:96px!important;
+  bottom:calc(16px + env(safe-area-inset-bottom,0px))!important;
+  transform:none!important;
+  max-height:none!important;
+  height:auto!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding-bottom:18px!important;
+}
+.featureDrawer button{min-height:44px!important}
+@media (max-height:700px){
+  .featureDrawer{top:72px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
+}
+@keyframes cc097EnemyPulse{
+  0%,100%{transform:translateX(-50%) scale(1);filter:none}
+  45%{transform:translateX(-50%) scale(.985);filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65))}
+}
+.enemyHurt #enemyEmoji,#enemyEmoji.cc097LocalHurt{
+  animation:cc097EnemyPulse .12s ease-out 1!important;
+}
+
 </style>
 </head>
 <body>
@@ -321,7 +347,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-hit-effect-flicker-fix-v1";
+const BUILD_TAG_093_REPACK="0.9.7-drawer-scroll-hit-pulse-fix-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2638,7 +2664,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Hotfix：打擊音效 / 命中特效造成介面閃爍修正 ===== */
 (function(){
- const FLICKER_FIX_TAG="0.9.7-hit-effect-flicker-fix-v1";
+ const FLICKER_FIX_TAG="0.9.7-drawer-scroll-hit-pulse-fix-v1";
  function by(id){return document.getElementById(id)}
  try{document.body&&document.body.classList.add("cc097NoGlobalHitFlash")}catch(e){}
  // 命中特效只允許出現在戰鬥舞台內，避免怪物受擊時整個 UI 或技能/英雄面板一起重繪閃爍。
@@ -2690,7 +2716,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  };
  // CSS for local emoji hurt animation, injected here to keep patch self-contained.
  const st=document.createElement("style");
- st.textContent=`#enemyEmoji.cc097LocalHurt{animation:enemyShake .12s linear 1;filter:brightness(1.8) drop-shadow(0 0 10px rgba(255,255,255,.7))}`;
+ st.textContent=`@keyframes cc097EnemyPulse{0%,100%{transform:translateX(-50%) scale(1);filter:none}45%{transform:translateX(-50%) scale(.985);filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65))}}#enemyEmoji.cc097LocalHurt,.enemyHurt #enemyEmoji{animation:cc097EnemyPulse .12s ease-out 1!important}`;
  document.head.appendChild(st);
  console.log("傳承",FLICKER_FIX_TAG);
 })();
