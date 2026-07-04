@@ -178,13 +178,15 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 @media (max-height:700px){
   .featureDrawer{top:72px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
 }
-@keyframes cc097EnemyPulse{
-  0%,100%{transform:translateX(-50%) scale(1);filter:none}
-  45%{transform:translateX(-50%) scale(.985);filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65))}
+@keyframes cc097EnemyGlow{
+  0%,100%{filter:none;opacity:1}
+  45%{filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65));opacity:.98}
 }
 .enemyHurt #enemyEmoji,#enemyEmoji.cc097LocalHurt{
-  animation:cc097EnemyPulse .12s ease-out 1!important;
+  transform:translateX(-50%)!important;
+  animation:cc097EnemyGlow .12s ease-out 1!important;
 }
+#enemyEmoji{transform:translateX(-50%)!important;}
 
 </style>
 </head>
@@ -347,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-drawer-scroll-hit-pulse-fix-v1";
+const BUILD_TAG_093_REPACK="0.9.7-monster-no-move-fix-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2664,7 +2666,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Hotfix：打擊音效 / 命中特效造成介面閃爍修正 ===== */
 (function(){
- const FLICKER_FIX_TAG="0.9.7-drawer-scroll-hit-pulse-fix-v1";
+ const FLICKER_FIX_TAG="0.9.7-monster-no-move-fix-v1";
  function by(id){return document.getElementById(id)}
  try{document.body&&document.body.classList.add("cc097NoGlobalHitFlash")}catch(e){}
  // 命中特效只允許出現在戰鬥舞台內，避免怪物受擊時整個 UI 或技能/英雄面板一起重繪閃爍。
@@ -2674,22 +2676,23 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
   const now=(performance&&performance.now)?performance.now():Date.now();
   const stage=by("combatStage"),layer=by("hitFxLayer"),emoji=by("enemyEmoji");
   if(!stage||!layer){return oldShowHitEffect?oldShowHitEffect(kind):undefined;}
-  // 高攻速時只保留視覺回饋頻率，不影響傷害與音效。
+  // 高攻速時只保留視覺回饋頻率，不影響傷害與音效；不再移動怪物圖。
   if(now-lastFxAt<55){
-   if(emoji){emoji.classList.remove("cc097LocalHurt"); void emoji.offsetWidth; emoji.classList.add("cc097LocalHurt"); setTimeout(()=>emoji.classList.remove("cc097LocalHurt"),120);}
+   if(emoji){emoji.style.transform="translateX(-50%)";}
    return;
   }
   lastFxAt=now;
   const d=document.createElement("div");
   d.className="hitFx "+kind;
-  d.style.left=(48+Math.random()*10-5)+"%";
-  d.style.top=(44+Math.random()*12-6)+"%";
+  d.style.left="50%";
+  d.style.top="46%";
   layer.appendChild(d);
   if(emoji){
+   emoji.style.transform="translateX(-50%)";
    emoji.classList.remove("cc097LocalHurt");
    void emoji.offsetWidth;
    emoji.classList.add("cc097LocalHurt");
-   setTimeout(()=>emoji.classList.remove("cc097LocalHurt"),140);
+   setTimeout(()=>{emoji.classList.remove("cc097LocalHurt");emoji.style.transform="translateX(-50%)";},140);
   }
   const fx=layer.querySelectorAll(".hitFx");
   if(fx.length>8)fx[0].remove();
@@ -2716,9 +2719,15 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
  };
  // CSS for local emoji hurt animation, injected here to keep patch self-contained.
  const st=document.createElement("style");
- st.textContent=`@keyframes cc097EnemyPulse{0%,100%{transform:translateX(-50%) scale(1);filter:none}45%{transform:translateX(-50%) scale(.985);filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65))}}#enemyEmoji.cc097LocalHurt,.enemyHurt #enemyEmoji{animation:cc097EnemyPulse .12s ease-out 1!important}`;
+ st.textContent=`@keyframes cc097EnemyGlow{0%,100%{filter:none;opacity:1}45%{filter:brightness(1.55) drop-shadow(0 0 10px rgba(255,255,255,.65));opacity:.98}}#enemyEmoji{transform:translateX(-50%)!important;transition:filter .08s ease,opacity .08s ease!important}#enemyEmoji.cc097LocalHurt,.enemyHurt #enemyEmoji{transform:translateX(-50%)!important;animation:cc097EnemyGlow .12s ease-out 1!important}`;
  document.head.appendChild(st);
- console.log("傳承",FLICKER_FIX_TAG);
+ try{
+ const enemyEmoji=by("enemyEmoji");
+ const stage=by("combatStage");
+ if(enemyEmoji){enemyEmoji.style.transform="translateX(-50%)";}
+ if(stage){stage.addEventListener("animationstart",()=>{const e=by("enemyEmoji"); if(e)e.style.transform="translateX(-50%)";},true);}
+}catch(e){}
+console.log("傳承",FLICKER_FIX_TAG);
 })();
 
 

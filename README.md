@@ -149,3 +149,7 @@ Lv250 開啟。英雄化身持續 60 秒，共用冷卻 120 秒。
 - 命中特效限制在戰鬥舞台與怪物 emoji，不再影響整體 UI。
 - 技能 / 英雄面板改用穩定鍵值與降頻重繪，避免高攻速時整塊面板重建。
 - 更新 Service Worker 快取版本。
+
+
+### Beta 0.9.7 Hotfix - Monster no-move hit feedback
+- Monster hit feedback now glows in place and no longer shifts left/right during attack sounds.
