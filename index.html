@@ -315,7 +315,7 @@ button:active{transform:translateY(2px);box-shadow:0 2px 0 #9f6b18}button:disabl
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-clean-ui-title-display-bugfix-v3";
+const BUILD_TAG_093_REPACK="0.9.7-clean-ui-title-display-bugfix-v4";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2173,7 +2173,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Hotfix：升階重置 / 鏡像門神平衡 / 功能收納 / 新稱號 ===== */
 (function(){
- const HF_TAG="0.9.7-clean-ui-title-display-bugfix-v3";
+ const HF_TAG="0.9.7-clean-ui-title-display-bugfix-v4";
  const HF_TIERS=[
   {equip:"普通階",player:"普通玩家",req:100},
   {equip:"精良階",player:"有點厲害玩家",req:300},
@@ -2336,7 +2336,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 /* ===== Beta 0.9.7 Hotfix2：主畫面清場 / 裝備稱號 / 巨神兵稱號 ===== */
 (function(){
  document.title="傳承 Beta 0.9.7 Hotfix Bugfix 裝備稱號與清場修正";
- const CLEAN_BUILD="0.9.7-clean-ui-title-display-bugfix-v3";
+ const CLEAN_BUILD="0.9.7-clean-ui-title-display-bugfix-v4";
  const DISPLAY_TITLES=[
   ["rookie","初估茅廬"],["dead","我掛了"],["revived","我復活了"],["firstKill","我的首殺"],["bossMeet","這個好可怕"],["bossKill","我覺得還好"],["strong50","我變強了"],["bossStuck","我卡關了！"],["walk100","我可以自己走路了"],["fly500","我要起飛啦"],["immortal1000","我要成仙了"],["sage5000","我得道成仙了"],
   ["reaperScary","我好恐怖"],["lancerUntouchable","你打不到我~"],
@@ -2506,7 +2506,7 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 
 /* ===== Beta 0.9.7 Bugfix3：稱號選擇、掉落階段、技能閃爍、收納點擊、裝備橫排 ===== */
 (function(){
- const BUGFIX_TAG="0.9.7-clean-ui-title-display-bugfix-v3";
+ const BUGFIX_TAG="0.9.7-clean-ui-title-display-bugfix-v4";
  const RANK_NAMES=["普通玩家","有點厲害玩家","自信玩家","高階玩家","神級玩家","傳承者","真•傳承者"];
  const TIER_NAMES=["普通階","精良階","稀有階","史詩階","傳說階","神話階","遠古階"];
  function n(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
@@ -2591,9 +2591,9 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 })();
 
 
-/* ===== Beta 0.9.7 Bugfix4：收納選單閃退修正 ===== */
+/* ===== Beta 0.9.7 Bugfix5：收納選單內容點擊修正 ===== */
 (function(){
- const DRAWER_FIX_TAG="0.9.7-clean-ui-title-display-bugfix-v3";
+ const DRAWER_FIX_TAG="0.9.7-clean-ui-title-display-bugfix-v4";
  function drawerOpen(){const panel=document.getElementById("featureDrawer");return !!(panel&&!panel.classList.contains("hidden"));}
  function setDrawer(open){const panel=document.getElementById("featureDrawer");if(panel)panel.classList.toggle("hidden",!open);}
  function hardBindDrawer(){
@@ -2617,8 +2617,10 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
   }
   if(panel&&!panel.dataset.drawerNoFlashFix){
    panel.dataset.drawerNoFlashFix="1";
-   panel.addEventListener("pointerdown",function(ev){ev.stopPropagation();},{capture:true});
-   panel.addEventListener("click",function(ev){ev.stopPropagation();},{capture:true});
+   // 不要在 capture 階段擋事件，否則選單內按鈕會收不到 click。
+   // 改成 bubble 階段只阻止事件冒泡到 document 關閉選單。
+   panel.addEventListener("pointerdown",function(ev){ev.stopPropagation();},{passive:true});
+   panel.addEventListener("click",function(ev){ev.stopPropagation();});
   }
  }
  const oldRender=render;
