@@ -153,3 +153,8 @@ Lv250 開啟。英雄化身持續 60 秒，共用冷卻 120 秒。
 
 ### Beta 0.9.7 Hotfix - Monster no-move hit feedback
 - Monster hit feedback now glows in place and no longer shifts left/right during attack sounds.
+
+
+### Beta 0.9.8 領域使與神器擴充
+
+本版新增領域使、神煞領域、阿卡娃法球、亡靈神鐮、戰鐮恐懼補強，並重製「我得道成仙了」稱號與新增 EXP 顯示。

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.7 Hotfix Flicker Fix</title>
+<title>傳承 Beta 0.9.8 領域使與神器擴充</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -340,7 +340,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.7 Hotfix 主畫面清場與稱號展示</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.8 領域使與神器擴充</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -348,8 +348,8 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.7";
-const BUILD_TAG_093_REPACK="0.9.7-monster-no-move-fix-v1";
+const GAME_VERSION="0.9.8";
+const BUILD_TAG_093_REPACK="0.9.8-domain-artifact-expansion-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2730,6 +2730,276 @@ statusHtml=function(){let base=__cc093_oldStatusHtml();if(!fight)return base;con
 console.log("傳承",FLICKER_FIX_TAG);
 })();
 
+
+
+/* ===== Beta 0.9.8 領域使與神器擴充 ===== */
+(function(){
+ const CC098_TAG="0.9.8-domain-artifact-expansion-v1";
+ document.title="傳承 Beta 0.9.8 領域使與神器擴充";
+ const by=id=>document.getElementById(id);
+ const num=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const short=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(v).toLocaleString();
+ const rankIndex=()=>Math.max(0,Math.floor(num(p&&p.progression&&p.progression.rank,0)));
+ const isMirror=t=>!!(t&&t.mirrorBoss);
+ const hasUnlockedTitle=id=>!!(p&&p.titles&&p.titles.unlocked&&p.titles.unlocked[id]);
+ function isDomainMaster(){try{return currentJobKey()==="domainmaster"}catch(e){return p&&p.job==="domainmaster"}}
+ function domainState(){if(!p.domain)p.domain={time:0,cd:0};p.domain.time=Math.max(0,num(p.domain.time,0));p.domain.cd=Math.max(0,num(p.domain.cd,0));return p.domain}
+ function isDomainActive(){const d=domainState();return isDomainMaster()&&d.time>0}
+ function isAkawa(){try{return selectedArtifactKey()==="akawa"}catch(e){return p&&p.artifacts&&p.artifacts.selected==="akawa"}}
+ function isNecroScythe(){try{return selectedArtifactKey()==="necroScythe"&&currentJobKey()==="reaper"}catch(e){return p&&p.artifacts&&p.artifacts.selected==="necroScythe"&&p.job==="reaper"}}
+ function fearCap(){return isNecroScythe()?500:300}
+ function targetList(){if(!fight)return[];return fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters().filter(Boolean):(fight&&fight.hp>0?[fight]:[])}
+ function syncTargetHp(t){if(!fight)return;if(fight.monsters)refreshTotalHp();else if(t)fight.hp=Math.max(0,t.hp||0)}
+ function finishIfDead(){if(!fight)return;if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy()}
+ function preserveFear(fn){
+  const saved=[];
+  if(isNecroScythe())for(const t of targetList()){const e=ensureEffectBag(t);if((e.fearStacks||0)>300)saved.push([t,e.fearStacks,e.fearTried400||0,e.fearDespair||0,e.fearReapReady||0])}
+  const r=fn();
+  for(const [t,st,t400,despair,reap] of saved){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);e.fearStacks=Math.max(e.fearStacks||0,st);e.fearTried400=Math.max(e.fearTried400||0,t400);e.fearDespair=Math.max(e.fearDespair||0,despair);e.fearReapReady=Math.max(e.fearReapReady||0,reap)}
+  return r;
+ }
+
+ Object.assign(JOBS,{
+  domainmaster:{icon:"🕶️",name:"領域使",lv:1,grade:"legendary3",weapon:"glasses",weaponName:"真誠墨鏡",desc:"傳說⭐⭐⭐職業。普攻20%召喚神煞領域；普攻40%造成玩家傷害×400%；普攻0.1%造成玩家傷害×40000%。專武：最終閃避率×1.5。"}
+ });
+ Object.assign(ARTIFACTS,{
+  akawa:{icon:"🔮",name:"阿卡娃法球",unlock:1,up:false,desc:"每秒獲得自身最大生命5%的護盾，最多累積至最大生命500%；可抵擋普攻、狀態與一般技能傷害，不能抵擋秒殺、收割與無視最大生命傷害。"},
+  necroScythe:{icon:"☠️",name:"亡靈神鐮",unlock:1,up:false,desc:"戰鐮專屬。每秒追加1層恐懼，恐懼上限提高到500；400層精神絕望，500層在生命低於10%時收割。"}
+ });
+
+ const oldCanUseJob=canUseJob;
+ canUseJob=function(key){if(key==="domainmaster")return !!p&&rankIndex()>=4;return oldCanUseJob(key)};
+ const oldJobPanelHtml=jobPanelHtml;
+ jobPanelHtml=function(){
+  const cur=currentJobKey(),j=JOBS[cur],sw=specialWeaponKey(cur),lv=specialWeaponLevel(cur),cost=specialWeaponCost(cur);
+  const jobBtns=Object.keys(JOBS).map(k=>{const jj=JOBS[k],locked=!canUseJob(k),need=k==="domainmaster"?" 傳說階":` Lv${jj.lv}`;return `<button class="${cur===k?"active":"tab"}" onclick="window.setJob('${k}')" ${locked?"disabled":""}>${jj.icon} ${jj.name}${locked?need:""}</button>`}).join("");
+  let swHtml=sw?`<div class="small">專武：<b>${j.weaponName}</b> Lv.${lv}｜各職業專武等級獨立，不互相繼承。</div><button class="purple" onclick="window.upgradeSpecialWeapon()">升級${j.weaponName}｜${cost.gold}金幣 + ${cost.stone}強化石</button>`:`<div class="small">專武：尚未啟用。戰士沒有專武與被動。</div>`;
+  if(cur==="domainmaster")swHtml+=`<div class="small">🕶️ 真誠墨鏡：目前職業為領域使時，最終閃避率 ×1.5，最高仍受閃避上限限制。</div>`;
+  return `<div class="row"><b>⚔️ 職業與專武</b><span class="pill">${j.icon} ${j.name}</span></div><div class="multiBtns">${jobBtns}</div><div class="small">被動：${j.desc}</div>${swHtml}`;
+ };
+
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){
+  oldEnsure();if(!p)return;
+  if(!p.specialWeapons)p.specialWeapons={};
+  p.specialWeapons.glasses=Math.max(0,Math.floor(num(p.specialWeapons.glasses,0)));
+  if(!p.domain)p.domain={time:0,cd:0};domainState();p.necroFearAcc=Math.max(0,num(p.necroFearAcc,0));
+  if(!p.cd)p.cd={};p.cd.sageCleanse=Math.max(0,num(p.cd.sageCleanse,0));
+  if(!p.artifacts)p.artifacts=defaultArtifacts();
+  for(const k of ["akawa","necroScythe"]){p.artifacts[k]=Math.max(0,Math.floor(num(p.artifacts[k],0)))}
+  p.artifacts.shield=Math.max(0,num(p.artifacts.shield,0));
+ };
+
+ const oldSetJob=setJob;
+ setJob=function(key){
+ const prev=currentJobKey();
+ if(key==="domainmaster"&&!canUseJob(key))return log("🕶️ 領域使需要玩家達到傳說階段才可解鎖");
+ const r=oldSetJob(key);ensureNewSystems();
+ if(prev!==currentJobKey()){const d=domainState();if(currentJobKey()!=="domainmaster")d.time=0;if(currentJobKey()!=="reaper"&&p.artifacts&&p.artifacts.selected==="necroScythe")log("☠️ 亡靈神鐮只有戰鐮可啟用，已暫時失效");}
+ return r
+};
+
+ const oldSelectedArtifactKey=selectedArtifactKey;
+ selectedArtifactKey=function(){const k=oldSelectedArtifactKey();if(k==="necroScythe"&&currentJobKey()!=="reaper")return"none";return k};
+ const oldSetArtifact=setArtifact;
+ setArtifact=function(key){if(key==="necroScythe"&&currentJobKey()!=="reaper")return log("☠️ 亡靈神鐮為戰鐮專屬，請先切換成戰鐮");return oldSetArtifact(key)};
+ const oldArtifactShieldMax=artifactShieldMax;
+ artifactShieldMax=function(){if(isAkawa())return Math.max(1,Math.floor(playerMaxHp()*5));return oldArtifactShieldMax()};
+ const oldArtifactPanelHtml=artifactPanelHtml;
+ artifactPanelHtml=function(){
+  ensureNewSystems();const open=(p.artifacts.maxLayer||0)>=1;let h=`<div class="row"><b>🏺 神器</b><span class="pill">深淵最高 ${p.artifacts.maxLayer||0} 層</span></div>`;
+  if(!open)return h+`<div class="small">通關深淵第1層後開啟神器系統。</div>`;
+  h+=`<div class="multiBtns">`+Object.keys(ARTIFACTS).map(k=>{const a=ARTIFACTS[k],lock=!artifactUnlocked(k)||(k==="necroScythe"&&currentJobKey()!=="reaper"),cur=selectedArtifactKey()===k;const need=k==="necroScythe"&&currentJobKey()!=="reaper"?" 戰鐮專屬":(lock?` 第${a.unlock}層`:"");return `<button class="${cur?"active":"tab"}" onclick="window.setArtifact('${k}')" ${lock?"disabled":""}>${a.icon} ${a.name}${need}</button>`}).join("")+`</div>`;
+  const key=selectedArtifactKey(),a=ARTIFACTS[key]||ARTIFACTS.none,lv=artifactLevel(key),c=artifactUpgradeCost(key),shield=artifactShieldMax();
+  let extra="";if(key==="vantosa"||key==="akawa")extra=`<br>神器護盾：${short(p.artifacts.shield||0)}/${short(shield)}`;if(key==="necroScythe")extra=`<br>戰鐮恐懼上限：500｜目前目標：${activeMonster()?Math.floor((ensureEffectBag(activeMonster()).fearStacks||0)):0}/500`;
+  h+=`<div class="small">目前：${a.icon} <b>${a.name}</b> Lv.${lv}｜${a.desc}<br>每次只能選 1 個神器生效，神器等級獨立保存。${extra}</div>`;
+  if(a.up&&key!=="none")h+=`<button class="purple" onclick="window.upgradeArtifact()">升級神器｜${c.gold.toLocaleString()} 金幣 + ${c.stone} 強化石</button>`;
+  return h;
+ };
+
+ const oldAbsorb=absorbWithShields;
+ absorbWithShields=function(amount,trueDamage=false){
+  if(!(isAkawa()&&trueDamage))return oldAbsorb(amount,trueDamage);
+  const hold=p.artifacts?p.artifacts.shield:0;
+  if(p.artifacts)p.artifacts.shield=0;
+  const left=oldAbsorb(amount,trueDamage);
+  if(p.artifacts)p.artifacts.shield=hold;
+  return left;
+ };
+
+ const oldAtk=atk;
+ atk=function(){let v=oldAtk();if(isDomainActive())v*=11;return v};
+ const oldPlayerDef=playerDef;
+ playerDef=function(){let v=oldPlayerDef();if(isDomainActive())v*=11;return Math.max(0,Math.floor(v))};
+ const oldEvadeRate=evadeRate;
+ evadeRate=function(target=activeMonster()){let v=preserveFear(()=>oldEvadeRate(target));if(isDomainActive())v=Math.max(0,v-10);return Math.max(0,Math.min(.95,v))};
+ const oldPlayerTakeDamage=playerTakeDamage;
+ playerTakeDamage=function(raw,source="怪物",m=null){
+  if(currentJobKey()==="domainmaster"&&p&&p.artifacts){
+   const base=(typeof cc096TitleRates==="function"?num(cc096TitleRates().evaPos,0):0);
+   const extra=Math.max(0,Math.min(.95,base*.5));
+   if(extra>0&&Math.random()<extra){floatText("🕶️真誠閃避");return 0}
+  }
+  return oldPlayerTakeDamage(raw,source,m);
+ };
+
+ function triggerDomain(target){
+  const d=domainState();if(!isDomainMaster()||d.time>0||d.cd>0||!target||target.hp<=0)return false;
+  if(Math.random()>=.20)return false;
+  d.time=10;d.cd=60;
+  if(!isMirror(target)){
+   const e=ensureEffectBag(target);e.domain=10;e.domainHpCut=1;
+   target.hp=Math.max(1,Math.floor(target.hp*.80));
+   syncTargetHp(target);
+   floatText((target.emoji||"")+"🌀神煞領域！",true);
+   log("🌀 領域使召喚神煞領域：自身傷害/命中/防禦+1000%，敵方攻速-80%、當前生命-20%、無法使用技能，持續10秒");
+  }else{
+   floatText("👤領域壓制無效");
+   log("👤 鏡像門神免疫神煞領域的當前生命降低與技能封鎖");
+  }
+  return true;
+ }
+ function domainBoostMultiplier(){
+  if(!isDomainMaster())return 1;
+  const r=Math.random();
+  if(r<.001){floatText("🕶️神煞重擊！",true);return 400}
+  if(r<.401){floatText("🕶️強化普攻！");return 4}
+  return 1;
+ }
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  const normal=!label&&!(opt&&opt.skill);
+  const beforeCombo=combo&&combo.count||0;
+  const target=activeMonster();
+  const beforeHp=target?target.hp:0;
+  if(normal&&isDomainMaster())mult*=domainBoostMultiplier();
+  const r=preserveFear(()=>oldDamage(mult,label,opt));
+  if(normal&&target&&fight){const hit=(combo&&combo.count||0)>beforeCombo||(target.hp||0)<beforeHp;if(hit)triggerDomain(target)}
+  if(normal&&currentJobKey()==="reaper"&&target&&target.hp>0&&Math.random()<.001)cc098AddFear(target,100,"🩸戰鐮爆發");
+  return r;
+ };
+
+ function cc098ProcessFear(target){
+  if(!target||target.hp<=0||isMirror(target))return false;
+  const e=ensureEffectBag(target),cap=fearCap();
+  e.fearStacks=Math.max(0,Math.min(cap,Math.floor(e.fearStacks||0)));
+  let escaped=false;
+  for(const [need,chance] of [[100,.20],[200,.25],[300,.30]]){
+   const key="fearTried"+need;
+   if(e.fearStacks>=need&&!e[key]){
+    e[key]=1;floatText((target.emoji||"")+"😱恐懼"+need+"層",true);
+    log("😱 恐懼達 "+need+" 層：逃離判定 "+Math.round(chance*100)+"%");
+    if(Math.random()<chance&&window.cc095_targetEscapesByFear){escaped=window.cc095_targetEscapesByFear(target);break}
+    e.fearFailedCount=Math.min(3,Math.floor(e.fearFailedCount||0)+1);floatText((target.emoji||"")+"😱抵抗恐懼");
+    if(e.fearFailedCount>=3&&!e.fearBroken){e.fearBroken=1;floatText((target.emoji||"")+"😱恐懼崩潰！",true);log("😱 目標進入恐懼崩潰：攻速/回血 -40%，無法使用技能")}
+   }
+  }
+  if(!escaped&&cap>=500&&e.fearStacks>=400&&!e.fearTried400){e.fearTried400=1;e.fearDespair=1;floatText((target.emoji||"")+"🧠精神絕望！",true);log("🧠 亡靈神鐮：恐懼400層觸發精神絕望，目標暫停攻擊")}
+  if(!escaped&&cap>=500&&e.fearStacks>=500){e.fearReapReady=1;if(target.hp>0&&target.hp<=target.max*.10){target.hp=0;floatText((target.emoji||"")+"☠️恐懼收割！",true);log("☠️ 亡靈神鐮：目標生命低於10%，收割成功");syncTargetHp(target);finishIfDead();return true}}
+  return escaped;
+ }
+ window.cc098AddFear=function(target,add=1,source="😱"){
+  if(!target||target.hp<=0||isMirror(target))return false;
+  const e=ensureEffectBag(target),amt=Math.max(1,Math.floor(add||1));
+  e.fearStacks=Math.min(fearCap(),Math.max(0,Math.floor(e.fearStacks||0))+amt);
+  floatText((target.emoji||"")+source+"恐懼+"+amt);
+  return cc098ProcessFear(target);
+ };
+ if(typeof cc093_addReaperFear==="function"){
+  cc093_addReaperFear=function(target,stacks=1){
+   if(currentJobKey()!=="reaper"||!target||target.hp<=0)return false;
+   if(Math.random()>=.45)return false;
+   let add=Math.max(1,Math.floor(stacks||1));
+   if(hasUnlockedTitle("reaperScary"))add*=2;
+   return window.cc098AddFear(target,add,"🩸");
+  };
+ }
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){
+  preserveFear(()=>oldTickEffects(dt));
+  if(!fight)return;
+  for(const target of targetList()){
+   if(!target||target.hp<=0)continue;
+   const e=ensureEffectBag(target);
+   if(e.domain>0)e.domain=Math.max(0,e.domain-dt);
+   if(e.fearDespair>0)e.fearDespair=1;
+   cc098ProcessFear(target);
+  }
+ };
+ const oldMonsterAttackInterval=monsterAttackInterval;
+ monsterAttackInterval=function(m){let base=preserveFear(()=>oldMonsterAttackInterval(m));if(m){const e=ensureEffectBag(m);if(e.fearDespair>0)return 999999;if(e.domain>0)base/=.20;}return base};
+ const oldMonsterNormalAttack=monsterNormalAttack;
+ monsterNormalAttack=function(m){if(m){const e=ensureEffectBag(m);if(e.fearDespair>0){floatText((m.emoji||"")+"🧠停止攻擊");return true}}return oldMonsterNormalAttack(m)};
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){if(m){const e=ensureEffectBag(m);if(e.domain>0){floatText((m.emoji||"")+"🌀技能封鎖");return}if(e.fearDespair>0){floatText((m.emoji||"")+"🧠無法施法");return}}return oldMonsterUseSkill(m)};
+
+ function playerDamageStatusCount(){const st=playerStatus();let c=0;if((st.burn||0)>0)c++;if((st.poison||0)>0)c++;if((st.bleed||0)>0)c++;return c}
+ function triggerSageCleanse(){
+  if(!hasUnlockedTitle("sage5000"))return false;
+  if((p.cd.sageCleanse||0)>0||playerDamageStatusCount()<3)return false;
+  const st=playerStatus();st.burn=0;st.poison=0;st.bleed=0;st.bleedStacks=0;st.burnTick=1;st.poisonTick=1;st.bleedTick=.5;p.cd.sageCleanse=30;
+  const t=activeMonster();if(t&&!isMirror(t)&&t.hp>0){ensureEffectBag(t).freeze=Math.max(ensureEffectBag(t).freeze||0,3);floatText((t.emoji||"")+"💫得道反震！",true)}
+  log("🧘 我得道成仙了：清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒");
+  return true;
+ }
+ const oldTick=tick;
+ tick=function(dt){
+  ensureNewSystems();
+  const d=domainState();d.time=Math.max(0,d.time-dt);d.cd=Math.max(0,d.cd-dt);p.cd.sageCleanse=Math.max(0,(p.cd.sageCleanse||0)-dt);
+  if(isAkawa()){const mx=artifactShieldMax();p.artifacts.shield=Math.min(mx,(p.artifacts.shield||0)+playerMaxHp()*.05*dt)}
+  const artKey=selectedArtifactKey();if(p.artifacts&&artKey!=="akawa"&&artKey!=="vantosa")p.artifacts.shield=0;
+  const r=oldTick(dt);
+  triggerSageCleanse();
+  if(isNecroScythe()&&fight){
+   p.necroFearAcc=(p.necroFearAcc||0)+dt;
+   while(p.necroFearAcc>=1){p.necroFearAcc-=1;const t=activeMonster();if(t&&t.hp>0)window.cc098AddFear(t,1,"☠️亡靈神鐮")}
+  }else if(p){p.necroFearAcc=0}
+  return r;
+ };
+
+ const oldStatusHtml=statusHtml;
+ statusHtml=function(){
+  let base=preserveFear(()=>oldStatusHtml());if(!fight)return base;
+  // 移除舊恐懼顯示，改由 0.9.8 統一顯示 300/500 上限，避免重複出現。
+  base=String(base||"").replace(/<span[^>]*>[^<]*😱 恐懼[^<]*<\/span>/g,"").replace(/<span[^>]*>[^<]*恐懼崩潰[^<]*<\/span>/g,"");
+  let domain=0,fear=0,despair=false,broken=false,reap=false,cap=fearCap();
+  for(const t of targetList()){const e=ensureEffectBag(t);domain=Math.max(domain,e.domain||0);fear=Math.max(fear,Math.floor(e.fearStacks||0));despair=despair||e.fearDespair>0;broken=broken||e.fearBroken>0;reap=reap||e.fearReapReady>0}
+  let h="";if(domain>0)h+=`<span class='badge freeze'>🌀 神煞領域壓制 ${domain.toFixed(1)}秒｜攻速-80%，技能封鎖</span>`;
+  if(fear>0)h+=`<span class='badge bleed'>😱 恐懼 ${fear}/${cap}</span>`;
+  if(broken)h+=`<span class='badge break'>😱 恐懼崩潰｜攻速/回血-40%，無法使用技能</span>`;
+  if(despair)h+=`<span class='badge freeze'>🧠 精神絕望｜暫停攻擊</span>`;
+  if(reap)h+=`<span class='badge poison'>☠️ 收割待命：生命低於10%</span>`;
+  if(h&&base==="<span class='small'>無狀態</span>")base="";
+  return base+h;
+ };
+ const oldPlayerStatusHtml=playerStatusHtml;
+ playerStatusHtml=function(){
+  let base=oldPlayerStatusHtml();let h="";const d=domainState();
+  if(isDomainActive())h+=`<span class="badge freeze">🌀 神煞領域 ${d.time.toFixed(1)}秒｜傷害/命中/防禦+1000%</span>`;
+  else if(isDomainMaster()&&d.cd>0)h+=`<span class="badge freeze">🌀 神煞領域冷卻 ${Math.ceil(d.cd)}秒</span>`;
+  if(isAkawa())h+=`<span class="badge break">🔮 阿卡娃護盾 ${short(p.artifacts.shield||0)} / ${short(artifactShieldMax())}</span>`;
+  if(isNecroScythe())h+=`<span class="badge bleed">☠️ 亡靈神鐮啟用｜恐懼上限500</span>`;
+  if(hasUnlockedTitle("sage5000")&&(p.cd.sageCleanse||0)>0)h+=`<span class="badge poison">🧘 我得道成仙了冷卻 ${Math.ceil(p.cd.sageCleanse)}秒</span>`;
+  if(h&&base==="玩家狀態：無")base="";
+  return base+h;
+ };
+
+ function renderExpInfo(){
+  const hud=document.querySelector(".hud");if(!hud||by("cc098ExpBox")){}else{const d=document.createElement("div");d.id="cc098ExpBox";d.className="cc098ExpBox";d.innerHTML='EXP <b id="cc098ExpNow">0</b> / <b id="cc098ExpNeed">0</b><br><span id="cc098ExpPct">0%</span>';hud.appendChild(d)}
+  const need=Math.max(1,expNeed()),cur=Math.max(0,num(p.exp,0)),pct=Math.max(0,Math.min(999,cur/need*100));
+  if(by("cc098ExpNow"))by("cc098ExpNow").textContent=short(cur);if(by("cc098ExpNeed"))by("cc098ExpNeed").textContent=short(need);if(by("cc098ExpPct"))by("cc098ExpPct").textContent="進度 "+pct.toFixed(1)+"%";
+ }
+ const oldRender=render;
+ render=function(){const r=preserveFear(()=>oldRender());renderExpInfo();
+  if(by("titlePanel")){by("titlePanel").innerHTML=by("titlePanel").innerHTML.replace(/我得道成仙了：無視所有狀態傷害/g,"我得道成仙了：3種以上狀態傷害時清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒");}
+  if(fight&&fight.monsters&&by("monsterList")){
+   const target=activeMonster(),idx=fight.monsters.indexOf(target),cap=fearCap();
+   by("monsterList").innerHTML=fight.monsters.map((m,i)=>{const e=ensureEffectBag(m),fearLine=(e.fearStacks>0?`<span class="monsterAffixes">😱 恐懼 ${Math.floor(e.fearStacks)}/${cap}${e.fearBroken>0?"｜崩潰":""}${e.fearDespair>0?"｜絕望":""}</span>`:""),domainLine=(e.domain>0?`<span class="monsterAffixes">🌀領域 ${e.domain.toFixed(1)}秒</span>`:"");return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${m.name}${m.rabbitRampStacks?`<span class="monsterAffixes">狂咬 ${m.rabbitRampStacks}層</span>`:""}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}${fearLine}${domainLine}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`}).join("");
+  }
+  return r};
+ const st=document.createElement("style");st.textContent=`.cc098ExpBox{grid-column:span 2;border:1px solid rgba(125,211,252,.25);background:rgba(14,165,233,.08);border-radius:12px;padding:8px;color:#e0f2fe}.cc098ExpBox b{color:#fff}`;document.head.appendChild(st);
+ console.log("傳承",CC098_TAG);
+})();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
