@@ -248,3 +248,10 @@
 - Added 500-stack pending execute display for fear reap state.
 - Fixed equipped title click switching with delegated click handling.
 - Locked player status display height with internal scrolling to prevent screen jumping when many statuses are active.
+
+
+## Beta 0.9.8 Hotfix：亡靈神鐮恐懼 500 層修正
+- 修正戰鐮舊版 300 層恐懼上限在 render / tick 時把亡靈神鐮 301~500 層彈回 300 的問題。
+- 亡靈神鐮啟用時，恐懼層數可穩定疊到 500。
+- 修正 400 層精神絕望與 500 層待斬殺 / 10% 生命收割判定。
+- 保留鏡像門神免疫特殊恐懼效果。

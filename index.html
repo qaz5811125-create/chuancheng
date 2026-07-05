@@ -3224,6 +3224,140 @@ console.log("傳承",FLICKER_FIX_TAG);
  console.log("傳承",HOTFIX_TAG,"input-restore-v2");
 })();
 
+
+/* ===== Beta 0.9.8 Hotfix：亡靈神鐮 500 層防回彈 / 收割保險 ===== */
+(function(){
+ const TAG="0.9.8-hotfix-necro-fear-500-reap-v1";
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ function necroCap(){
+  try{return selectedArtifactKey()==="necroScythe"&&currentJobKey()==="reaper"?500:300}
+  catch(e){return p&&p.artifacts&&p.artifacts.selected==="necroScythe"&&p.job==="reaper"?500:300}
+ }
+ function targets(){
+  if(!fight)return[];
+  if(fight.monsters&&Array.isArray(fight.monsters))return fight.monsters.filter(Boolean);
+  return fight&&fight.hp>0?[fight]:[];
+ }
+ function patchBag(e){
+  if(!e||typeof e!=="object"||e.__necroFearAccessorV1)return e;
+  let raw=Math.max(0,Math.floor(n(e.fearStacks,0)),Math.floor(n(e.__fearHold,0)),Math.floor(n(e.__fearStacksRaw,0)));
+  try{
+   Object.defineProperty(e,"fearStacks",{
+    configurable:true,
+    enumerable:true,
+    get(){return raw},
+    set(v){
+     v=Math.floor(n(v,0));
+     const cap=necroCap();
+     // 舊戰鐮邏輯會在 render / tick 期間把 301~500 強制寫回 300。
+     // 亡靈神鐮啟用時，這種 300 回寫視為舊上限裁切，直接忽略。
+     if(cap>=500&&raw>300&&v===300){e.__fearHold=raw;e.__fearStacksRaw=raw;return;}
+     raw=Math.max(0,Math.min(cap,v));
+     e.__fearHold=raw;e.__fearStacksRaw=raw;
+    }
+   });
+   e.__necroFearAccessorV1=1;
+   e.__fearHold=raw;e.__fearStacksRaw=raw;
+  }catch(err){
+   e.fearStacks=raw;e.__fearHold=raw;e.__fearStacksRaw=raw;e.__necroFearAccessorV1=1;
+  }
+  return e;
+ }
+ const oldEnsure=ensureEffectBag;
+ ensureEffectBag=function(target){
+  const e=oldEnsure(target);
+  return patchBag(e);
+ };
+ function syncDeath(target){
+  if(!fight)return;
+  if(fight.monsters){
+   refreshTotalHp();
+   settleFormationDeaths();
+   if(fight&&fight.hp<=0)killEnemy();
+  }else{
+   fight.hp=Math.max(0,n(target&&target.hp,0));
+   if(fight&&fight.hp<=0)killEnemy();
+  }
+ }
+ function process(target){
+  if(!target||target.hp<=0||target.mirrorBoss)return false;
+  const cap=necroCap();
+  const e=ensureEffectBag(target);
+  const fear=Math.max(0,Math.floor(n(e.fearStacks,0)));
+  if(cap>=500&&fear>=400&&!e.fearDespair){
+   e.fearTried400=1;e.fearDespair=1;
+   floatText((target.emoji||"")+"🧠精神絕望！",true);
+   log("🧠 亡靈神鐮：恐懼400層觸發精神絕望，目標暫停攻擊");
+  }
+  if(cap>=500&&fear>=500){
+   e.fearReapReady=1;
+   if(target.hp>0&&target.hp<=target.max*.10){
+    target.hp=0;
+    floatText((target.emoji||"")+"☠️恐懼收割！",true);
+    log("☠️ 亡靈神鐮：目標生命低於10%，收割成功");
+    syncDeath(target);
+    return true;
+   }
+  }
+  return false;
+ }
+ function processAll(){for(const t of targets())process(t)}
+ function addFear(target,add=1,source="😱"){
+  if(!target||target.hp<=0||target.mirrorBoss)return false;
+  const e=ensureEffectBag(target),amt=Math.max(1,Math.floor(n(add,1))),cap=necroCap();
+  e.fearStacks=Math.min(cap,Math.max(0,Math.floor(n(e.fearStacks,0)))+amt);
+  e.__fearHold=Math.max(Math.floor(n(e.__fearHold,0)),Math.floor(n(e.fearStacks,0)));
+  e.__fearStacksRaw=e.__fearHold;
+  floatText((target.emoji||"")+source+"恐懼+"+amt);
+  let escaped=false;
+  for(const [need,chance] of [[100,.20],[200,.25],[300,.30]]){
+   const key="fearTried"+need;
+   if(e.fearStacks>=need&&!e[key]){
+    e[key]=1;floatText((target.emoji||"")+"😱恐懼"+need+"層",true);
+    log("😱 恐懼達 "+need+" 層：逃離判定 "+Math.round(chance*100)+"%");
+    if(Math.random()<chance&&window.cc095_targetEscapesByFear){escaped=window.cc095_targetEscapesByFear(target);break}
+    e.fearFailedCount=Math.min(3,Math.floor(n(e.fearFailedCount,0))+1);
+    floatText((target.emoji||"")+"😱抵抗恐懼");
+    if(e.fearFailedCount>=3&&!e.fearBroken){e.fearBroken=1;floatText((target.emoji||"")+"😱恐懼崩潰！",true);log("😱 目標進入恐懼崩潰：攻速/回血-40%，無法使用技能")}
+   }
+  }
+  if(!escaped)process(target);
+  return escaped;
+ }
+ window.cc098AddFear=addFear;
+ cc093_addReaperFear=function(target,stacks=1){
+  if(currentJobKey()!=="reaper"||!target||target.hp<=0)return false;
+  if(Math.random()>=.45)return false;
+  let add=Math.max(1,Math.floor(n(stacks,1)));
+  try{if(typeof cc097TitleUnlocked==="function"&&cc097TitleUnlocked("reaperScary"))add*=2;}catch(e){}
+  return addFear(target,add,"🩸");
+ };
+ window.cc096AddFearStack=function(target,add=1,source="🐶"){return addFear(target,add,source+"😱")};
+ const oldTick=typeof tick==="function"?tick:null;
+ if(oldTick)tick=function(dt){const r=oldTick(dt);processAll();return r};
+ const oldTickEffects=typeof tickEffects==="function"?tickEffects:null;
+ if(oldTickEffects)tickEffects=function(dt){const r=oldTickEffects(dt);processAll();return r};
+ const oldRender=typeof render==="function"?render:null;
+ if(oldRender)render=function(){
+  const before=targets().map(t=>[t,Math.floor(n(ensureEffectBag(t).fearStacks,0)),Math.floor(n(ensureEffectBag(t).__fearHold,0))]);
+  const r=oldRender();
+  for(const [t,st,hold] of before){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);const keep=Math.max(st,hold,Math.floor(n(e.fearStacks,0)),Math.floor(n(e.__fearHold,0)));e.fearStacks=keep;e.__fearHold=keep;e.__fearStacksRaw=keep;}
+  processAll();
+  return r;
+ };
+ const oldStatus=typeof statusHtml==="function"?statusHtml:null;
+ if(oldStatus)statusHtml=function(){
+  const before=targets().map(t=>[t,Math.floor(n(ensureEffectBag(t).fearStacks,0)),Math.floor(n(ensureEffectBag(t).__fearHold,0))]);
+  let base=String(oldStatus()||"");
+  for(const [t,st,hold] of before){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);const keep=Math.max(st,hold,Math.floor(n(e.fearStacks,0)),Math.floor(n(e.__fearHold,0)));e.fearStacks=keep;e.__fearHold=keep;e.__fearStacksRaw=keep;}
+  processAll();
+  return base;
+ };
+ processAll();
+ window.cc098NecroFearHotfixTag=TAG;
+ console.log("傳承",TAG);
+})();
+
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
 window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setArtifact=setArtifact;window.upgradeArtifact=upgradeArtifact;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.cleanse=cleanse;window.bloodShield=bloodShield;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;window.exitAbyss=exitAbyss;
