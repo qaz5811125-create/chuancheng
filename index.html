@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.8 領域使與神器擴充</title>
+<title>傳承 Beta 0.9.8 Hotfix 按鍵復活與收納恢復</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -189,6 +189,12 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 #enemyEmoji{transform:translateX(-50%)!important;}
 
 </style>
+<style>
+/* 0.9.8 input restore: ensure floating drawer is above app cards and accepts touch */
+#featureDockBtn.featureDockBtn{z-index:100000!important;pointer-events:auto!important;display:block!important;visibility:visible!important;opacity:1!important;}
+#featureDrawer.featureDrawer{z-index:99999!important;pointer-events:auto!important;}
+#featureDrawer.featureDrawer button{pointer-events:auto!important;}
+</style>
 </head>
 <body>
 <div id="pwaSplash" aria-label="傳承啟動畫面"></div>
@@ -340,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.8 領域使與神器擴充</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.8 Hotfix 按鍵復活與收納恢復</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -3144,7 +3150,9 @@ console.log("傳承",FLICKER_FIX_TAG);
   if(typeof cc097TitleUnlocked==="function"&&cc097TitleUnlocked("reaperScary"))add*=2;
   return addFearFixed(target,add,"🩸");
  };
- cc096AddFearStack=function(target,add=1,source="🐶"){
+ // cc096AddFearStack 原本是 0.9.6 IIFE 內部函式，不能在這裡用未宣告變數覆寫，否則會讓整包 JS 中斷，造成所有按鍵失靈與收納消失。
+ // 這裡只提供全域安全入口；原本寵物後援邏輯仍可照舊運作，戰鐮/亡靈神鐮則使用新版 addFearFixed。
+ window.cc096AddFearStack=function(target,add=1,source="🐶"){
   return addFearFixed(target,add,source+"😱");
  };
  const oldTickEffects=tickEffects;
@@ -3213,7 +3221,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  window.upgradeSpecialWeapon=upgradeSpecialWeapon;
  window.jobPanelHtml=jobPanelHtml;
  window.cc098HotfixTag=HOTFIX_TAG;
- console.log("傳承",HOTFIX_TAG);
+ console.log("傳承",HOTFIX_TAG,"input-restore-v2");
 })();
 
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
