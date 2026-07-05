@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.8 Hotfix 按鍵復活與收納恢復</title>
+<title>傳承 Beta 0.9.9 戰鐮覺醒</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -355,7 +355,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 "use strict";
 const $=id=>document.getElementById(id);
 const GAME_VERSION="0.9.8";
-const BUILD_TAG_093_REPACK="0.9.8-domain-artifact-expansion-v1";
+const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
 const slotMeta={weapon:["⚔️","武器"],head:["🎩","頭盔"],armor:["🛡️","盔甲"],ring:["💍","戒指"],shoes:["👢","鞋子"]};
@@ -2886,7 +2886,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  };
 
  function cc098ProcessFear(target){
-  if(!target||target.hp<=0||isMirror(target))return false;
+  if(!target||target.hp<=0||isMirror(target)||target.awakenBoss)return false;
   const e=ensureEffectBag(target),cap=fearCap();
   e.fearStacks=Math.max(0,Math.min(cap,Math.floor(e.fearStacks||0)));
   let escaped=false;
@@ -3063,7 +3063,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  }
  function processFear500(target){
   if(!target||target.hp<=0)return false;
-  if(target.mirrorBoss)return false;
+  if(target.mirrorBoss||target.awakenBoss)return false;
   const cap=currentFearCap(),e=ensureEffectBag(target);
   e.fearStacks=Math.max(0,Math.min(cap,Math.floor(n(e.fearStacks,0))));
   if(cap>=500&&e.fearStacks>=400&&!e.fearTried400){
@@ -3280,7 +3280,7 @@ console.log("傳承",FLICKER_FIX_TAG);
   }
  }
  function process(target){
-  if(!target||target.hp<=0||target.mirrorBoss)return false;
+  if(!target||target.hp<=0||target.mirrorBoss||target.awakenBoss)return false;
   const cap=necroCap();
   const e=ensureEffectBag(target);
   const fear=Math.max(0,Math.floor(n(e.fearStacks,0)));
@@ -3355,6 +3355,223 @@ console.log("傳承",FLICKER_FIX_TAG);
  };
  processAll();
  window.cc098NecroFearHotfixTag=TAG;
+ console.log("傳承",TAG);
+})();
+
+
+
+/* ===== Beta 0.9.9：職業覺醒 / 戰鐮 → 收割者 / 覺醒副本 ===== */
+(function(){
+ const TAG="0.9.9-reaper-awakening-v1";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const short=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ const TITLE_ID="businessFirst";
+ const TITLE_NAME="業務第一名☠️";
+ const AWAKEN_DUNGEON="reaperAwaken";
+ document.title="傳承 Beta 0.9.9 戰鐮覺醒";
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function swLv(job="reaper"){try{return specialWeaponLevel(job)}catch(e){const w=job==="reaper"?"scythe":null;return w&&p&&p.specialWeapons?Math.floor(n(p.specialWeapons[w],0)):0}}
+ function awakenState(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.reaperKills=Math.max(0,Math.floor(n(a.reaperKills,0)));
+  a.reaperDungeonClears=Math.max(0,Math.floor(n(a.reaperDungeonClears,0)));
+  a.reaperAwakened=!!a.reaperAwakened;
+  return a;
+ }
+ function titleStateSafe(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function hasBusinessTitle(){const t=titleStateSafe();return !!(t.unlocked&&t.unlocked[TITLE_ID])}
+ function unlockBusinessTitle(){const t=titleStateSafe();if(t.unlocked[TITLE_ID])return false;t.unlocked[TITLE_ID]=Date.now();log("🏷️ 解鎖稱號：「"+TITLE_NAME+"」");return true}
+ function isReaperAwakened(){return !!(p&&awakenState().reaperAwakened)}
+ function hasReaperKillReq(){return awakenState().reaperKills>=1000}
+ function hasReaperLevelReq(){return swLv("reaper")>=10}
+ function hasReaperDungeonReq(){return awakenState().reaperDungeonClears>=1}
+ function reaperCanAwaken(){return hasReaperKillReq()&&hasReaperLevelReq()&&hasReaperDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function currentAwakenDisplay(){return isReaperAwakened()?"戰鐮 → 收割者":"戰鐮"}
+ function openModal(html){
+  let m=by("cc099Modal");
+  if(!m){m=document.createElement("div");m.id="cc099Modal";m.className="cc099Modal hidden";document.body.appendChild(m)}
+  m.innerHTML=`<div class="cc099ModalCard">${html}</div>`;
+  m.classList.remove("hidden");
+ }
+ function closeModal(){const m=by("cc099Modal");if(m)m.classList.add("hidden")}
+ function lineReqs(){const a=awakenState();return `
+  <div class="cc099Req ${hasReaperKillReq()?"ok":"no"}">${check(hasReaperKillReq())} 使用戰鐮擊敗怪物：${Math.min(a.reaperKills,1000)} / 1000</div>
+  <div class="cc099Req ${hasReaperLevelReq()?"ok":"no"}">${check(hasReaperLevelReq())} 戰鐮等級：Lv.${swLv("reaper")} / Lv.10</div>
+  <div class="cc099Req ${hasReaperDungeonReq()?"ok":"no"}">${check(hasReaperDungeonReq())} 戰鐮覺醒副本：${Math.min(a.reaperDungeonClears,1)} / 1</div>`}
+ function showAwakeningPanel(){
+  ensureNewSystems();const a=awakenState();
+  const cur=curJob();
+  let other="";
+  const closed=["戰士","狂戰士","戰騎","弓箭手","盜賊","刺客","法師","槍手","聖錘兵","召喚師","技能師","刺盾","巨神兵","領域使"];
+  other=`<div class="small"><b>暫未開放覺醒</b><br>${closed.join("、")}</div>`;
+  openModal(`
+   <div class="row"><b>🌑 職業覺醒</b><button onclick="window.cc099CloseModal()">關閉</button></div>
+   <div class="small">覺醒系統獨立於職業切換，目前第一階段只開放 <b>戰鐮 → 收割者</b>。</div>
+   <hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="reaper"?currentAwakenDisplay():(cur==="reaper"?"戰鐮":"暫未開放")}</span></div>
+   <div class="card notice"><b>戰鐮覺醒目標：收割者</b><div class="small">覺醒狀態：${a.reaperAwakened?"✅ 已覺醒":"未覺醒"}</div>${lineReqs()}</div>
+   <div class="small"><b>覺醒效果</b><br>1. 戰鐮職業本體數值成長 +40%<br>2. 戰鐮專武升級成長 +40%<br>3. 解鎖收割者專屬狀態：死兆</div>
+   <div class="small"><b>死兆</b><br>目標恐懼達 300 層以上時獲得死兆。目標受到戰鐮普攻傷害 +40%，受到恐懼每秒傷害 +40%。不改動亡靈神鐮 500 層與收割規則。</div>
+   <button class="purple" onclick="window.cc099AwakenReaper()" ${reaperCanAwaken()&&!a.reaperAwakened?"":"disabled"}>覺醒：戰鐮 → 收割者</button>
+   ${other}
+  `);
+ }
+ function showAwakenDungeonPanel(){
+  ensureNewSystems();const a=awakenState(),cur=curJob(),can=cur==="reaper"&&hasReaperKillReq()&&hasReaperLevelReq()&&!isDungeon();
+  openModal(`
+   <div class="row"><b>💀 覺醒副本</b><button onclick="window.cc099CloseModal()">關閉</button></div>
+   <div class="card notice"><b>戰鐮覺醒副本</b><div class="small">Boss：收割試煉者｜挑戰時間：120 秒<br>通關後獲得專屬稱號【${TITLE_NAME}】，並完成戰鐮覺醒條件。</div></div>
+   <div class="small"><b>開啟條件</b>${lineReqs().replace(/戰鐮覺醒副本：[^<]+<\/div>/,'戰鐮覺醒副本：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>Boss 特性</b><br>免疫恐懼逃離、恐懼收割、秒殺與特殊處決；可受到普攻、撕裂、恐懼層數與恐懼每秒傷害。</div>
+   <button class="purple" onclick="window.cc099StartReaperAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為戰鐮")}</button>
+   <div class="small">目前通關：${Math.min(a.reaperDungeonClears,1)} / 1｜稱號：${hasBusinessTitle()?"✅ "+TITLE_NAME:"未取得"}</div>
+  `);
+ }
+ function ensureDrawerButtons(){
+  const panel=by("featureDrawer");if(!panel||panel.dataset.cc099AwakenButtons==="1")return;
+  panel.dataset.cc099AwakenButtons="1";
+  function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}
+  panel.appendChild(b("🌑 職業覺醒",showAwakeningPanel));
+  panel.appendChild(b("💀 覺醒副本",showAwakenDungeonPanel));
+ }
+ function createReaperAwakenBoss(){
+  const hp=Math.max(1,Math.floor(playerMaxHp()*30));
+  const atkV=Math.max(1,Math.floor(atk()*8));
+  const defV=Math.max(0,Math.floor(playerDef()*10));
+  const m=enemy({mode:"dungeon",dungeonType:AWAKEN_DUNGEON,type:"boss",name:"收割試煉者",emoji:"💀",hp,def:defV,reg:Math.floor(hp*.005),gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:3,awakenBoss:true,targetKey:"reaperAwaken"});
+  return finalizeMonster(m);
+ }
+ function startReaperAwakenDungeon(){
+  ensureNewSystems();
+  if(isDungeon())return log("副本進行中，不能重複進入");
+  if(curJob()!=="reaper")return log("💀 戰鐮覺醒副本需要目前職業為戰鐮");
+  if(!hasReaperKillReq())return log("💀 戰鐮擊殺數不足："+awakenState().reaperKills+"/1000");
+  if(!hasReaperLevelReq())return log("💀 戰鐮等級不足：Lv."+swLv("reaper")+"/10");
+  closeModal();
+  dungeon={type:AWAKEN_DUNGEON,timer:120,kills:0,gain:0,running:true};
+  fight=createReaperAwakenBoss();p.queue=0;hold=false;budget=0;show("main");
+  log("💀 戰鐮覺醒副本開始：120秒內擊敗收割試煉者");save(false);render();
+ }
+ function awakenReaper(){
+  ensureNewSystems();const a=awakenState();
+  if(a.reaperAwakened)return log("💀 戰鐮已覺醒為收割者");
+  if(!reaperCanAwaken())return log("💀 戰鐮覺醒條件尚未完成");
+  a.reaperAwakened=true;save(false);log("🌑 覺醒成功：戰鐮 → 收割者");floatText("戰鐮→收割者！",true);render();showAwakeningPanel();
+ }
+ function endAwakenRun(success){
+  window.cc099CutsceneActive=true;
+  const a=awakenState();
+  if(success){
+   a.reaperDungeonClears=Math.max(1,a.reaperDungeonClears||0);
+   unlockBusinessTitle();
+   save(false);
+  }
+  const text=success?"恭喜你，接手新業務🎊":"你不是這期的業務第一名😑";
+  const cls=success?"win":"lose";
+  let ov=by("cc099Cutscene");
+  if(!ov){ov=document.createElement("div");ov.id="cc099Cutscene";document.body.appendChild(ov)}
+  ov.className="cc099Cutscene "+cls;
+  ov.innerHTML=`<div class="cc099BossTalk"><div class="cc099BossEmoji">💀</div><div class="small">收割試煉者</div><div class="cc099TalkText">「${text}」</div><button onclick="window.cc099CloseCutscene(${success?1:0})">確認</button></div>`;
+  ov.classList.remove("hidden");
+ }
+ function closeCutscene(success){
+  const ov=by("cc099Cutscene");if(ov)ov.classList.add("hidden");
+  window.cc099CutsceneActive=false;
+  dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();save(false);spawnMain();
+  if(success)log("💀 你通過了收割試煉。獲得專屬稱號【"+TITLE_NAME+"】，戰鐮已具備覺醒資格。");
+  else log("💀 戰鐮覺醒副本挑戰失敗");
+ }
+ // 系統資料補值。
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;awakenState();titleStateSafe();};
+ // 戰鐮擊殺進度，只計算真正擊殺，恐懼逃離不算。
+ const oldReward=rewardMonster;
+ rewardMonster=function(m,dropState){
+  const countable=m&&!m.rewarded&&!m.escaped&&!m.escapedByFear&&curJob()==="reaper";
+  const r=oldReward(m,dropState);
+  if(countable&&m&&m.rewarded&&!m.escaped&&!m.escapedByFear){const a=awakenState();a.reaperKills=Math.min(999999,a.reaperKills+1)}
+  return r;
+ };
+ // 覺醒副本通關 / 失敗。
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){
+  if(dungeon&&dungeon.type===AWAKEN_DUNGEON){dungeon.running=false;endAwakenRun(true);return}
+  return oldDungeonKill();
+ };
+ const oldEndDungeon=endDungeon;
+ endDungeon=function(){
+  if(dungeon&&dungeon.type===AWAKEN_DUNGEON){dungeon.running=false;endAwakenRun(false);return}
+  return oldEndDungeon();
+ };
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){
+  if(dungeon&&dungeon.type===AWAKEN_DUNGEON){dungeon.running=false;endAwakenRun(false);return}
+  return oldPlayerDeath();
+ };
+ // 覺醒副本 Boss AI。
+ const oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){
+  if(dungeon&&dungeon.type===AWAKEN_DUNGEON&&fight){const m=fight;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<4){monsterNormalAttack(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}return}
+  return oldTickMonsterAI(dt);
+ };
+ // 過場期間暫停戰鬥更新。
+ const oldTick=tick;
+ tick=function(dt){if(window.cc099CutsceneActive)return;return oldTick(dt)};
+ // 收割試煉者免疫恐懼逃離。
+ if(window.cc095_targetEscapesByFear){const oldEsc=window.cc095_targetEscapesByFear;window.cc095_targetEscapesByFear=function(target){if(target&&target.awakenBoss){floatText("💀業務不能逃");return false}return oldEsc(target)}}
+ // 覺醒成長：只強化戰鐮本體/專武相關成長，不放大裝備、神器、稱號總值。
+ const oldJobAtk=jobAtkBonus;
+ jobAtkBonus=function(){let v=oldJobAtk();if(curJob()==="reaper"&&isReaperAwakened())v*=1.4;return v};
+ const oldBleedRate=bleedRate;
+ bleedRate=function(){let v=oldBleedRate();if(curJob()==="reaper"&&isReaperAwakened())v*=1.4;return v};
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){const t=activeMonster();const normal=!label&&!(opt&&opt.skill);if(normal&&curJob()==="reaper"&&isReaperAwakened()&&t){const e=ensureEffectBag(t);if((e.fearStacks||0)>=300)mult*=1.4}return oldDamage(mult,label,opt)};
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){const r=oldTickEffects(dt);if(curJob()==="reaper"&&isReaperAwakened()&&fight){const list=(fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters():[fight]).filter(Boolean);let hit=false;for(const t of list){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);if((e.fearStacks||0)>=300&&!(e.invincible>0)){e.deathMark=1;const d=Math.max(1,(t.max||t.hp||1)*0.0004*dt*(t.dotTaken||1)*(t.statusRes||1));t.hp-=d;hit=true}}if(hit){if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy()}}return r};
+ // UI 顯示：職業欄、玩家狀態、怪物狀態、稱號切換。
+ const oldJobPanel=jobPanelHtml;
+ jobPanelHtml=function(){let h=oldJobPanel();if(isReaperAwakened())h=h.replace(/<span class="pill">🩸 戰鐮<\/span>/,'<span class="pill">🩸 戰鐮 → 收割者</span>');return h};
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatus();if(curJob()==="reaper"&&isReaperAwakened()){if(h==="玩家狀態：無")h="";h+=`<span class="badge bleed">🌑 覺醒：戰鐮 → 收割者｜死兆解鎖</span>`}return h};
+ const oldStatus=statusHtml;
+ statusHtml=function(){let h=oldStatus();if(fight&&curJob()==="reaper"&&isReaperAwakened()){let mark=false;const list=(fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters():[fight]).filter(Boolean);for(const t of list){const e=ensureEffectBag(t);if((e.fearStacks||0)>=300||e.deathMark>0)mark=true}if(mark){if(h==="<span class='small'>無狀態</span>")h="";h+=`<span class='badge poison'>🌑 死兆｜戰鐮普攻/恐懼傷害 +40%</span>`}}return h};
+ function renderBusinessTitleTools(){
+  if(!p||!p.titles)return;
+  if(p.titles.equipped===TITLE_ID){const el=by("equippedTitleHud");if(el){el.textContent="【"+TITLE_NAME+"】";el.classList.remove("hidden")}}
+  const box=by("equippedTitleBox");if(box&&hasBusinessTitle()&&!by("cc099BusinessTitleBtn")){
+   const list=box.querySelector(".titleEquipList")||box;
+   const b=document.createElement("button");b.type="button";b.id="cc099BusinessTitleBtn";b.className="titleChoice"+(p.titles.equipped===TITLE_ID?" active":"");b.dataset.titleId=TITLE_ID;b.textContent="🏷️ "+TITLE_NAME;
+   b.addEventListener("pointerdown",ev=>ev.stopPropagation());
+   b.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();p.titles.equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render()});
+   list.appendChild(b);
+  }
+ }
+ const oldRender=render;
+ render=function(){const r=oldRender();ensureDrawerButtons();renderBusinessTitleTools();return r};
+ // 讓其他舊版顯示也知道這個稱號名稱。
+ const oldSetTitle=window.cc097SetEquippedTitle;
+ window.cc097SetEquippedTitle=function(id){if(id===TITLE_ID){if(!hasBusinessTitle())return log("尚未解鎖此稱號");titleStateSafe().equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render();return}return oldSetTitle?oldSetTitle(id):undefined};
+ window.cc099ShowAwakeningPanel=showAwakeningPanel;
+ window.cc099ShowAwakenDungeonPanel=showAwakenDungeonPanel;
+ window.cc099StartReaperAwakenDungeon=startReaperAwakenDungeon;
+ window.cc099AwakenReaper=awakenReaper;
+ window.cc099CloseModal=closeModal;
+ window.cc099CloseCutscene=closeCutscene;
+ const style=document.createElement("style");
+ style.textContent=`
+  .cc099Modal{position:fixed;inset:0;z-index:120000;background:rgba(2,6,23,.72);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+  .cc099Modal.hidden{display:none!important}.cc099ModalCard{width:min(620px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(250,204,21,.32);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.6)}
+  .cc099Req{padding:6px 8px;margin:5px 0;border-radius:10px;background:rgba(15,23,42,.72)}.cc099Req.ok{border:1px solid rgba(34,197,94,.45);color:#bbf7d0}.cc099Req.no{border:1px solid rgba(248,113,113,.35);color:#fecaca}
+  .cc099Cutscene{position:fixed;inset:0;z-index:130000;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;animation:cc099FadeIn .38s ease both}.cc099Cutscene.hidden{display:none!important}.cc099Cutscene.lose{background:rgba(0,0,0,.86)}
+  .cc099BossTalk{width:min(560px,90vw);text-align:center;background:linear-gradient(180deg,rgba(15,23,42,.95),rgba(0,0,0,.95));border:1px solid rgba(250,204,21,.45);border-radius:22px;padding:22px;box-shadow:0 0 60px rgba(250,204,21,.12)}
+  .cc099BossEmoji{font-size:64px;filter:drop-shadow(0 0 18px rgba(248,250,252,.25))}.cc099TalkText{font-size:22px;font-weight:900;margin:16px 0;line-height:1.5;color:#fde68a}@keyframes cc099FadeIn{from{opacity:0}to{opacity:1}}
+ `;
+ document.head.appendChild(style);
+ setTimeout(()=>{try{ensureDrawerButtons()}catch(e){}},0);
+ window.cc099AwakeningTag=TAG;
  console.log("傳承",TAG);
 })();
 
