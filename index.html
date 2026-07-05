@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.8";
+const GAME_VERSION="0.9.10";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -3572,6 +3572,178 @@ console.log("傳承",FLICKER_FIX_TAG);
  document.head.appendChild(style);
  setTimeout(()=>{try{ensureDrawerButtons()}catch(e){}},0);
  window.cc099AwakeningTag=TAG;
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.10 沙漠正式開放 / 乾渴壓制 / 乾屍限制回血 ===== */
+(function(){
+ const TAG="0.9.10-desert-expansion-v1";
+ const by=id=>document.getElementById(id);
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function isDesert(){try{return currentMapId()==="desert"}catch(e){return p&&p.world&&p.world.current==="desert"}}
+ function aliveList(){try{return fight&&fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters():(fight&&fight.hp>0?[fight]:[])}catch(e){return[]}}
+ function desertExtraForMonster(m){
+  if(!m||m.map!=="desert")return 0;
+  if(m.desertKind==="cactus")return .20;
+  if(m.desertKind==="flower")return .30;
+  if(m.desertKind==="snake")return .05;
+  if(m.desertKind==="mummy")return 1.00;
+  return 0;
+ }
+ function currentDesertSuppression(){
+  if(!isDesert())return 0;
+  let extra=0;
+  for(const m of aliveList())extra=Math.max(extra,desertExtraForMonster(m));
+  return clamp(.40+extra,0,1.40);
+ }
+ function dryText(){
+  const v=currentDesertSuppression();
+  if(v<=0)return "";
+  const pct=Math.round(v*100);
+  return pct>100?`🏜️ 乾渴壓制：回血 -${pct}%，每秒失去最大生命 0.4%`:`🏜️ 乾渴壓制：回血 -${pct}%`;
+ }
+ function applyShieldedDryDamage(amount){
+  let left=Math.max(0,amount);
+  const st=playerStatus();
+  if((st.bloodShield||0)>0){const used=Math.min(st.bloodShield,left);st.bloodShield-=used;left-=used;if(used>0)floatText("🩸血盾-"+Math.floor(used))}
+  if((p.artifacts&&p.artifacts.shield||0)>0){const used=Math.min(p.artifacts.shield,left);p.artifacts.shield-=used;left-=used;if(used>0)floatText("🛡️神器盾-"+Math.floor(used))}
+  if(left>0)p.hp=Math.max(0,(p.hp||playerMaxHp())-left);
+  return left;
+ }
+ function ensureDesertMapOpen(){
+  try{
+   const d=WORLD_MAPS.find(x=>x.id==="desert");
+   if(d){d.open=true;d.desc="正式開放：乾渴壓制、🌵仙人掌、🏵️食人花、🐍火焰蛇、🧌乾屍。";}
+   if(TARGET_OPTIONS){Object.assign(TARGET_OPTIONS,{cactus:["🌵","仙人掌"],flower:["🏵️","食人花"],snake:["🐍","火焰蛇"],mummy:["🧌","乾屍"]});}
+   if(MAP_TARGET_KEYS)MAP_TARGET_KEYS.desert=["auto","cactus","flower","snake","mummy"];
+  }catch(e){console.warn("desert open patch failed",e)}
+ }
+ ensureDesertMapOpen();
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();ensureDesertMapOpen();};
+ const oldCurrentMapName=currentMapName;
+ currentMapName=function(){return currentMapId()==="forest"?"森林":currentMapId()==="desert"?"沙漠":"起源主線"};
+ const oldCanEnterMap=canEnterMap;
+ canEnterMap=function(map){if(map&&map.id==="desert")return p.lv>=100;return oldCanEnterMap(map)};
+ function desertMonsterTemplate(st,type){
+  const baseHp=Math.floor(160*Math.pow(1.18,st-1)+st*70);
+  const baseDef=Math.floor(12+st*14+Math.pow(st,1.14)*5.5);
+  const baseReg=Math.floor(3+st*2.0+Math.pow(st,1.08));
+  const g=monsterGrowth(st);
+  let o={mode:"main",map:"desert",type,targetKey:"auto",statusRes:1,burnTaken:0,bleedImmune:true,burnImmune:true};
+  if(type==="boss"){
+   const snake=Math.random()<.5;
+   if(snake){
+    Object.assign(o,{desertKind:"snake",targetKey:"snake",emoji:"🐍",name:"火焰蛇",hp:Math.floor(baseHp*6.8),def:Math.floor(baseDef*1.4),reg:Math.floor(baseReg*1.2),gold:3800+st*210,xp:520+st*46,drop:1,mAtk:(55+st*5.8)*g.atk,armorBreak:(10+st*1.2)*g.br,mAspd:.85*g.spd,skill:"desert_flame_storm",skillCd:40,desertSpeedStacks:0,timer:90});
+   }else{
+    Object.assign(o,{desertKind:"mummy",targetKey:"mummy",emoji:"🧌",name:"乾屍",hp:Math.floor(baseHp*15),def:Math.floor(baseDef*9.5),reg:Math.floor(baseReg*3),gold:4400+st*240,xp:620+st*52,drop:1,mAtk:(70+st*6.5)*g.atk,armorBreak:(16+st*1.6)*g.br,mAspd:.62*g.spd,skill:"mummy_undying",skillCd:120,mummyUndyingUsed:0,timer:90});
+   }
+  }else if(type==="elite"){
+   Object.assign(o,{desertKind:"flower",targetKey:"flower",emoji:"🏵️",name:"食人花",hp:Math.floor(baseHp*5.8),def:Math.floor(baseDef*.25),reg:Math.floor(baseReg*.7),gold:980+st*92,xp:250+st*25,drop:.72,mAtk:(36+st*4.0)*g.atk,armorBreak:(7+st*.75)*g.br,mAspd:.78*g.spd,stunChance:.20,stunDuration:5,stunCd:15,flowerMaxHpCd:0});
+  }else{
+   Object.assign(o,{desertKind:"cactus",targetKey:"cactus",emoji:"🌵",name:"會傷害人的仙人掌",hp:Math.floor(baseHp*1.65),def:Math.floor(baseDef*1.2),reg:Math.floor(baseReg*4.5),gold:85+st*20,xp:48+st*9,drop:.28+Math.min(.18,st*.0035),mAtk:(18+st*2.1)*g.atk,armorBreak:(3+st*.45)*g.br,mAspd:.75*g.spd,stunChance:.25,stunDuration:3,stunCd:15,reflect:.12});
+  }
+  return finalizeMonster(applyMonsterAffixes(enemy(o),st));
+ }
+ const oldMainMonsterTemplate=mainMonsterTemplate;
+ mainMonsterTemplate=function(st,type){if(currentMapId()==="desert")return desertMonsterTemplate(st,type);return oldMainMonsterTemplate(st,type)};
+ const oldCreateMainEnemy=createMainEnemy;
+ createMainEnemy=function(){const f=oldCreateMainEnemy();if(currentMapId()==="desert"&&f&&f.monsters){f.name="沙漠怪物編隊";f.emoji=f.monsters.map(m=>m.emoji).join("");}return f};
+ const oldAddBleed=addBleed;
+ addBleed=function(target,stacks=1){if(target&&target.map==="desert"){floatText((target.emoji||"")+"🩸免疫撕裂");return}return oldAddBleed(target,stacks)};
+ const oldAddBurn=addBurn;
+ addBurn=function(target,stacks=1,infinite=false){if(target&&target.map==="desert"){floatText((target.emoji||"")+"🔥免疫燃燒");return}return oldAddBurn(target,stacks,infinite)};
+ function desertPoison(st,stacks){st.poison=Math.max(0,Math.floor(st.poison||0))+Math.max(1,Math.floor(stacks));st.poisonTick=1;}
+ function desertBurn(st,stacks){st.burn=Math.max(0,Math.floor(st.burn||0))+Math.max(1,Math.floor(stacks));st.burnTick=1;}
+ function desertMonsterHitEffects(m){
+  if(!m||m.map!=="desert")return;
+  const st=playerStatus();
+  if(m.desertKind==="cactus"){
+   if(m.reflect&&Math.random()<.35){const r=Math.max(1,Math.floor(playerMaxHp()*.002));applyShieldedDryDamage(r);floatText("🌵反傷-"+r)}
+   if(Math.random()<.10){applyPlayerBleed(18,2,true);st.chaos=Math.max(st.chaos||0,10);floatText("🌵撕裂混沌+2",true)}
+  }else if(m.desertKind==="flower"){
+   applyPlayerBleed(20,1,true);
+   if(Math.random()<.40){const dd=playerTakeDamage((m.mAtk||1)*.85,"食人花二段",m);if(dd>0)floatText("🏵️二段-"+dd)}
+   m.flowerMaxHpCd=Math.max(0,num(m.flowerMaxHpCd,0));
+   if(m.flowerMaxHpCd<=0&&Math.random()<.001){m.flowerMaxHpCd=10;const d=Math.max(1,Math.floor(playerMaxHp()*.05));const real=dealPlayerDamage(d,{trueDamage:true,status:true,source:"食人花最大生命傷害",m});floatText("🏵️最大生命-"+real,true)}
+  }else if(m.desertKind==="snake"){
+   const e=ensureEffectBag(m),add=(e.flameStorm>0?2:1);
+   desertPoison(st,add);desertBurn(st,add);
+   m.desertSpeedStacks=clamp(num(m.desertSpeedStacks,0)+add*2,0,1000);
+   m.mAspd=(m.baseMAspd||m.mAspd||.8)*(1+Math.min(1,m.desertSpeedStacks*.001));
+   floatText(e.flameStorm>0?"🐍毒火+2":"🐍毒火+1");
+  }else if(m.desertKind==="mummy"){
+   desertPoison(st,5);st.mummyRegenLock=1;floatText("🧌限制回血+中毒5",true);
+  }
+ }
+ const oldMonsterNormalAttack=monsterNormalAttack;
+ monsterNormalAttack=function(m){
+  const before=p.hp;
+  const ok=oldMonsterNormalAttack(m);
+  if(ok&&m&&m.map==="desert"&&p.hp>0&&before>=p.hp){desertMonsterHitEffects(m)}
+  return ok;
+ };
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){
+  if(m&&m.map==="desert"){
+   const e=ensureEffectBag(m);
+   if(m.skill==="desert_flame_storm"){e.flameStorm=10;m.skillTimer=m.skillCd||40;log("🐍 火焰蛇使用燃燒風暴，10秒內毒火一次疊2層");floatText("🐍燃燒風暴",true);return}
+   if(m.skill==="mummy_undying"){
+    if(!m.mummyUndyingUsed&&m.hp>0&&m.hp<=m.max*.10){m.mummyUndyingUsed=1;e.invincible=30;m.skillTimer=m.skillCd||120;log("🧌 乾屍觸發不死不滅，30秒無敵");floatText("🧌不死不滅",true);return}
+    m.skillTimer=1;return;
+   }
+  }
+  return oldMonsterUseSkill(m);
+ };
+ const oldMonsterAttackInterval=monsterAttackInterval;
+ monsterAttackInterval=function(m){let v=oldMonsterAttackInterval(m);if(m&&m.map==="desert"&&m.desertKind==="snake"){v=1/Math.max(.05,m.mAspd||.5)}return v};
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){const r=oldTickEffects(dt);if(fight){for(const m of aliveList()){const e=ensureEffectBag(m);if(e.flameStorm>0)e.flameStorm=Math.max(0,e.flameStorm-dt);if(m.flowerMaxHpCd>0)m.flowerMaxHpCd=Math.max(0,m.flowerMaxHpCd-dt);if(m.map==="desert"&&m.desertKind==="mummy"&&!m.mummyUndyingUsed&&m.hp>0&&m.hp<=m.max*.10){m.mummyUndyingUsed=1;e.invincible=30;m.skillTimer=m.skillCd||120;log("🧌 乾屍觸發不死不滅，30秒無敵");floatText("🧌不死不滅",true)}}}return r};
+ const oldEffectivePlayerRegen=effectivePlayerRegen;
+ effectivePlayerRegen=function(){const base=oldEffectivePlayerRegen();const sup=currentDesertSuppression();if(sup<=0)return base;return Math.max(0,Math.floor(base*Math.max(0,1-sup)))};
+ const oldTickPlayer=tickPlayer;
+ tickPlayer=function(dt){
+  oldTickPlayer(dt);
+  if(p.hp>0&&isDesert()){
+   const sup=currentDesertSuppression();
+   if(sup>1){const d=playerMaxHp()*(sup-1)*0.01*dt;const real=applyShieldedDryDamage(d);if(real>0&&Math.random()<.18)floatText("🏜️乾渴-"+Math.max(1,Math.floor(real)))}
+   if(p.hp<=0)playerDeath();
+  }
+ };
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){
+  if(isDesert()&&!(isDungeon&&isDungeon())){
+   if(typeof canTriggerUndying==="function"&&canTriggerUndying())return oldPlayerDeath();
+   p.j.fail=(p.j.fail||0)+1;p.queue=0;hold=false;budget=0;resetCombo();saveCurrentMapProgress();p.world.current="origin";syncStageFromCurrentMap();clearPlayerStatus();p.hp=playerMaxHp();
+   if(p.artifacts&&selectedArtifactKey()==="vantosa")p.artifacts.shield=artifactShieldMax();
+   log("🏜️ 沙漠死亡，已自動返回主城");save(false);spawnMain();show("main");return;
+  }
+  return oldPlayerDeath();
+ };
+ const oldReturnOrigin=returnOriginMap;
+ returnOriginMap=function(){const r=oldReturnOrigin();try{clearPlayerStatus()}catch(e){}return r};
+ const oldSpawnMain=spawnMain;
+ spawnMain=function(){try{const st=playerStatus();st.mummyRegenLock=0}catch(e){}return oldSpawnMain()};
+ const oldEffReg=effReg;
+ effReg=function(){let v=oldEffReg();if(fight&&fight.monsters&&currentMapId()==="desert")return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);return a+(m.reg||0)*(e.freeze>0?.45:1)*poisonRegenMultiplier(m)},0);return v};
+ const oldPlayerStatusHtml=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatusHtml();const dry=dryText();const st=playerStatus();if(dry){if(h==="玩家狀態：無")h="";h+=`<span class="badge break">${dry}</span>`}if(isDesert()&&st.mummyRegenLock>0){if(h==="玩家狀態：無")h="";h+=`<span class="badge poison">🧌 限制回血｜回血 -100%</span>`}return h};
+ const oldRenderPlayerPanel=renderPlayerPanel;
+ renderPlayerPanel=function(){const r=oldRenderPlayerPanel();if(by("mapNow"))by("mapNow").textContent=currentMapName();if(by("mapHud"))by("mapHud").textContent=currentMapId()==="desert"?"沙漠":currentMapId()==="forest"?"森林":"起源";return r};
+ const oldRenderWorld=renderWorld;
+ renderWorld=function(){ensureDesertMapOpen();return oldRenderWorld()};
+ const oldRender=render;
+ render=function(){const r=oldRender();try{ensureDesertMapOpen();if(by("enemyType")&&currentMapId()==="desert"&&!isDungeon()){by("enemyType").textContent=(fight.type==="boss"?"沙漠Boss":fight.type==="elite"?"沙漠精英":"沙漠普通")+"｜乾渴壓制中｜建議戰力 "+recPower(p.stage)}}catch(e){}return r};
+ try{
+  const def=TITLE_DEFS&&TITLE_DEFS.find(x=>x.id==="sage5000");
+  if(def)def.desc="3種以上狀態傷害時，清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒";
+ }catch(e){}
+ const oldTitlePanel=typeof cc096TitlePanelHtml==="function"?cc096TitlePanelHtml:null;
+ if(oldTitlePanel){cc096TitlePanelHtml=function(){return oldTitlePanel().replace(/我得道成仙了：無視所有狀態傷害/g,"我得道成仙了：3種以上狀態傷害時清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒").replace(/我得道成仙了｜Lv\.5000解鎖｜無視所有狀態傷害，增益狀態不受影響/g,"我得道成仙了｜Lv.5000解鎖｜3種以上狀態傷害時，清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒")};}
+ window.cc0910DesertDryInfo=()=>({suppression:currentDesertSuppression(),text:dryText()});
+ window.cc0910DesertTag=TAG;
  console.log("傳承",TAG);
 })();
 
