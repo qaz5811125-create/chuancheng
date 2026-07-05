@@ -3001,6 +3001,221 @@ console.log("傳承",FLICKER_FIX_TAG);
  console.log("傳承",CC098_TAG);
 })();
 
+
+/* ===== Beta 0.9.8 Hotfix：專武升級 / 亡靈神鐮恐懼上限 / 稱號切換 / 玩家狀態欄固定 ===== */
+(function(){
+ const HOTFIX_TAG="0.9.8-hotfix-weapon-fear-title-status-v1";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const safeShort=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ function safeGradeKey(job=currentJobKey()){
+  const g=(JOBS[job]&&JOBS[job].grade)||"common";
+  if(g==="legendary3")return "legendary3Star";
+  if(window.JOB_GRADE_META&&JOB_GRADE_META[g])return g;
+  return "common";
+ }
+ function currentFearCap(){
+  try{return selectedArtifactKey()==="necroScythe"&&currentJobKey()==="reaper"?500:300}catch(e){return p&&p.artifacts&&p.artifacts.selected==="necroScythe"&&p.job==="reaper"?500:300}
+ }
+ function fearTargetsAll(){
+  if(!fight)return[];
+  if(fight.monsters&&Array.isArray(fight.monsters))return fight.monsters.filter(Boolean);
+  return fight&&fight.hp>0?[fight]:[];
+ }
+ function saveFearState(){
+  const arr=[];
+  const cap=currentFearCap();
+  if(cap<500)return arr;
+  for(const t of fearTargetsAll()){
+   const e=ensureEffectBag(t);
+   arr.push([t,
+    Math.floor(n(e.fearStacks,0)),
+    n(e.fearTried400,0),n(e.fearDespair,0),n(e.fearReapReady,0),
+    n(e.fearTried100,0),n(e.fearTried200,0),n(e.fearTried300,0),
+    n(e.fearFailedCount,0),n(e.fearBroken,0)
+   ]);
+  }
+  return arr;
+ }
+ function restoreFearState(arr){
+  const cap=currentFearCap();
+  if(cap<500)return;
+  for(const row of arr){
+   const [t,st,t400,despair,reap,t100,t200,t300,failed,broken]=row;
+   if(!t||t.hp<=0)continue;
+   const e=ensureEffectBag(t);
+   e.fearStacks=Math.max(Math.floor(n(e.fearStacks,0)),Math.min(500,st));
+   e.fearTried400=Math.max(n(e.fearTried400,0),t400);
+   e.fearDespair=Math.max(n(e.fearDespair,0),despair);
+   e.fearReapReady=Math.max(n(e.fearReapReady,0),reap);
+   e.fearTried100=Math.max(n(e.fearTried100,0),t100);
+   e.fearTried200=Math.max(n(e.fearTried200,0),t200);
+   e.fearTried300=Math.max(n(e.fearTried300,0),t300);
+   e.fearFailedCount=Math.max(n(e.fearFailedCount,0),failed);
+   e.fearBroken=Math.max(n(e.fearBroken,0),broken);
+  }
+ }
+ function processFear500(target){
+  if(!target||target.hp<=0)return false;
+  if(target.mirrorBoss)return false;
+  const cap=currentFearCap(),e=ensureEffectBag(target);
+  e.fearStacks=Math.max(0,Math.min(cap,Math.floor(n(e.fearStacks,0))));
+  if(cap>=500&&e.fearStacks>=400&&!e.fearTried400){
+   e.fearTried400=1;e.fearDespair=1;
+   floatText((target.emoji||"")+"🧠精神絕望！",true);
+   log("🧠 亡靈神鐮：恐懼400層觸發精神絕望，目標暫停攻擊");
+  }
+  if(cap>=500&&e.fearStacks>=500){
+   e.fearReapReady=1;
+   if(target.hp>0&&target.hp<=target.max*.10){
+    target.hp=0;
+    floatText((target.emoji||"")+"☠️恐懼收割！",true);
+    log("☠️ 亡靈神鐮：目標生命低於10%，收割成功");
+    if(fight&&fight.monsters)refreshTotalHp();else if(fight)fight.hp=0;
+    if(fight&&fight.monsters){settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy();
+    return true;
+   }
+  }
+  return false;
+ }
+ function addFearFixed(target,add=1,source="😱"){
+  if(!target||target.hp<=0||target.mirrorBoss)return false;
+  const cap=currentFearCap(),e=ensureEffectBag(target),amt=Math.max(1,Math.floor(n(add,1)));
+  e.fearStacks=Math.min(cap,Math.max(0,Math.floor(n(e.fearStacks,0)))+amt);
+  floatText((target.emoji||"")+source+"恐懼+"+amt);
+  let escaped=false;
+  for(const [need,chance] of [[100,.20],[200,.25],[300,.30]]){
+   const key="fearTried"+need;
+   if(e.fearStacks>=need&&!e[key]){
+    e[key]=1;floatText((target.emoji||"")+"😱恐懼"+need+"層",true);
+    log("😱 恐懼達 "+need+" 層：逃離判定 "+Math.round(chance*100)+"%");
+    if(Math.random()<chance&&window.cc095_targetEscapesByFear){escaped=window.cc095_targetEscapesByFear(target);break}
+    e.fearFailedCount=Math.min(3,Math.floor(n(e.fearFailedCount,0))+1);
+    floatText((target.emoji||"")+"😱抵抗恐懼");
+    if(e.fearFailedCount>=3&&!e.fearBroken){e.fearBroken=1;floatText((target.emoji||"")+"😱恐懼崩潰！",true);log("😱 目標進入恐懼崩潰：攻速/回血 -40%，無法使用技能")}
+   }
+  }
+  if(!escaped)processFear500(target);
+  return escaped;
+ }
+
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){
+  oldEnsure();if(!p)return;
+  if(JOBS.domainmaster)JOBS.domainmaster.grade="legendary3Star";
+  if(!p.specialWeapons)p.specialWeapons={};
+  const weaponKeys=Object.keys(JOBS).map(k=>JOBS[k]&&JOBS[k].weapon).filter(Boolean);
+  for(const w of weaponKeys)p.specialWeapons[w]=Math.max(0,Math.floor(n(p.specialWeapons[w],0)));
+  if(!p.jobFragments)p.jobFragments={};
+  if(typeof JOB_FRAGMENT_KEYS!=="undefined")for(const k of JOB_FRAGMENT_KEYS)p.jobFragments[k]=Math.max(0,Math.floor(n(p.jobFragments[k],0)));
+  if(!p.cd)p.cd={};
+  p.cd.sageCleanse=Math.max(0,n(p.cd.sageCleanse,0));
+ };
+
+ specialWeaponCost=function(job=currentJobKey()){
+  const lv=specialWeaponLevel(job),fragKey=safeGradeKey(job);
+  return {gold:Math.floor(1000*Math.pow(1.35,lv)),frag:Math.floor(10+lv*5),fragKey,stone:0};
+ };
+ upgradeSpecialWeapon=function(){
+  ensureNewSystems();
+  const job=currentJobKey(),w=specialWeaponKey(job);
+  if(!w)return log("戰士沒有專武可升級");
+  const c=specialWeaponCost(job),meta=JOB_GRADE_META[c.fragKey]||JOB_GRADE_META.common,fragName=meta[1];
+  const have=Math.floor(n(p.jobFragments&&p.jobFragments[c.fragKey],0));
+  if(p.gold<c.gold||have<c.frag)return log("專武升級資源不足，需要 "+c.gold.toLocaleString()+" 金幣 + "+fragName+" x"+c.frag+"（目前 "+have+"）");
+  p.gold-=c.gold;p.jobFragments[c.fragKey]=have-c.frag;
+  p.specialWeapons[w]=specialWeaponLevel(job)+1;
+  save(false);log((JOBS[job]&&JOBS[job].weaponName||"專武")+" 升到 Lv."+p.specialWeapons[w]);render();
+ };
+ jobPanelHtml=function(){
+  ensureNewSystems();
+  const cur=currentJobKey(),j=JOBS[cur],sw=specialWeaponKey(cur),lv=specialWeaponLevel(cur),cost=specialWeaponCost(cur);
+  const jobBtns=Object.keys(JOBS).map(k=>{const jj=JOBS[k],locked=!canUseJob(k),grade=(JOB_GRADE_META[safeGradeKey(k)]||JOB_GRADE_META.common)[0],need=k==="domainmaster"?" 傳說階":` Lv${jj.lv}`;return `<button class="${cur===k?"active":"tab"}" onclick="window.setJob('${k}')" ${locked?"disabled":""}>${jj.icon} ${jj.name}<br>${grade}${locked?need:""}</button>`}).join("");
+  let swHtml=sw?`<div class="small">職業分級：<b>${(JOB_GRADE_META[safeGradeKey(cur)]||JOB_GRADE_META.common)[0]}</b>｜專武：<b>${j.weaponName}</b> Lv.${lv}｜各職業專武等級獨立。</div><button class="purple" onclick="window.upgradeSpecialWeapon()">升級${j.weaponName}｜${cost.gold.toLocaleString()}金幣 + ${(JOB_GRADE_META[cost.fragKey]||JOB_GRADE_META.common)[1]}x${cost.frag}</button>`:`<div class="small">專武：尚未啟用。戰士沒有專武與被動。</div>`;
+  if(cur==="domainmaster")swHtml+=`<div class="small">🕶️ 真誠墨鏡：目前職業為領域使時，最終閃避率 ×1.5，最高仍受閃避上限限制。</div>`;
+  return `<div class="row"><b>⚔️ 職業與專武</b><span class="pill">${j.icon} ${j.name}</span></div><div class="multiBtns">${jobBtns}</div><div class="small">被動：${j.desc}</div>${swHtml}`;
+ };
+
+ window.cc098AddFear=addFearFixed;
+ cc093_addReaperFear=function(target,stacks=1){
+  if(currentJobKey()!=="reaper"||!target||target.hp<=0)return false;
+  if(Math.random()>=.45)return false;
+  let add=Math.max(1,Math.floor(n(stacks,1)));
+  if(typeof cc097TitleUnlocked==="function"&&cc097TitleUnlocked("reaperScary"))add*=2;
+  return addFearFixed(target,add,"🩸");
+ };
+ cc096AddFearStack=function(target,add=1,source="🐶"){
+  return addFearFixed(target,add,source+"😱");
+ };
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){
+  const saved=saveFearState();
+  const r=oldTickEffects(dt);
+  restoreFearState(saved);
+  for(const t of fearTargetsAll())processFear500(t);
+  return r;
+ };
+ const oldTick=tick;
+ tick=function(dt){
+  const saved=saveFearState();
+  const r=oldTick(dt);
+  restoreFearState(saved);
+  for(const t of fearTargetsAll())processFear500(t);
+  return r;
+ };
+
+ const oldStatusHtml=statusHtml;
+ statusHtml=function(){
+  let base=String(oldStatusHtml&&oldStatusHtml()||"");
+  if(!fight)return base;
+  base=base.replace(/<span[^>]*>[^<]*😱 恐懼[^<]*\/span>/g,"").replace(/<span[^>]*>[^<]*💀 恐懼[^<]*\/span>/g,"");
+  const cap=currentFearCap();let fear=0,despair=false,broken=false,reap=false;
+  for(const t of fearTargetsAll().filter(x=>x&&x.hp>0)){const e=ensureEffectBag(t);fear=Math.max(fear,Math.floor(n(e.fearStacks,0)));despair=despair||e.fearDespair>0;broken=broken||e.fearBroken>0;reap=reap||e.fearReapReady>0||fear>=500;}
+  let h="";
+  if(fear>0)h+=`<span class='badge bleed'>😱 恐懼 ${fear}/${cap}</span>`;
+  if(broken)h+=`<span class='badge break'>😱 恐懼崩潰｜攻速/回血-40%，無法使用技能</span>`;
+  if(despair)h+=`<span class='badge freeze'>🧠 精神絕望｜暫停攻擊</span>`;
+  if(reap)h+=`<span class='badge poison'>☠️ 待斬殺｜生命低於10%立即收割</span>`;
+  if(h&&base==="<span class='small'>無狀態</span>")base="";
+  return base+h;
+ };
+
+ function hotfixRenderMonsterFear(){
+  if(!(fight&&fight.monsters&&by("monsterList")))return;
+  const target=activeMonster(),idx=fight.monsters.indexOf(target),cap=currentFearCap();
+  by("monsterList").innerHTML=fight.monsters.map((m,i)=>{const e=ensureEffectBag(m),fear=Math.floor(n(e.fearStacks,0)),fearLine=(fear>0?`<span class="monsterAffixes">😱 恐懼 ${fear}/${cap}${e.fearBroken>0?"｜崩潰":""}${e.fearDespair>0?"｜絕望":""}${(e.fearReapReady>0||fear>=500)?"｜待斬殺":""}</span>`:""),domainLine=(e.domain>0?`<span class="monsterAffixes">🌀領域 ${e.domain.toFixed(1)}秒</span>`:"");return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${m.name}${m.rabbitRampStacks?`<span class="monsterAffixes">狂咬 ${m.rabbitRampStacks}層</span>`:""}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}${fearLine}${domainLine}</span><span>${safeShort(Math.max(0,Math.floor(m.hp)))}/${safeShort(m.max)}</span></div>`}).join("");
+ }
+ const oldRender=render;
+ render=function(){const r=oldRender();hotfixRenderMonsterFear();return r};
+
+ const CC098_TITLE_NAMES={rookie:"初估茅廬",dead:"我掛了",revived:"我復活了",firstKill:"我的首殺",bossMeet:"這個好可怕",bossKill:"我覺得還好",strong50:"我變強了",bossStuck:"我卡關了！",walk100:"我可以自己走路了",fly500:"我要起飛啦",immortal1000:"我要成仙了",sage5000:"我得道成仙了",reaperScary:"我好恐怖",lancerUntouchable:"你打不到我~",colossus15Years:"我一拳15年功力",grandpaLovePunch:"阿公愛心拳",onePunchGod:"一拳超神"};
+ function cc098TitleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function cc098HasTitle(id){const t=cc098TitleState();return !!(t.unlocked&&t.unlocked[id])}
+ function cc098TitleName(id){return CC098_TITLE_NAMES[id]||id}
+ window.cc097SetEquippedTitle=function(id){
+  ensureNewSystems();
+  const t=cc098TitleState();id=id||"";
+  if(id&&!cc098HasTitle(id))return log("尚未解鎖此稱號");
+  t.equipped=id;save(false);log(id?"🏷️ 裝備稱號：「"+cc098TitleName(id)+"」":"🏷️ 已取消顯示稱號");render();
+ };
+ document.addEventListener("click",function(ev){
+  const b=ev.target&&ev.target.closest?ev.target.closest(".titleChoice[data-title-id]"):null;
+  if(!b)return;
+  ev.preventDefault();ev.stopPropagation();window.cc097SetEquippedTitle(b.getAttribute("data-title-id")||"");
+ },true);
+ const st=document.createElement("style");
+ st.textContent=`
+  .playerStatusBox{height:86px!important;min-height:86px!important;max-height:86px!important;overflow-y:auto;overscroll-behavior:contain;display:block;scrollbar-width:thin;line-height:1.45;padding-right:4px;}
+  .playerStatusBox .badge{display:inline-block;margin:2px 3px 2px 0;vertical-align:top;}
+  .titleChoice{touch-action:manipulation;position:relative;z-index:2;}
+ `;
+ document.head.appendChild(st);
+ window.upgradeSpecialWeapon=upgradeSpecialWeapon;
+ window.jobPanelHtml=jobPanelHtml;
+ window.cc098HotfixTag=HOTFIX_TAG;
+ console.log("傳承",HOTFIX_TAG);
+})();
+
 window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHero;window.useHeroSkill=useHeroSkill;window.upgradeHero=upgradeHero;window.summonSkill=summonSkill;
 
 window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setArtifact=setArtifact;window.upgradeArtifact=upgradeArtifact;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.cleanse=cleanse;window.bloodShield=bloodShield;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;window.exitAbyss=exitAbyss;

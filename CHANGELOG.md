@@ -233,3 +233,11 @@
 
 ## Beta 0.9.7 Hotfix - Monster no-move hit feedback
 - Fix monster emoji still moving left/right during hit sounds by forcing hit feedback to glow only without X-axis movement.
+
+## Beta 0.9.8 Hotfix weapon / fear / title / status
+- Fixed special weapon upgrade UI and resource handling for all jobs.
+- Fixed Domain Master grade key for legendary ⭐⭐⭐ fragments.
+- Fixed Undead Scythe fear stacks being clamped back to 300 by older fear logic.
+- Added 500-stack pending execute display for fear reap state.
+- Fixed equipped title click switching with delegated click handling.
+- Locked player status display height with internal scrolling to prevent screen jumping when many statuses are active.
