@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.8 Hotfix 按鍵復活與收納恢復</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.11 海域正式開放</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.10";
+const GAME_VERSION="0.9.11";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -3744,6 +3744,225 @@ console.log("傳承",FLICKER_FIX_TAG);
  if(oldTitlePanel){cc096TitlePanelHtml=function(){return oldTitlePanel().replace(/我得道成仙了：無視所有狀態傷害/g,"我得道成仙了：3種以上狀態傷害時清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒").replace(/我得道成仙了｜Lv\.5000解鎖｜無視所有狀態傷害，增益狀態不受影響/g,"我得道成仙了｜Lv.5000解鎖｜3種以上狀態傷害時，清除自身狀態傷害，並暈眩目前目標3秒，冷卻30秒")};}
  window.cc0910DesertDryInfo=()=>({suppression:currentDesertSuppression(),text:dryText()});
  window.cc0910DesertTag=TAG;
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.11 海域正式開放 / 潮汐 / 深海沉默 / 海域怪物 ===== */
+(function(){
+ const TAG="0.9.11-sea-expansion-v1";
+ const by=id=>document.getElementById(id);
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ function isSea(){try{return currentMapId()==="sea"}catch(e){return p&&p.world&&p.world.current==="sea"}}
+ function seaState(){if(!p.sea)p.sea={tideTimer:0,tide:"ebb",waveTimer:0,fearCd:0,notice:""};return p.sea}
+ function aliveSea(){try{return fight&&fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters():(fight&&fight.hp>0?[fight]:[])}catch(e){return[]}}
+ function isSeaSilenceStage(){return isSea()&&!isDungeon()&&cleanStageValue(p.stage,1)%3===0}
+ function isDeepSilenced(){const st=playerStatus();return isSeaSilenceStage()||((st.seaSilence||0)>0)||((st.seaBite||0)>0)||((st.seaBind||0)>0)}
+ function isSeaLocked(){const st=playerStatus();return (st.seaBite||0)>0||(st.seaBind||0)>0}
+ function seaMsg(txt){const st=seaState();st.notice=txt;log(txt);floatText(txt,true)}
+ function ensureSeaMapOpen(){
+  try{
+   const d=WORLD_MAPS.find(x=>x.id==="sea");
+   if(d){d.open=true;d.lv=150;d.name="海域";d.desc="正式開放：海底遺跡、潮汐、海浪、深海沉默、🐡🐠🐙🦈。";}
+   const sky=WORLD_MAPS.find(x=>x.id==="sky");if(sky)sky.open=false;
+   if(TARGET_OPTIONS){Object.assign(TARGET_OPTIONS,{puffer:["🐡","打了會痛的魚"],fastfish:["🐠","跑很快的魚"],octopus:["🐙","愛抱抱的毒章魚"],shark:["🦈","牙齒很尖的鯊魚"]});}
+   if(MAP_TARGET_KEYS)MAP_TARGET_KEYS.sea=["auto","puffer","fastfish","octopus","shark"];
+  }catch(e){console.warn("sea open patch failed",e)}
+ }
+ ensureSeaMapOpen();
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();ensureSeaMapOpen();seaState();};
+ const oldCurrentMapName=currentMapName;
+ currentMapName=function(){const id=currentMapId();return id==="sea"?"海域":id==="desert"?"沙漠":id==="forest"?"森林":"起源主線"};
+ const oldCanEnterMap=canEnterMap;
+ canEnterMap=function(map){if(map&&map.id==="sea")return p.lv>=150;return oldCanEnterMap(map)};
+ const oldTargetKeyOf=targetKeyOf;
+ targetKeyOf=function(m){if(m&&m.targetKey)return m.targetKey;return oldTargetKeyOf(m)};
+ function addSeaShield(m){
+  const shield=Math.max(1,Math.floor((m.max||m.hp||1)*.5));
+  m.seaBaseMax=m.max||m.hp;m.seaShieldMax=shield;m.seaShield=shield;
+  m.hp=(m.hp||m.max||1)+shield;m.max=(m.max||m.hp)+shield;
+  return m;
+ }
+ function seaMonsterTemplate(st,type){
+  const baseHp=Math.floor(260*Math.pow(1.205,st-1)+st*120);
+  const baseDef=Math.floor(20+st*18+Math.pow(st,1.16)*6.8);
+  const baseReg=Math.floor(5+st*2.8+Math.pow(st,1.08)*1.6);
+  const g=monsterGrowth(st);
+  let o={mode:"main",map:"sea",type,targetKey:"auto",statusRes:1,freezeImmune:true,sea:true};
+  if(type==="boss"){
+   const oct=Math.floor(st/10)%2===1;
+   if(oct){
+    Object.assign(o,{seaKind:"octopus",targetKey:"octopus",emoji:"🐙",name:"愛抱抱的毒章魚",hp:Math.floor(baseHp*12),def:Math.floor(baseDef*4.2),reg:Math.floor(baseHp*.02),gold:5200+st*260,xp:760+st*60,drop:1,mAtk:(70+st*6.8)*g.atk,armorBreak:(10+st*1.1)*g.br,mAspd:.90*g.spd,skill:"sea_death_grip",skillCd:60,timer:90});
+   }else{
+    Object.assign(o,{seaKind:"shark",targetKey:"shark",emoji:"🦈",name:"牙齒很尖的鯊魚",hp:Math.floor(baseHp*13.5),def:Math.floor(baseDef*3.8),reg:Math.floor(baseReg*3),gold:5600+st*280,xp:800+st*64,drop:1,mAtk:(85+st*7.6)*g.atk,armorBreak:(16+st*1.5)*g.br,mAspd:1.05*g.spd,skill:"sea_bite_hold",skillCd:60,timer:90});
+   }
+  }else if(type==="elite"){
+   Object.assign(o,{seaKind:"fastfish",targetKey:"fastfish",emoji:"🐠",name:"跑很快的魚",hp:Math.floor(baseHp*4.2),def:Math.floor(baseDef*1.1),reg:Math.floor(baseReg*.8),gold:1200+st*96,xp:310+st*29,drop:.72,mAtk:0,armorBreak:0,mAspd:0,extraEvade:.60,seaDashTimer:5});
+  }else{
+   Object.assign(o,{seaKind:"puffer",targetKey:"puffer",emoji:"🐡",name:"打了會痛的魚",hp:Math.floor(baseHp*1.85),def:Math.floor(baseDef*1.35),reg:Math.floor(baseReg*1.5),gold:110+st*22,xp:58+st*10,drop:.30+Math.min(.18,st*.0035),mAtk:(24+st*2.3)*g.atk,armorBreak:(4+st*.50)*g.br,mAspd:.82*g.spd,reflectRaw:.05});
+  }
+  return addSeaShield(finalizeMonster(applyMonsterAffixes(enemy(o),st)));
+ }
+ const oldMainMonsterTemplate=mainMonsterTemplate;
+ mainMonsterTemplate=function(st,type){if(currentMapId()==="sea")return seaMonsterTemplate(st,type);return oldMainMonsterTemplate(st,type)};
+ const oldCreateMainEnemy=createMainEnemy;
+ createMainEnemy=function(){
+  if(currentMapId()!=="sea")return oldCreateMainEnemy();
+  const st=cleanStageValue(p.stage,1);let t=typeOf(st),monsters=[];
+  if(st%10===0){monsters=[seaMonsterTemplate(st,"boss")];t="boss";}
+  else if(st%3===0){monsters=[seaMonsterTemplate(st,"elite")];t="elite";}
+  else {const count=rand(1,3);for(let i=0;i<count;i++)monsters.push(seaMonsterTemplate(st,Math.random()<.72?"normal":"elite"));}
+  const total=monsters.reduce((a,m)=>a+m.max,0),lead=monsters[0];
+  return{mode:"main",type:t,name:"海域怪物編隊",emoji:monsters.map(m=>m.emoji).join(""),hp:total,max:total,def:lead.def,reg:lead.reg,drop:lead.drop,timer:t==="boss"?90:0,e:{burn:0,poison:0,freeze:0,break:0,bleed:0,shatter:0,prison:0},dotFloat:0,dropState:{items:0},monsters};
+ };
+ function refreshSeaShields(){for(const m of aliveSea()){if(m.seaShieldMax){m.seaShield=clamp(Math.max(0,(m.hp||0)-(m.seaBaseMax||m.max)),0,m.seaShieldMax)}}}
+ const oldExecuteRate=executeRate;
+ executeRate=function(target=null){if(target&&target.map==="sea"&&((target.seaShield||0)>0||target.type==="boss"))return 0;return oldExecuteRate(target)};
+ const oldEffDefForTarget=effDefForTarget;
+ effDefForTarget=function(t){if(t&&t.map==="sea"&&(t.seaShield||0)>0)return Math.floor(t.def||0);return oldEffDefForTarget(t)};
+ const oldAddPoison=addPoison;
+ addPoison=function(target,stacks=1,infinite=false){if(target&&target.map==="sea"&&ensureEffectBag(target).invincible>0)return;return oldAddPoison(target,stacks,infinite)};
+ const oldAddBurn=addBurn;
+ addBurn=function(target,stacks=1,infinite=false){if(target&&target.map==="sea"&&ensureEffectBag(target).invincible>0)return;return oldAddBurn(target,stacks,infinite)};
+ const oldAddBleed=addBleed;
+ addBleed=function(target,stacks=1){if(target&&target.map==="sea"&&ensureEffectBag(target).invincible>0)return;return oldAddBleed(target,stacks)};
+ const oldRollEffects=rollEffects;
+ rollEffects=function(target=activeMonster()){
+  if(target&&target.map==="sea"&&ensureEffectBag(target).invincible>0)return;
+  const r=oldRollEffects(target);
+  if(target&&target.map==="sea"){const e=ensureEffectBag(target);if(e.freeze>0){e.freeze=0;floatText((target.emoji||"")+"❄️免疫冰凍")}}
+  return r;
+ };
+ const oldCanPlayerAct=canPlayerAct;
+ canPlayerAct=function(msg="暈眩中，無法行動"){
+  if(isSeaLocked()){log("🌊 被海域控制封鎖，無法行動");return false}
+  if(isDeepSilenced()){log("🤐 深海沉默中，主動技能無法使用");return false}
+  return oldCanPlayerAct(msg);
+ };
+ const oldAutoCastSkills=autoCastSkills;
+ autoCastSkills=function(){if(isDeepSilenced())return;return oldAutoCastSkills()};
+ function seaPoisonPlayer(stacks,cap=20){const st=playerStatus();st.poison=Math.min(cap,Math.max(0,Math.floor(st.poison||0))+Math.max(1,Math.floor(stacks)));st.poisonTick=1;}
+ const oldMonsterNormalAttack=monsterNormalAttack;
+ monsterNormalAttack=function(m){
+  const ok=oldMonsterNormalAttack(m);
+  if(ok&&m&&m.map==="sea"&&p.hp>0){
+   const st=playerStatus();
+   if(m.seaKind==="puffer"){
+    seaPoisonPlayer(1,20);
+    if(Math.random()<.15){st.seaSilence=Math.max(st.seaSilence||0,5);floatText("🐡沉默！",true)}
+    if(Math.random()<.05){applyPlayerStun(1,"🐡 打了會痛的魚造成短暫暈眩 1 秒");}
+   }else if(m.seaKind==="octopus"){
+    st.poison=Math.max(0,Math.floor(st.poison||0))+7;st.poisonTick=1;floatText("🐙中毒+7",true);
+   }else if(m.seaKind==="shark"){
+    applyPlayerBleed(12,2,true);st.regenDown=Math.max(st.regenDown||0,6);st.seaDodgeDown=Math.max(st.seaDodgeDown||0,6);floatText("🦈撕裂放血",true);
+   }
+  }
+  return ok;
+ };
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){
+  if(m&&m.map==="sea"){
+   const st=playerStatus();
+   if(m.skill==="sea_death_grip"){st.seaBind=10;m.skillTimer=m.skillCd||60;log("🐙 愛抱抱的毒章魚使用死亡纏繞，封鎖玩家所有操作 10 秒");floatText("🐙死亡纏繞",true);return}
+   if(m.skill==="sea_bite_hold"){st.seaBite=10;st.regenDown=Math.max(st.regenDown||0,10);m.skillTimer=m.skillCd||60;log("🦈 牙齒很尖的鯊魚使用咬住不放，10秒內封鎖行動並持續放血");floatText("🦈咬住不放",true);return}
+  }
+  return oldMonsterUseSkill(m);
+ };
+ const oldTickPlayer=tickPlayer;
+ tickPlayer=function(dt){
+  const st=playerStatus();
+  if(st.seaSilence>0)st.seaSilence=Math.max(0,st.seaSilence-dt);
+  if(st.seaBind>0)st.seaBind=Math.max(0,st.seaBind-dt);
+  if(st.seaBite>0){st.seaBite=Math.max(0,st.seaBite-dt);const d=playerMaxHp()*.005*dt;dealPlayerDamage(d,{trueDamage:true,status:true,source:"咬住不放"});}
+  if(st.seaFear>0)st.seaFear=Math.max(0,st.seaFear-dt);
+  if(st.seaDodgeDown>0)st.seaDodgeDown=Math.max(0,st.seaDodgeDown-dt);
+  oldTickPlayer(dt);
+  if(p.hp>0&&isSea()&&!isDungeon()){
+   if(isSeaSilenceStage()){const real=dealPlayerDamage(playerMaxHp()*.03*dt,{trueDamage:true,status:true,source:"深海沉默"});if(real>0&&Math.random()<.10)floatText("🤐深海-"+Math.max(1,Math.floor(real)))}
+   if((p.hp||0)<=playerMaxHp()*.30 && (!st.seaFearCd||st.seaFearCd<=0)){st.seaFear=5;st.seaFearCd=30;floatText("🌑深海恐懼",true);log("🌑 深海恐懼：血量低於30%，攻擊速度降低30%，持續5秒")}
+   if(st.seaFearCd>0)st.seaFearCd=Math.max(0,st.seaFearCd-dt);
+   if(p.hp<=0)playerDeath();
+  }
+ };
+ const oldAsp=asp;
+ asp=function(){let v=oldAsp();const st=playerStatus();if(st.seaFear>0)v*=.70;return v};
+ const oldEffectivePlayerRegen=effectivePlayerRegen;
+ effectivePlayerRegen=function(){let v=oldEffectivePlayerRegen();const st=playerStatus();if(isSea()&&seaState().tide==="flood")v*=.70;if(st.seaBite>0)v*=.50;return Math.max(0,Math.floor(v))};
+ const oldEvadeRate=evadeRate;
+ evadeRate=function(target=activeMonster()){let v=oldEvadeRate(target);if(target&&target.map==="sea"&&target.seaKind==="fastfish")v=Math.max(v,.75);return clamp(v,0,.95)};
+ function seaTickEnvironment(dt){
+  if(!isSea()||isDungeon()||!fight)return;
+  const s=seaState();
+  s.tideTimer=n(s.tideTimer,0)+dt;s.waveTimer=n(s.waveTimer,0)+dt;
+  const next=s.tide==="flood"?20:40;
+  if(s.tideTimer>=next){s.tideTimer=0;s.tide=s.tide==="flood"?"ebb":"flood";seaMsg(s.tide==="flood"?"🌊【漲潮來襲】海水開始上升……":"🌅【退潮】海水平息了。")}
+  if(s.waveTimer>=30){s.waveTimer=0;const real=dealPlayerDamage(playerMaxHp()*.02,{trueDamage:true,status:true,source:"海浪衝擊"});for(const m of aliveSea())m.hp=Math.min(m.max,(m.hp||0)+(m.max||1)*.10);refreshTotalHp();floatText("🌊海浪襲來！",true);log("🌊 海浪衝擊：玩家失去最大生命2%，怪物恢復最大生命10%")}
+  for(const m of aliveSea()){
+   if(m.seaKind==="fastfish"){m.seaDashTimer=n(m.seaDashTimer,5)-dt;if(m.seaDashTimer<=0){m.seaDashTimer=5;applyPlayerStun(1,"🐠 跑很快的魚高速衝刺，玩家暈眩 1 秒");floatText("🐠衝刺暈眩",true)}}
+   if(m.seaKind==="octopus"&&m.hp>0&&m.hp<=m.max*.30){m.hp=Math.min(m.max,m.hp+(m.max*.02)*dt)}
+  }
+  refreshSeaShields();
+ }
+ const oldTick=typeof tick==="function"?tick:null;
+ if(oldTick){tick=function(dt){seaTickEnvironment(dt);return oldTick(dt)}}
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){
+  if(isDeepSilenced()&&isSea()&&!isDungeon()){
+   const list=fight&&fight.monsters?aliveMonsters():[fight].filter(Boolean);
+   for(const target of list){const e=ensureEffectBag(target);for(const k of ["freeze","shatter","prison","invincible","berserk","dodge"])if(e[k]>0)e[k]=Math.max(0,e[k]-dt)}
+   return;
+  }
+  const r=oldTickEffects(dt);
+  if(isSea())for(const m of aliveSea()){const e=ensureEffectBag(m);if(e.freeze>0)e.freeze=0;if(m.seaKind==="puffer"&&e.invincible<=0&&Math.random()<0){}}
+  return r;
+ };
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  if(!fight)return oldDamage(mult,label,opt);
+  const before=(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean).map(m=>[m,n(m.hp,0),m.seaKind]);
+  const r=oldDamage(mult,label,opt);
+  if(isSea()&&!isDungeon()){
+   for(const [m,h,kind] of before){
+    if(!m||m.hp<=0)continue;
+    const lost=Math.max(0,h-n(m.hp,0));
+    if(kind==="puffer"&&lost>0){
+     const refl=Math.max(1,Math.floor(atk()*Math.max(.1,n(mult,1))*.05));
+     const real=dealPlayerDamage(refl,{trueDamage:true,status:true,source:"海域反傷"});if(real>0)floatText("🐡反傷-"+real,true);
+     if(Math.random()<.01){const e=ensureEffectBag(m);e.invincible=3;e.burn=0;e.poison=0;e.bleed=0;e.break=0;e.freeze=0;e.prison=0;e.shatter=0;floatText("🐡無敵！",true);log("🐡 打了會痛的魚進入無敵3秒並清除負面狀態")}
+    }
+   }
+   refreshSeaShields();
+  }
+  return r;
+ };
+ const oldMonsterAttackInterval=monsterAttackInterval;
+ monsterAttackInterval=function(m){let v=oldMonsterAttackInterval(m);if(isSea()&&seaState().tide==="flood"&&m&&m.map==="sea")v/=1.30;return v};
+ const oldEffReg=effReg;
+ effReg=function(){let v=oldEffReg();if(isSea()&&fight&&fight.monsters&&!isDungeon()){v=aliveMonsters().reduce((a,m)=>a+(m.reg||0)*(seaState().tide==="flood"?1.30:1)*poisonRegenMultiplier(m),0)}return v};
+ const oldSpawnMain=spawnMain;
+ spawnMain=function(){const r=oldSpawnMain();if(isSea()&&!isDungeon()){const s=seaState();s.tide="ebb";s.tideTimer=0;s.waveTimer=0;refreshSeaShields();if(isSeaSilenceStage())log("🤐 深海沉默關卡：通關後自動解除")};return r};
+ const oldSetCurrentStage=setCurrentStage;
+ setCurrentStage=function(stage){const r=oldSetCurrentStage(stage);if(isSea()&&playerStatus()){playerStatus().seaSilence=0;playerStatus().seaBind=0;playerStatus().seaBite=0;}return r};
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){
+  if(isSea()&&!(isDungeon&&isDungeon())){
+   if(typeof canTriggerUndying==="function"&&canTriggerUndying())return oldPlayerDeath();
+   p.j.fail=(p.j.fail||0)+1;p.queue=0;hold=false;budget=0;resetCombo();saveCurrentMapProgress();p.world.current="desert";syncStageFromCurrentMap();clearPlayerStatus();p.hp=playerMaxHp();if(p.artifacts&&selectedArtifactKey()==="vantosa")p.artifacts.shield=artifactShieldMax();log("🌊 海域死亡，被海浪沖回沙漠");save(false);spawnMain();show("main");return;
+  }
+  return oldPlayerDeath();
+ };
+ const oldPlayerStatusHtml=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatusHtml();const st=playerStatus();const tags=[];if(isSea()){tags.push(`<span class="badge freeze">${seaState().tide==="flood"?"🌊 漲潮中":"🌅 退潮中"}</span>`);if(isSeaSilenceStage())tags.push(`<span class="badge prison">🤐 深海沉默｜技能封鎖｜每秒-3%</span>`)}if(st.seaSilence>0)tags.push(`<span class="badge prison">🤐 沉默 ${st.seaSilence.toFixed(1)}秒</span>`);if(st.seaBind>0)tags.push(`<span class="badge prison">🐙 死亡纏繞 ${st.seaBind.toFixed(1)}秒</span>`);if(st.seaBite>0)tags.push(`<span class="badge bleed">🦈 咬住不放 ${st.seaBite.toFixed(1)}秒｜回血-50%</span>`);if(st.seaFear>0)tags.push(`<span class="badge freeze">🌑 深海恐懼 ${st.seaFear.toFixed(1)}秒｜攻速-30%</span>`);if(tags.length){if(h==="玩家狀態：無")h="";h+=tags.join("")}return h};
+ const oldRenderPlayerPanel=renderPlayerPanel;
+ renderPlayerPanel=function(){const r=oldRenderPlayerPanel();if(by("mapNow"))by("mapNow").textContent=currentMapName();if(by("mapHud")){const id=currentMapId();by("mapHud").textContent=id==="sea"?"海域":id==="desert"?"沙漠":id==="forest"?"森林":"起源"}return r};
+ const oldRenderWorld=renderWorld;
+ renderWorld=function(){ensureSeaMapOpen();return oldRenderWorld()};
+ const oldRender=render;
+ render=function(){const r=oldRender();try{ensureSeaMapOpen();if(isSea()&&by("enemyType")&&!isDungeon()){by("enemyType").textContent=(fight.type==="boss"?"海域Boss":fight.type==="elite"?"海域精英":"海域普通")+"｜"+(seaState().tide==="flood"?"🌊漲潮":"🌅退潮")+"｜建議戰力 "+recPower(p.stage)}if(isSea()&&by("monsterList")&&fight&&fight.monsters){const target=activeMonster(),idx=fight.monsters.indexOf(target);by("monsterList").innerHTML=fight.monsters.map((m,i)=>{const e=ensureEffectBag(m),shield=m.seaShield>0?`<span class="monsterAffixes">🛡️海盾 ${Math.floor(m.seaShield)}/${Math.floor(m.seaShieldMax||0)}</span>`:"",inv=e.invincible>0?`<span class="monsterAffixes">無敵 ${e.invincible.toFixed(1)}秒</span>`:"";return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${m.name}${shield}${inv}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`}).join("")}}catch(e){}return r};
+ window.cc0911SeaInfo=()=>({tag:TAG,isSea:isSea(),tide:seaState().tide,deepSilence:isDeepSilenced()});
+ window.cc0911SeaTag=TAG;
  console.log("傳承",TAG);
 })();
 
