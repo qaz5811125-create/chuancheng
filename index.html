@@ -3970,7 +3970,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 
 /* ===== Beta 0.9.12 領域世界：領域使重置 / 神煞極域 / 真誠墨鏡重製 ===== */
 (function(){
- const TAG="0.9.12-domain-world-v1";
+ const TAG="0.9.12-domain-world-hotfix-v2";
  document.title="傳承 Beta 0.9.12 領域世界";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -4064,8 +4064,15 @@ console.log("傳承",FLICKER_FIX_TAG);
  }
  function withoutOldDomain912(fn){
   if(!p||p.job!=="domainmaster")return fn();
-  const old=p.job;p.job="warrior";
-  try{return fn()}finally{p.job=old}
+  const old=p.job;
+  p.__cc0912DisplayJob=old;
+  p.__cc0912BypassOldDomain=(p.__cc0912BypassOldDomain||0)+1;
+  p.job="warrior";
+  try{return fn()}finally{
+   p.job=old;
+   p.__cc0912BypassOldDomain=Math.max(0,(p.__cc0912BypassOldDomain||1)-1);
+   if(!p.__cc0912BypassOldDomain){delete p.__cc0912DisplayJob;delete p.__cc0912BypassOldDomain;}
+  }
  }
  function harmfulImmune912(){
   if(!activeDomain())return;
@@ -4151,17 +4158,22 @@ console.log("傳承",FLICKER_FIX_TAG);
   if(!normal||!isDomainJob())return oldDamage(mult,label,opt);
   const fightRef=fight;
   const before=currentTargets912().map(m=>[m,n(m.hp,0)]);
+
+  // 0.9.12 Hotfix：領域意志是「普攻保底」，不能被擊殺換關或舊傷害流程吃掉。
+  // 因此在確認本次是領域使普攻後，先處理領域開啟/保底累積，再進入舊 damage 流程。
+  tryOpenDomain912(before.length>0);
+
   let mlt=mult;
   const strike=rollDomainStrike912();mlt*=strike.mult;
   if(activeDomain()){const d=domainState912();mlt*=1+d.atkB;mlt*=domainEnemyVuln912();}
   let r;
   p.__cc0912NoDomainAtk=true;
-  r=withoutOldDomain912(()=>oldDamage(mlt,label,opt));
-  p.__cc0912NoDomainAtk=false;
+  try{r=withoutOldDomain912(()=>oldDamage(mlt,label,opt));}
+  finally{p.__cc0912NoDomainAtk=false;}
   if(fight!==fightRef)return r;
   let anyHit=false;
   for(const [t,hp0] of before){if(!t)continue;const lost=hp0-n(t.hp,0);if(lost>0){anyHit=true;if(t.hp>0)applyCurrentHpStrike912(t);if(t.hp>0)applyDomainExecute912(t)}}
-  if(anyHit){if(fight&&fight.monsters)refreshTotalHp();else if(activeMonster())fight.hp=Math.max(0,activeMonster().hp||0);tryOpenDomain912(true);if(fight&&fight.monsters)settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}
+  if(anyHit){if(fight&&fight.monsters)refreshTotalHp();else if(activeMonster())fight.hp=Math.max(0,activeMonster().hp||0);if(fight&&fight.monsters)settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}
   return r;
  };
  const oldStatusHtml=statusHtml;
@@ -4186,6 +4198,15 @@ console.log("傳承",FLICKER_FIX_TAG);
  const st=document.createElement("style");
  st.textContent=`.cc0912DomainFx{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle at center,rgba(124,58,237,.26),rgba(0,0,0,.72));backdrop-filter:blur(1px)}.cc0912DomainFx.show{display:flex;animation:cc0912DomainFade 1.35s ease-out forwards}.cc0912DomainFx.extreme{background:radial-gradient(circle at center,rgba(192,38,211,.38),rgba(0,0,0,.82))}.cc0912DomainSeal{font-size:64px;filter:drop-shadow(0 0 16px rgba(216,180,254,.9));animation:cc0912DomainPulse .65s ease-in-out infinite alternate}.cc0912DomainText{font-size:30px;font-weight:900;color:#f5f3ff;text-shadow:0 0 18px rgba(168,85,247,.95);letter-spacing:2px}.cc0912DomainSub{margin-top:8px;color:#e9d5ff;font-weight:800}@keyframes cc0912DomainFade{0%{opacity:0}18%,78%{opacity:1}100%{opacity:0}}@keyframes cc0912DomainPulse{from{transform:scale(.95)}to{transform:scale(1.12)}}`;
  document.head.appendChild(st);
+ const oldRender912=typeof render==="function"?render:null;
+ if(oldRender912){render=function(){
+  if(p&&p.__cc0912DisplayJob){
+   const real=p.job;
+   p.job=p.__cc0912DisplayJob;
+   try{return oldRender912()}finally{p.job=real;}
+  }
+  return oldRender912();
+ }}
  window.cc0912DomainInfo=()=>{const d=domainState912();return{tag:TAG,job:isDomainJob(),active:activeDomain(),kind:d.kind,time:d.time,cd:d.cd,miss:d.miss,atkBonus:d.atkB,aspdBonus:d.aspB,evadeBonus:d.evaB}};
  console.log("傳承",TAG);
 })();
