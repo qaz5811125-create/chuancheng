@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.11 海域正式開放</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.12 領域世界</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.11";
+const GAME_VERSION="0.9.12";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -3963,6 +3963,230 @@ console.log("傳承",FLICKER_FIX_TAG);
  render=function(){const r=oldRender();try{ensureSeaMapOpen();if(isSea()&&by("enemyType")&&!isDungeon()){by("enemyType").textContent=(fight.type==="boss"?"海域Boss":fight.type==="elite"?"海域精英":"海域普通")+"｜"+(seaState().tide==="flood"?"🌊漲潮":"🌅退潮")+"｜建議戰力 "+recPower(p.stage)}if(isSea()&&by("monsterList")&&fight&&fight.monsters){const target=activeMonster(),idx=fight.monsters.indexOf(target);by("monsterList").innerHTML=fight.monsters.map((m,i)=>{const e=ensureEffectBag(m),shield=m.seaShield>0?`<span class="monsterAffixes">🛡️海盾 ${Math.floor(m.seaShield)}/${Math.floor(m.seaShieldMax||0)}</span>`:"",inv=e.invincible>0?`<span class="monsterAffixes">無敵 ${e.invincible.toFixed(1)}秒</span>`:"";return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${m.name}${shield}${inv}${affixLabel(m)?`<span class="monsterAffixes">${affixLabel(m)}</span>`:""}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${m.max.toLocaleString()}</span></div>`}).join("")}}catch(e){}return r};
  window.cc0911SeaInfo=()=>({tag:TAG,isSea:isSea(),tide:seaState().tide,deepSilence:isDeepSilenced()});
  window.cc0911SeaTag=TAG;
+ console.log("傳承",TAG);
+})();
+
+
+
+/* ===== Beta 0.9.12 領域世界：領域使重置 / 神煞極域 / 真誠墨鏡重製 ===== */
+(function(){
+ const TAG="0.9.12-domain-world-v1";
+ document.title="傳承 Beta 0.9.12 領域世界";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ function isDomainJob(){try{return currentJobKey()==="domainmaster"}catch(e){return !!(p&&p.job==="domainmaster")}}
+ function domainState912(){
+  if(!p.domain)p.domain={time:0,cd:0};
+  p.domain.time=Math.max(0,n(p.domain.time,0));
+  p.domain.cd=Math.max(0,n(p.domain.cd,0));
+  p.domain.miss=Math.max(0,Math.floor(n(p.domain.miss,0)));
+  p.domain.atkB=Math.max(0,n(p.domain.atkB,0));
+  p.domain.aspB=Math.max(0,n(p.domain.aspB,0));
+  p.domain.evaB=Math.max(0,n(p.domain.evaB,0));
+  p.domain.stackAcc=Math.max(0,n(p.domain.stackAcc,0));
+  p.domain.kind=p.domain.kind||"normal";
+  return p.domain;
+ }
+ function activeDomain(){const d=domainState912();return isDomainJob()&&d.time>0}
+ function extremeDomain(){const d=domainState912();return activeDomain()&&d.kind==="extreme"}
+ function currentTargets912(){if(!fight)return[];return fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters().filter(Boolean):(fight&&fight.hp>0?[fight]:[])}
+ function isMirror912(t){return !!(t&&(t.mirrorBoss||t.name==="鏡像門神"))}
+ function isBoss912(t){try{return isBossLike(t)}catch(e){return !!(t&&(t.type==="boss"||fight&&fight.type==="boss"))}}
+ function isElite912(t){return !!(t&&(t.type==="elite"||t.targetKey==="fastfish"||t.seaKind==="fastfish"))}
+ function syncHp912(t){if(!fight)return;if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(t){fight.hp=Math.max(0,t.hp||0);if(fight.hp<=0)killEnemy()}}
+ function clearDomain912(reason=""){
+  if(!p||!p.domain)return;
+  const d=domainState912();
+  d.time=0;d.kind="normal";d.atkB=0;d.aspB=0;d.evaB=0;d.stackAcc=0;
+  for(const m of currentTargets912()){const e=ensureEffectBag(m);e.domain912=0;e.domain912Kind="";}
+  if(reason)log(reason);
+ }
+ function domainDuration912(kind){return (kind==="extreme"?30:10)+5}
+ function domainChance912(){return .08+.05}
+ function domainEnemyVuln912(){return extremeDomain()?6:2}
+ function domainEnemyAtkFactor912(e){return (e&&e.domain912>0)?(e.domain912Kind==="extreme"?.40:.70):1}
+ function domainEnemyMiss912(e){return (e&&e.domain912>0)?(e.domain912Kind==="extreme"?.30:.10):0}
+ function domainDodge912(){const d=domainState912();return activeDomain()?clamp(d.evaB,0,.80):0}
+ function domainBanner912(kind){
+  const text=kind==="extreme"?"🕶️ 神煞極域展開！！":"🕶️ 神煞領域展開！";
+  floatText(text,true);log(text+(kind==="extreme"?" 真正的領域，現在才開始。":""));
+  let layer=by("cc0912DomainFx");
+  if(!layer){layer=document.createElement("div");layer.id="cc0912DomainFx";document.body.appendChild(layer)}
+  layer.className="cc0912DomainFx show "+(kind==="extreme"?"extreme":"normal");
+  layer.innerHTML=`<div class="cc0912DomainSeal">🕶️</div><div class="cc0912DomainText">${text}</div>${kind==="extreme"?'<div class="cc0912DomainSub">真正的領域，現在才開始。</div>':''}`;
+  setTimeout(()=>{if(layer)layer.classList.remove("show")},1350);
+ }
+ function beginDomain912(kind="normal"){
+  if(!isDomainJob()||!fight)return false;
+  const d=domainState912(),dur=domainDuration912(kind);
+  d.kind=kind;d.time=dur;d.max=dur;d.cd=kind==="extreme"?0:30;d.miss=0;d.atkB=0;d.aspB=0;d.evaB=0;d.stackAcc=0;
+  for(const m of currentTargets912()){
+   if(!m||m.hp<=0||isMirror912(m))continue;
+   const e=ensureEffectBag(m);e.domain912=dur;e.domain912Kind=kind;
+  }
+  domainBanner912(kind);
+  save(false);return true;
+ }
+ function rollDomainStrike912(){
+  if(!isDomainJob())return {mult:1,label:""};
+  const inDomain=activeDomain(),r=Math.random();
+  if(inDomain){
+   if(r<.05){floatText("🕶️神煞極擊！",true);return{mult:400,label:"特強化"}}
+   floatText("🕶️領域支配！");return{mult:4,label:"強化"};
+  }
+  if(r<.20){floatText("🕶️特強化普攻！",true);return{mult:400,label:"特強化"}}
+  if(r<.70){floatText("🕶️強化普攻！");return{mult:4,label:"強化"}}
+  return{mult:1,label:""};
+ }
+ function applyCurrentHpStrike912(target){
+  if(!target||target.hp<=0||isMirror912(target))return false;
+  if(Math.random()>=.20)return false;
+  const rate=isBoss912(target)?.05:.10;
+  const dmg=Math.max(1,Math.floor((target.hp||0)*rate));
+  target.hp=Math.max(1,(target.hp||0)-dmg);
+  floatText((target.emoji||"")+"🕶️當前生命-"+Math.round(rate*100)+"%",true);
+  return true;
+ }
+ function applyDomainExecute912(target){
+  if(!target||target.hp<=0||isMirror912(target)||isBoss912(target))return false;
+  const threshold=isElite912(target)?.15:.25;
+  if(target.hp<=target.max*threshold){target.hp=0;floatText((target.emoji||"")+"🕶️領域處決！",true);log("🕶️ 領域處決：目標生命低於 "+Math.round(threshold*100)+"%，直接斬殺");return true}
+  return false;
+ }
+ function eligibleDomainAttempt912(){const d=domainState912();return isDomainJob()&&fight&&d.time<=0&&d.cd<=0}
+ function tryOpenDomain912(hit){
+  if(!hit||!eligibleDomainAttempt912())return;
+  const d=domainState912();
+  if(d.miss>=50){beginDomain912("extreme");return}
+  if(Math.random()<domainChance912()){beginDomain912("normal");return}
+  d.miss=Math.min(50,d.miss+1);
+ }
+ function withoutOldDomain912(fn){
+  if(!p||p.job!=="domainmaster")return fn();
+  const old=p.job;p.job="warrior";
+  try{return fn()}finally{p.job=old}
+ }
+ function harmfulImmune912(){
+  if(!activeDomain())return;
+  const st=playerStatus();
+  for(const k of ["stun","defDown","weak","chaos","regenDown","terror","bleed","poison","burn","armorBreak","seaSilence","seaBind","seaBite","seaFear","seaDodgeDown"]){if(st[k]>0)st[k]=0;}
+  st.bleedStacks=0;st.bleedTick=.5;st.poisonTick=1;st.burnTick=1;
+ }
+ if(JOBS&&JOBS.domainmaster){
+  JOBS.domainmaster.grade="legendary3Star";
+  JOBS.domainmaster.desc="傳說⭐⭐⭐職業。普攻50%強化、20%特強化、20%追加當前生命傷害；8%開啟神煞領域，真誠墨鏡再+5%。50次未觸發則下一次開啟神煞極域。領域期間支配戰場。";
+ }
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;const d=domainState912();if(!Number.isFinite(d.miss))d.miss=0;};
+ const oldJobPanelHtml=jobPanelHtml;
+ jobPanelHtml=function(){
+  let h=oldJobPanelHtml();
+  h=String(h||"").replace(/<div class="small">🕶️ 真誠墨鏡：目前職業為領域使時，最終閃避率 ×1\.5，最高仍受閃避上限限制。<\/div>/g,"");
+  if(isDomainJob()){
+   const d=domainState912();
+   h+=`<div class="small">🕶️ 真誠墨鏡：神煞領域觸發率 +5%，領域持續時間 +5 秒。</div>`;
+   h+=`<div class="small">🕶️ 領域意志：目前保底累積 ${d.miss||0}/50；滿 50 後下一次有效普攻必定展開【神煞極域】。</div>`;
+  }
+  return h;
+ };
+ const oldAtk=atk;
+ atk=function(){let v=withoutOldDomain912(()=>oldAtk());if(activeDomain()&&!p.__cc0912NoDomainAtk){v*=1+domainState912().atkB}return v};
+ const oldAsp=asp;
+ asp=function(){let v=withoutOldDomain912(()=>oldAsp());if(activeDomain())v*=1+domainState912().aspB;return v};
+ const oldPlayerDef=playerDef;
+ playerDef=function(){return withoutOldDomain912(()=>oldPlayerDef())};
+ const oldEvadeRate=evadeRate;
+ evadeRate=function(target=activeMonster()){return withoutOldDomain912(()=>oldEvadeRate(target))};
+ const oldDealPlayerDamage=dealPlayerDamage;
+ dealPlayerDamage=function(raw,opt={}){if(activeDomain()&&opt&&opt.status){floatText("🕶️領域免疫");return 0}return oldDealPlayerDamage(raw,opt)};
+ const oldApplyPlayerStun=applyPlayerStun;
+ applyPlayerStun=function(sec,msg=""){if(activeDomain()){floatText("🕶️免疫控制");return false}return oldApplyPlayerStun(sec,msg)};
+ const oldCanPlayerAct=canPlayerAct;
+ canPlayerAct=function(msg="暈眩中，無法行動"){if(activeDomain()&&p.hp>0)return true;return oldCanPlayerAct(msg)};
+ const oldPlayerTakeDamage=playerTakeDamage;
+ playerTakeDamage=function(raw,source="怪物",m=null){
+  let amount=raw;
+  if(m){const e=ensureEffectBag(m);if(e.domain912>0){if(Math.random()<domainEnemyMiss912(e)){floatText((m.emoji||"")+"🕶️命中降低MISS");return 0}amount*=domainEnemyAtkFactor912(e)}}
+  if(activeDomain()&&Math.random()<domainDodge912()){floatText("🕶️領域閃避");return 0}
+  return withoutOldDomain912(()=>oldPlayerTakeDamage(amount,source,m));
+ };
+ const oldEffDefForTarget=effDefForTarget;
+ effDefForTarget=function(t){let v=oldEffDefForTarget(t);if(t){const e=ensureEffectBag(t);if(e.domain912>0)v*=e.domain912Kind==="extreme"?.40:.70}return Math.max(0,Math.floor(v))};
+ const oldEffReg=effReg;
+ effReg=function(){
+  if(!fight)return oldEffReg();
+  if(fight.monsters&&Array.isArray(fight.monsters)){
+   return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);if(e.domain912>0)return a;let r=(m.reg||0);try{r*=poisonRegenMultiplier(m)}catch(err){}return a+r},0);
+  }
+  const e=ensureEffectBag(fight);if(e.domain912>0)return 0;
+  return oldEffReg();
+ };
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){if(m){const e=ensureEffectBag(m);if(e.domain912>0){floatText((m.emoji||"")+"🕶️技能封鎖");return}}return oldMonsterUseSkill(m)};
+ const oldTick=typeof tick==="function"?tick:null;
+ if(oldTick){tick=function(dt){
+  ensureNewSystems();harmfulImmune912();
+  const r=oldTick(dt);
+  const d=domainState912();
+  if(isDomainJob()&&d.time>0){
+   d.stackAcc+=dt;
+   while(d.stackAcc>=.5){
+    d.stackAcc-=.5;
+    if(d.kind==="extreme"){d.atkB=clamp(d.atkB+.20,0,10);d.aspB=clamp(d.aspB+.15,0,5);d.evaB=clamp(d.evaB+.15,0,.80)}
+    else{d.atkB=clamp(d.atkB+.05,0,2);d.aspB=clamp(d.aspB+.05,0,2);d.evaB=clamp(d.evaB+.05,0,.80)}
+   }
+   for(const m of currentTargets912()){const e=ensureEffectBag(m);if(e.domain912>0){e.domain912=Math.min(e.domain912,d.time);e.domain912Kind=d.kind}}
+   harmfulImmune912();
+  }else if(d.time<=0&&(d.atkB||d.aspB||d.evaB||d.stackAcc)){clearDomain912()}
+  return r;
+ }}
+ const oldSetCurrentStage=setCurrentStage;
+ setCurrentStage=function(stage){clearDomain912();return oldSetCurrentStage(stage)};
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){clearDomain912();return oldPlayerDeath()};
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  const normal=!label&&!(opt&&opt.skill)&&!(opt&&opt.forceSingle);
+  if(!normal||!isDomainJob())return oldDamage(mult,label,opt);
+  const fightRef=fight;
+  const before=currentTargets912().map(m=>[m,n(m.hp,0)]);
+  let mlt=mult;
+  const strike=rollDomainStrike912();mlt*=strike.mult;
+  if(activeDomain()){const d=domainState912();mlt*=1+d.atkB;mlt*=domainEnemyVuln912();}
+  let r;
+  p.__cc0912NoDomainAtk=true;
+  r=withoutOldDomain912(()=>oldDamage(mlt,label,opt));
+  p.__cc0912NoDomainAtk=false;
+  if(fight!==fightRef)return r;
+  let anyHit=false;
+  for(const [t,hp0] of before){if(!t)continue;const lost=hp0-n(t.hp,0);if(lost>0){anyHit=true;if(t.hp>0)applyCurrentHpStrike912(t);if(t.hp>0)applyDomainExecute912(t)}}
+  if(anyHit){if(fight&&fight.monsters)refreshTotalHp();else if(activeMonster())fight.hp=Math.max(0,activeMonster().hp||0);tryOpenDomain912(true);if(fight&&fight.monsters)settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}
+  return r;
+ };
+ const oldStatusHtml=statusHtml;
+ statusHtml=function(){
+  let base=oldStatusHtml();if(!fight)return base;
+  let h="",dur=0,kind="";
+  for(const m of currentTargets912()){const e=ensureEffectBag(m);if(e.domain912>dur){dur=e.domain912;kind=e.domain912Kind}}
+  if(dur>0){h+=`<span class='badge freeze'>${kind==="extreme"?"🕶️ 神煞極域壓制":"🕶️ 神煞領域壓制"} ${dur.toFixed(1)}秒｜命中/攻擊/防禦下降，回血歸零，技能封鎖</span>`}
+  if(h&&base==="<span class='small'>無狀態</span>")base="";
+  return base+h;
+ };
+ const oldPlayerStatusHtml=playerStatusHtml;
+ playerStatusHtml=function(){
+  let base=oldPlayerStatusHtml();let h="";const d=domainState912();
+  base=String(base||"").replace(/<span class="badge freeze">🌀 神煞領域[^<]*<\/span>/g,"");
+  if(isDomainJob()&&d.time>0){h+=`<span class="badge freeze">${d.kind==="extreme"?"🕶️ 神煞極域":"🕶️ 神煞領域"} ${d.time.toFixed(1)}秒｜攻擊+${Math.round(d.atkB*100)}%｜攻速+${Math.round(d.aspB*100)}%｜閃避${Math.round(clamp(d.evaB,0,.80)*100)}%</span>`}
+  else if(isDomainJob()&&d.cd>0)h+=`<span class="badge freeze">🕶️ 神煞領域冷卻 ${Math.ceil(d.cd)}秒｜保底 ${d.miss||0}/50</span>`;
+  else if(isDomainJob())h+=`<span class="badge freeze">🕶️ 領域意志 ${d.miss||0}/50</span>`;
+  if(h&&base==="玩家狀態：無")base="";
+  return base+h;
+ };
+ const st=document.createElement("style");
+ st.textContent=`.cc0912DomainFx{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;pointer-events:none;background:radial-gradient(circle at center,rgba(124,58,237,.26),rgba(0,0,0,.72));backdrop-filter:blur(1px)}.cc0912DomainFx.show{display:flex;animation:cc0912DomainFade 1.35s ease-out forwards}.cc0912DomainFx.extreme{background:radial-gradient(circle at center,rgba(192,38,211,.38),rgba(0,0,0,.82))}.cc0912DomainSeal{font-size:64px;filter:drop-shadow(0 0 16px rgba(216,180,254,.9));animation:cc0912DomainPulse .65s ease-in-out infinite alternate}.cc0912DomainText{font-size:30px;font-weight:900;color:#f5f3ff;text-shadow:0 0 18px rgba(168,85,247,.95);letter-spacing:2px}.cc0912DomainSub{margin-top:8px;color:#e9d5ff;font-weight:800}@keyframes cc0912DomainFade{0%{opacity:0}18%,78%{opacity:1}100%{opacity:0}}@keyframes cc0912DomainPulse{from{transform:scale(.95)}to{transform:scale(1.12)}}`;
+ document.head.appendChild(st);
+ window.cc0912DomainInfo=()=>{const d=domainState912();return{tag:TAG,job:isDomainJob(),active:activeDomain(),kind:d.kind,time:d.time,cd:d.cd,miss:d.miss,atkBonus:d.atkB,aspdBonus:d.aspB,evadeBonus:d.evaB}};
  console.log("傳承",TAG);
 })();
 
