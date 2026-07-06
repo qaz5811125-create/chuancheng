@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.13 終幕槍神</title>
+<title>傳承 Beta 0.9.14【我回來了】魔戰神</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.13 終幕槍神</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.14【我回來了】魔戰神</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.13";
+const GAME_VERSION="0.9.14";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4493,6 +4493,305 @@ console.log("傳承",FLICKER_FIX_TAG);
  window.cc0913CloseModal=closeModal;
  window.cc0913CloseCutscene=closeCutscene;
  window.cc0913Info=()=>({tag:TAG,awakened:isAwakened(),kills:awakenState().gunnerKills,lv:gunnerSwLv(),dungeon:awakenState().gunnerDungeonClears,title:hasTitle()});
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.14：【我回來了】魔戰神 / 覺醒收納 / 終幕槍神顯示修正 ===== */
+(function(){
+ const TAG="0.9.14-magic-war-god-v1";
+ const VERSION_NAME="傳承 Beta 0.9.14【我回來了】魔戰神";
+ const DUNGEON="berserkerAwaken";
+ const TITLE_ID="demonKai";
+ const TITLE_NAME="魔神•凱";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ document.title=VERSION_NAME;
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function isBoss(t){try{return isBossLike(t)}catch(e){return !!t&&(t.type==="boss"||t.abyss||t.mode==="abyss")}}
+ function isMirror(t){return !!t&&(t.mirrorBoss||t.targetKey==="mirror"||t.name==="鏡像門神")}
+ function isAwakenImmune(t){return !!t&&(isMirror(t)||t.awakenBoss)}
+ function titleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function hasTitle(){return !!(p&&titleState().unlocked&&titleState().unlocked[TITLE_ID])}
+ function unlockTitle(){const t=titleState();if(t.unlocked[TITLE_ID])return false;t.unlocked[TITLE_ID]=Date.now();log("🏷️ 解鎖稱號：「"+TITLE_NAME+"」");return true}
+ function awakenState(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.gunnerAwakened=!!a.gunnerAwakened;
+  a.berserkerBurnStacks=Math.max(0,Math.floor(n(a.berserkerBurnStacks,0)));
+  a.berserkerDungeonClears=Math.max(0,Math.floor(n(a.berserkerDungeonClears,0)));
+  a.berserkerAwakened=!!a.berserkerAwakened;
+  a.magicWarGodPain=Math.max(0,Math.min(3,n(a.magicWarGodPain,0)));
+  return a;
+ }
+ function isGunnerAwakened(){return !!(p&&p.awakening&&p.awakening.gunnerAwakened)}
+ function isAwakened(){return !!(p&&awakenState().berserkerAwakened)}
+ function berserkerLv(){try{return specialWeaponLevel("berserker")}catch(e){return p&&p.specialWeapons?Math.floor(n(p.specialWeapons.axe,0)):0}}
+ function hasBurnReq(){return awakenState().berserkerBurnStacks>=1000}
+ function hasLevelReq(){return berserkerLv()>=5}
+ function hasDungeonReq(){return awakenState().berserkerDungeonClears>=1}
+ function canAwaken(){return hasBurnReq()&&hasLevelReq()&&hasDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function reqLines(){const a=awakenState();return `
+   <div class="cc0914Req ${hasBurnReq()?"ok":"no"}">${check(hasBurnReq())} 累積疊加燃燒狀態：${Math.min(a.berserkerBurnStacks,1000)} / 1000</div>
+   <div class="cc0914Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 狂戰士職業等級：Lv.${berserkerLv()} / Lv.5</div>
+   <div class="cc0914Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【魔神甦醒】：${Math.min(a.berserkerDungeonClears,1)} / 1</div>`}
+ function openModal(html){
+  let m=by("cc0914Modal");
+  if(!m){m=document.createElement("div");m.id="cc0914Modal";m.className="cc0914Modal hidden";document.body.appendChild(m)}
+  m.innerHTML=`<div class="cc0914ModalCard">${html}</div>`;
+  m.classList.remove("hidden");
+ }
+ function closeModal(){const m=by("cc0914Modal");if(m)m.classList.add("hidden")}
+ function showPanel(){
+  ensureNewSystems();const a=awakenState(),cur=curJob();
+  openModal(`
+   <div class="row"><b>🔥 狂戰士覺醒</b><button onclick="window.cc0914CloseModal()">關閉</button></div>
+   <div class="small">第三個覺醒職業：<b>狂戰士 → 【我回來了】魔戰神</b>。核心玩法是燃燒、封鎖、受傷增攻與低血防禦。</div>
+   <hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="berserker"?(isAwakened()?"【我回來了】魔戰神":"狂戰士"):"請切換狂戰士"}</span></div>
+   <div class="card notice"><b>覺醒目標：【我回來了】魔戰神</b><div class="small">覺醒狀態：${a.berserkerAwakened?"✅ 已覺醒":"未覺醒"}</div>${reqLines()}</div>
+   <div class="small"><b>覺醒被動</b><br>1. 普攻額外附帶 50% 無視防禦傷害。<br>2. 普攻 25% 機率造成群傷。<br>3. 普攻 10% 機率造成秒殺；對 Boss 觸發時改為造成最大生命 10% 傷害。</div>
+   <div class="small"><b>專屬機制</b><br>【封鎖】：普攻命中後封鎖目標 5 秒，使其無法閃避、回血與施放技能。<br>【受到傷害越多攻擊越強】：已承受傷害會轉為攻擊加成，最高 +300%。<br>【血量越低防禦越高】：生命越低，防禦越高，最高約 +300%。</div>
+   <div class="small"><b>專武變化</b><br>戰斧 → 戰天斬｜普攻時對一個目標造成多段傷害。</div>
+   <button class="purple" onclick="window.cc0914AwakenBerserker()" ${canAwaken()&&!a.berserkerAwakened?"":"disabled"}>覺醒：狂戰士 → 【我回來了】魔戰神</button>
+   <div class="small">稱號：${hasTitle()?"✅ 【"+TITLE_NAME+"】":"未取得"}｜稱號顏色：紫色。</div>
+  `);
+ }
+ function showDungeonPanel(){
+  ensureNewSystems();const a=awakenState(),cur=curJob();
+  const can=cur==="berserker"&&hasBurnReq()&&hasLevelReq()&&!isDungeon();
+  openModal(`
+   <div class="row"><b>🔥 覺醒副本</b><button onclick="window.cc0914CloseModal()">關閉</button></div>
+   <div class="card notice"><b>【魔神甦醒】</b><div class="small">Boss：魔神｜挑戰時間：120 秒<br>通關後完成副本條件，並獲得紫色稱號【${TITLE_NAME}】。</div></div>
+   <div class="small"><b>開啟條件</b>${reqLines().replace(/通關【魔神甦醒】：[^<]+<\/div>/,'通關【魔神甦醒】：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>魔神特性</b><br>魔神會攻擊玩家。玩家死亡時，魔神消耗自身剩餘血量 10% 復活玩家，玩家以 100% 血量 + 100% 最大生命護盾重新站起來。</div>
+   <button class="purple" onclick="window.cc0914StartBerserkerAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為狂戰士")}</button>
+   <div class="small">目前通關：${Math.min(a.berserkerDungeonClears,1)} / 1｜稱號：${hasTitle()?"✅ "+TITLE_NAME:"未取得"}</div>
+  `);
+ }
+ function showArchivePanel(){
+  ensureNewSystems();const a=awakenState();
+  openModal(`
+   <div class="row"><b>📦 已完成覺醒收納</b><button onclick="window.cc0914CloseModal()">關閉</button></div>
+   <div class="card"><b>🔫 終幕槍神</b><div class="small">狀態：${a.gunnerAwakened?"✅ 已覺醒":"未完成"}<br>原職業：槍手<br>副本：【槍手的自覺】已從主要入口收納。<br>保留：終幕處決、槍神之速、終幕火力、終幕一擊、【更燙的狙擊步槍】、【狙神非你莫屬】。</div></div>
+   <div class="card"><b>🔥 【我回來了】魔戰神</b><div class="small">狀態：${a.berserkerAwakened?"✅ 已覺醒":"施工中 / 未完成"}<br>副本：【魔神甦醒】<br>稱號：【${TITLE_NAME}】</div></div>
+  `);
+ }
+ function ensureDrawerButtons(){
+  const panel=by("featureDrawer");if(!panel)return;
+  if(panel.dataset.cc0914MagicButtons!=="1"){
+   panel.dataset.cc0914MagicButtons="1";
+   function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}
+   panel.appendChild(b("🔥 魔戰神覺醒",showPanel));
+   panel.appendChild(b("🔥 魔神甦醒",showDungeonPanel));
+   panel.appendChild(b("📦 已完成覺醒",showArchivePanel));
+  }
+  const hideGunner=isGunnerAwakened();
+  [...panel.querySelectorAll("button")].forEach(btn=>{
+   const txt=(btn.textContent||"").trim();
+   if(txt.includes("槍手覺醒")||txt.includes("槍手副本"))btn.style.display=hideGunner?"none":"";
+  });
+ }
+ function createBerserkerBoss(){
+  const hp=Math.max(1,Math.floor(playerMaxHp()*36));
+  const atkV=Math.max(1,Math.floor(atk()*5.5));
+  const defV=Math.max(0,Math.floor(playerDef()*9));
+  const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:"魔神",emoji:"🔥",hp,def:defV,reg:Math.floor(hp*.004),gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:1.8,awakenBoss:true,targetKey:"berserkerAwaken"});
+  return typeof finalizeMonster==="function"?finalizeMonster(m):m;
+ }
+ function startDungeon914(){
+  ensureNewSystems();
+  if(isDungeon())return log("副本進行中，不能重複進入");
+  if(curJob()!=="berserker")return log("🔥 魔神甦醒需要目前職業為狂戰士");
+  if(!hasBurnReq())return log("🔥 燃燒疊層不足："+awakenState().berserkerBurnStacks+"/1000");
+  if(!hasLevelReq())return log("🔥 狂戰士職業等級不足：Lv."+berserkerLv()+"/5");
+  closeModal();
+  dungeon={type:DUNGEON,timer:120,kills:0,gain:0,running:true,revives:0};
+  fight=createBerserkerBoss();p.queue=0;hold=false;budget=0;show("main");
+  log("🔥 魔神甦醒開始：120秒內擊敗魔神");save(false);render();
+ }
+ function awakenBerserker(){
+  ensureNewSystems();const a=awakenState();
+  if(a.berserkerAwakened)return log("🔥 狂戰士已覺醒為【我回來了】魔戰神");
+  if(!canAwaken())return log("🔥 魔戰神覺醒條件尚未完成");
+  a.berserkerAwakened=true;unlockTitle();save(false);log("🔥 覺醒成功：狂戰士 → 【我回來了】魔戰神");floatText("狂戰士→魔戰神！",true);render();showPanel();
+ }
+ function endRun(success){
+  window.cc0914CutsceneActive=true;
+  const a=awakenState();
+  if(success){a.berserkerDungeonClears=Math.max(1,a.berserkerDungeonClears||0);unlockTitle();save(false)}
+  const text=success?"這片天地遲早有你的位子":"失敗了就重新站起來";
+  let ov=by("cc0914Cutscene");if(!ov){ov=document.createElement("div");ov.id="cc0914Cutscene";document.body.appendChild(ov)}
+  ov.className="cc0914Cutscene "+(success?"win":"lose");
+  ov.innerHTML=`<div class="cc0914BossTalk"><div class="cc0914BossEmoji">🔥</div><div class="small">魔神</div><div class="cc0914TalkText">「${text}」</div><button onclick="window.cc0914CloseCutscene(${success?1:0})">確認</button></div>`;
+  ov.classList.remove("hidden");
+ }
+ function closeCutscene(success){
+  const ov=by("cc0914Cutscene");if(ov)ov.classList.add("hidden");
+  window.cc0914CutsceneActive=false;
+  dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();save(false);spawnMain();
+  if(success)log("🔥 你通過了魔神甦醒。獲得紫色稱號【"+TITLE_NAME+"】，狂戰士已具備覺醒資格。");
+  else log("🔥 魔神甦醒挑戰失敗");
+ }
+ function syncFightHp(){if(!fight)return;if(fight.monsters){refreshTotalHp()}else{const t=activeMonster();if(t)fight.hp=Math.max(0,t.hp||0)}}
+ function settleAfterMagic(){if(!fight)return;if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy()}
+ function applySeal(target){if(!target||target.hp<=0)return;const e=ensureEffectBag(target);e.magicSeal=Math.max(e.magicSeal||0,5);floatText((target.emoji||"")+"🔒封鎖",true)}
+ function magicSlash(target){
+  if(!target||target.hp<=0)return false;
+  let changed=false;
+  const ignore=Math.max(1,Math.floor(atk()*.50));
+  target.hp=Math.max(0,(target.hp||0)-ignore);floatText("🔥無視防禦 -"+fmt(ignore));changed=true;
+  for(let i=0;i<3&&target.hp>0;i++){
+   const d=Math.max(1,Math.floor(atk()*.35*100/(100+Math.max(0,effDefForTarget(target)))));
+   target.hp=Math.max(0,(target.hp||0)-d);floatText("🪓戰天斬 -"+fmt(d));changed=true;
+  }
+  applySeal(target);
+  if(Math.random()<.25&&fight&&fight.monsters){
+   for(const m of aliveMonsters().filter(x=>x!==target)){
+    const d=Math.max(1,Math.floor(atk()*.45*100/(100+Math.max(0,effDefForTarget(m)))));
+    m.hp=Math.max(0,(m.hp||0)-d);floatText((m.emoji||"")+"🔥群傷 -"+fmt(d));changed=true;
+   }
+  }
+  if(Math.random()<.10&&!isAwakenImmune(target)){
+   if(isBoss(target)){
+    const d=Math.max(1,Math.floor((target.max||target.hp||1)*.10));
+    target.hp=Math.max(1,(target.hp||0)-d);floatText("☠️Boss最大生命 -"+fmt(d),true);changed=true;
+   }else{
+    target.hp=0;floatText("☠️魔神秒殺！",true);changed=true;
+   }
+  }
+  return changed;
+ }
+ function recordBurnStacks(target,before,after,add){
+  if(!p||curJob()!=="berserker")return;
+  const a=awakenState();
+  const delta=Math.max(0,Math.floor(after||0)-Math.floor(before||0));
+  const gain=Math.max(0,Math.floor(add||0),delta);
+  if(gain>0)a.berserkerBurnStacks=Math.min(999999,a.berserkerBurnStacks+gain);
+  if(target){const e=ensureEffectBag(target);a.berserkerBurnStacks=Math.max(a.berserkerBurnStacks,Math.floor(e.burn||0));}
+  if(a.berserkerBurnStacks>=1000&&!a.berserkerBurnReqNotified){a.berserkerBurnReqNotified=1;log("🔥 狂戰士燃燒疊層達成：1000/1000")}
+ }
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;awakenState();titleState();if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.axe=Math.max(0,Math.floor(n(p.specialWeapons.axe,0)))};
+ const oldAddBurn=addBurn;
+ addBurn=function(target,stacks=1,infinite=false){const e=target?ensureEffectBag(target):null,before=e?Math.floor(e.burn||0):0;const r=oldAddBurn(target,stacks,infinite);const after=e?Math.floor(e.burn||0):before;recordBurnStacks(target,before,after,stacks);return r};
+ const oldDeal=dealPlayerDamage;
+ dealPlayerDamage=function(raw,opt={}){const r=oldDeal(raw,opt);try{if(r>0&&curJob()==="berserker"&&isAwakened()){const a=awakenState();a.magicWarGodPain=Math.min(3,(a.magicWarGodPain||0)+r/Math.max(1,playerMaxHp()));}}catch(e){}return r};
+ const oldJobAtk=jobAtkBonus;
+ jobAtkBonus=function(){let v=oldJobAtk();try{if(curJob()==="berserker"&&isAwakened())v+=Math.min(3,awakenState().magicWarGodPain||0)}catch(e){}return v};
+ const oldEffDef=effectivePlayerDef;
+ effectivePlayerDef=function(){let v=oldEffDef();try{if(curJob()==="berserker"&&isAwakened()){const miss=1-Math.max(0,Math.min(1,(p.hp||0)/Math.max(1,playerMaxHp())));v=Math.floor(v*(1+miss*3));}}catch(e){}return v};
+ const oldEvade=evadeRate;
+ evadeRate=function(target=activeMonster()){const e=target?ensureEffectBag(target):null;if(e&&e.magicSeal>0)return 0;return oldEvade(target)};
+ const oldEffReg=effReg;
+ effReg=function(){try{if(fight&&fight.monsters&&aliveMonsters().some(m=>ensureEffectBag(m).magicSeal>0)){return aliveMonsters().reduce((a,m)=>{const e=ensureEffectBag(m);return a+(e.magicSeal>0?0:m.reg*(e.freeze>0?.45:1)*poisonRegenMultiplier(m))},0)}const t=activeMonster();if(t&&ensureEffectBag(t).magicSeal>0)return 0}catch(e){}return oldEffReg()};
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){const e=m?ensureEffectBag(m):null;if(e&&e.magicSeal>0){floatText((m.emoji||"")+"🔒技能封鎖");return}return oldMonsterUseSkill(m)};
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  const normal=!label&&!(opt&&opt.skill)&&!(opt&&opt.forceSingle);
+  if(!(normal&&curJob()==="berserker"&&isAwakened()))return oldDamage(mult,label,opt);
+  const oldFight=fight;
+  const before=(fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean).map(t=>[t,Math.max(0,t.hp||0)]):[]);
+  const r=oldDamage(mult,label,opt);
+  if(!oldFight||fight!==oldFight)return r;
+  let changed=false;
+  for(const [t,hp0] of before){if(!t||t.hp<=0)continue;const lost=hp0-Math.max(0,t.hp||0);if(lost<=0)continue;if(magicSlash(t))changed=true;}
+  if(changed){syncFightHp();settleAfterMagic();render()}
+  return r;
+ };
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(true);return}return oldDungeonKill()};
+ const oldEndDungeon=endDungeon;
+ endDungeon=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldEndDungeon()};
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){
+  if(dungeon&&dungeon.type===DUNGEON&&fight){
+   dungeon.revives=Math.max(0,Math.floor(n(dungeon.revives,0)))+1;
+   const cost=Math.max(1,Math.floor((fight.hp||1)*.10));
+   fight.hp=Math.max(0,(fight.hp||0)-cost);if(!fight.monsters)fight.hp=Math.max(0,fight.hp);
+   const st=playerStatus();clearPlayerStatus();const st2=playerStatus();p.hp=playerMaxHp();st2.bloodShield=Math.floor(playerMaxHp());st2.bloodShieldTime=Math.max(130,Math.ceil((dungeon&&dungeon.timer)||120)+5);
+   p.queue=0;hold=false;budget=0;resetCombo();
+   floatText("🔥魔神復活你！",true);log("🔥 魔神消耗自身剩餘血量10%，讓你重新站起來。復活次數："+dungeon.revives);
+   if(fight.hp<=0){dungeon.running=false;endRun(true);return}
+   save(false);render();return;
+  }
+  return oldPlayerDeath();
+ };
+ const oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){
+  if(dungeon&&dungeon.type===DUNGEON&&fight){const m=fight;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<4){monsterNormalAttack(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}return}
+  return oldTickMonsterAI(dt);
+ };
+ const oldTick=tick;
+ tick=function(dt){
+  if(window.cc0914CutsceneActive)return;
+  const oldFight=fight;
+  const sealed=(fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean).filter(m=>ensureEffectBag(m).magicSeal>0).map(m=>[m,Math.max(0,m.hp||0)]):[]);
+  const r=oldTick(dt);
+  if(oldFight&&fight===oldFight){
+   for(const [m,h] of sealed){if(m&&ensureEffectBag(m).magicSeal>0&&m.hp>h)m.hp=h}
+   for(const m of (fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean):[])){const e=ensureEffectBag(m);if(e.magicSeal>0)e.magicSeal=Math.max(0,e.magicSeal-dt)}
+   if(fight&&fight.monsters)refreshTotalHp();
+  }
+  return r;
+ };
+ const oldJobPanel=jobPanelHtml;
+ jobPanelHtml=function(){
+  let h=String(oldJobPanel()||"");
+  if(isGunnerAwakened()){
+   h=h.replace(/🔫\s*槍手\s*→\s*終幕槍神/g,"🔫 終幕槍神");
+   h=h.replace(/🔫\s*槍手/g,"🔫 終幕槍神");
+   h=h.replace(/<span class="pill">槍手 → 終幕槍神<\/span>/g,'<span class="pill">終幕槍神</span>');
+  }
+  if(isAwakened()){
+   h=h.replace(/🪓\s*(狂戰士|狂戰)(?![^<]*魔戰神)/g,"🪓 【我回來了】魔戰神");
+   h=h.replace(/戰斧/g,"戰天斬");
+   if(curJob()==="berserker")h+=`<div class="small">🔥 【我回來了】魔戰神：普攻附帶無視防禦、群傷、Boss最大生命傷害與封鎖。</div><div class="small">🪓 戰天斬：普攻對單一目標追加三段斬擊。</div>`;
+  }
+  return h;
+ };
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatus();if(curJob()==="berserker"&&isAwakened()){if(h==="玩家狀態：無")h="";const a=awakenState(),miss=1-Math.max(0,Math.min(1,(p.hp||0)/Math.max(1,playerMaxHp())));h+=`<span class="badge burn">🔥 覺醒：狂戰士 → 【我回來了】魔戰神｜戰天斬</span><span class="badge break">受傷增攻 +${Math.round((a.magicWarGodPain||0)*100)}%｜低血防禦 +${Math.round(miss*300)}%</span>`}return h};
+ const oldStatus=statusHtml;
+ statusHtml=function(){let h=oldStatus();if(!fight)return h;let add="";for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);if(e.magicSeal>0)add+=`<span class='badge break'>🔒 封鎖 ${e.magicSeal.toFixed(1)}秒｜無法閃避/回血/技能</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";return h+add};
+ function renderTitleTools(){
+  if(!p||!p.titles)return;
+  if(p.titles.equipped===TITLE_ID){const el=by("equippedTitleHud");if(el){el.textContent="【"+TITLE_NAME+"】";el.classList.remove("hidden");el.classList.add("cc0914PurpleTitleHud")}}
+  const box=by("equippedTitleBox");if(box&&hasTitle()&&!by("cc0914DemonKaiTitleBtn")){
+   const list=box.querySelector(".titleEquipList")||box;
+   const b=document.createElement("button");b.type="button";b.id="cc0914DemonKaiTitleBtn";b.className="titleChoice cc0914PurpleTitle"+(p.titles.equipped===TITLE_ID?" active":"");b.dataset.titleId=TITLE_ID;b.textContent="🏷️ "+TITLE_NAME;
+   b.addEventListener("pointerdown",ev=>ev.stopPropagation());
+   b.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();p.titles.equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render()});
+   list.appendChild(b);
+  }
+ }
+ const oldRender=render;
+ render=function(){const r=oldRender();ensureDrawerButtons();renderTitleTools();try{if(isDungeon()&&dungeon&&dungeon.type===DUNGEON){if(by("enemyType"))by("enemyType").textContent="覺醒副本｜魔神甦醒｜建議戰力 "+recPower(p.stage);if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>🔥 魔神甦醒</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜復活：${dungeon.revives||0}｜魔神會用自身剩餘血量10%讓你重新站起來</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>🔥 魔神甦醒進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：魔神<br>復活次數：${dungeon.revives||0}<br>狀態：挑戰中</div></div>`;}}catch(e){}return r};
+ const oldSetTitle=window.cc097SetEquippedTitle;
+ window.cc097SetEquippedTitle=function(id){if(id===TITLE_ID){if(!hasTitle())return log("尚未解鎖此稱號");titleState().equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render();return}return oldSetTitle?oldSetTitle(id):undefined};
+ const style=document.createElement("style");
+ style.textContent=`
+  .cc0914Modal{position:fixed;inset:0;z-index:122000;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+  .cc0914Modal.hidden{display:none!important}.cc0914ModalCard{width:min(660px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#1e102f,#020617);border:1px solid rgba(168,85,247,.55);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.66)}
+  .cc0914Req{padding:6px 8px;margin:5px 0;border-radius:10px;background:rgba(15,23,42,.72)}.cc0914Req.ok{border:1px solid rgba(34,197,94,.45);color:#bbf7d0}.cc0914Req.no{border:1px solid rgba(248,113,113,.35);color:#fecaca}
+  .cc0914Cutscene{position:fixed;inset:0;z-index:132500;background:#05010a;display:flex;align-items:center;justify-content:center;color:#fff;animation:cc0914FadeIn .38s ease both}.cc0914Cutscene.hidden{display:none!important}.cc0914Cutscene.lose{background:rgba(10,0,14,.92)}
+  .cc0914BossTalk{width:min(590px,90vw);text-align:center;background:linear-gradient(180deg,rgba(49,18,75,.96),rgba(0,0,0,.95));border:1px solid rgba(168,85,247,.62);border-radius:22px;padding:22px;box-shadow:0 0 70px rgba(168,85,247,.22)}
+  .cc0914BossEmoji{font-size:66px;filter:drop-shadow(0 0 20px rgba(168,85,247,.75))}.cc0914TalkText{font-size:22px;font-weight:900;margin:16px 0;line-height:1.55;color:#e9d5ff}@keyframes cc0914FadeIn{from{opacity:0}to{opacity:1}}
+  .cc0914PurpleTitle,.cc0914PurpleTitle.active{background:linear-gradient(135deg,#7e22ce,#c084fc)!important;color:#fff!important;border-color:#e9d5ff!important;box-shadow:0 0 0 2px rgba(168,85,247,.25),0 0 18px rgba(168,85,247,.25)!important}.cc0914PurpleTitleHud{color:#e9d5ff!important;text-shadow:0 0 12px rgba(168,85,247,.7)!important}
+ `;
+ document.head.appendChild(style);
+ setTimeout(()=>{try{ensureDrawerButtons()}catch(e){}},0);
+ window.cc0914ShowBerserkerAwakeningPanel=showPanel;
+ window.cc0914ShowBerserkerAwakenDungeonPanel=showDungeonPanel;
+ window.cc0914ShowAwakeningArchive=showArchivePanel;
+ window.cc0914StartBerserkerAwakenDungeon=startDungeon914;
+ window.cc0914AwakenBerserker=awakenBerserker;
+ window.cc0914CloseModal=closeModal;
+ window.cc0914CloseCutscene=closeCutscene;
+ window.cc0914Info=()=>({tag:TAG,awakened:isAwakened(),burn:awakenState().berserkerBurnStacks,lv:berserkerLv(),dungeon:awakenState().berserkerDungeonClears,title:hasTitle(),gunnerArchived:isGunnerAwakened()});
  console.log("傳承",TAG);
 })();
 
