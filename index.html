@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.14【我回來了】魔戰神</title>
+<title>傳承 Beta 0.9.15【天之王•神兵】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.14【我回來了】魔戰神</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.15【天之王•神兵】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.14";
+const GAME_VERSION="0.9.15";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4637,7 +4637,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  }
  function syncFightHp(){if(!fight)return;if(fight.monsters){refreshTotalHp()}else{const t=activeMonster();if(t)fight.hp=Math.max(0,t.hp||0)}}
  function settleAfterMagic(){if(!fight)return;if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy()}
- function applySeal(target){if(!target||target.hp<=0)return;const e=ensureEffectBag(target);e.magicSeal=Math.max(e.magicSeal||0,5);floatText((target.emoji||"")+"🔒封鎖",true)}
+ function applySeal(target){if(!target||target.hp<=0)return;const e=ensureEffectBag(target);if((e.magicSealCd||0)>0){floatText((target.emoji||"")+"🔒封鎖冷卻 "+Math.ceil(e.magicSealCd)+"秒");return}e.magicSeal=Math.max(e.magicSeal||0,5);e.magicSealCd=60;floatText((target.emoji||"")+"🔒封鎖",true)}
  function magicSlash(target){
   if(!target||target.hp<=0)return false;
   let changed=false;
@@ -4733,7 +4733,7 @@ console.log("傳承",FLICKER_FIX_TAG);
   const r=oldTick(dt);
   if(oldFight&&fight===oldFight){
    for(const [m,h] of sealed){if(m&&ensureEffectBag(m).magicSeal>0&&m.hp>h)m.hp=h}
-   for(const m of (fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean):[])){const e=ensureEffectBag(m);if(e.magicSeal>0)e.magicSeal=Math.max(0,e.magicSeal-dt)}
+   for(const m of (fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean):[])){const e=ensureEffectBag(m);if(e.magicSeal>0)e.magicSeal=Math.max(0,e.magicSeal-dt);if(e.magicSealCd>0)e.magicSealCd=Math.max(0,e.magicSealCd-dt)}
    if(fight&&fight.monsters)refreshTotalHp();
   }
   return r;
@@ -4756,7 +4756,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  const oldPlayerStatus=playerStatusHtml;
  playerStatusHtml=function(){let h=oldPlayerStatus();if(curJob()==="berserker"&&isAwakened()){if(h==="玩家狀態：無")h="";const a=awakenState(),miss=1-Math.max(0,Math.min(1,(p.hp||0)/Math.max(1,playerMaxHp())));h+=`<span class="badge burn">🔥 覺醒：狂戰士 → 【我回來了】魔戰神｜戰天斬</span><span class="badge break">受傷增攻 +${Math.round((a.magicWarGodPain||0)*100)}%｜低血防禦 +${Math.round(miss*300)}%</span>`}return h};
  const oldStatus=statusHtml;
- statusHtml=function(){let h=oldStatus();if(!fight)return h;let add="";for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);if(e.magicSeal>0)add+=`<span class='badge break'>🔒 封鎖 ${e.magicSeal.toFixed(1)}秒｜無法閃避/回血/技能</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";return h+add};
+ statusHtml=function(){let h=oldStatus();if(!fight)return h;let add="";for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);if(e.magicSeal>0)add+=`<span class='badge break'>🔒 封鎖 ${e.magicSeal.toFixed(1)}秒｜無法閃避/回血/技能</span>`;else if(e.magicSealCd>0)add+=`<span class='badge break'>🔒 封鎖冷卻 ${e.magicSealCd.toFixed(1)}秒</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";return h+add};
  function renderTitleTools(){
   if(!p||!p.titles)return;
   if(p.titles.equipped===TITLE_ID){const el=by("equippedTitleHud");if(el){el.textContent="【"+TITLE_NAME+"】";el.classList.remove("hidden");el.classList.add("cc0914PurpleTitleHud")}}
@@ -4792,6 +4792,280 @@ console.log("傳承",FLICKER_FIX_TAG);
  window.cc0914CloseModal=closeModal;
  window.cc0914CloseCutscene=closeCutscene;
  window.cc0914Info=()=>({tag:TAG,awakened:isAwakened(),burn:awakenState().berserkerBurnStacks,lv:berserkerLv(),dungeon:awakenState().berserkerDungeonClears,title:hasTitle(),gunnerArchived:isGunnerAwakened()});
+ console.log("傳承",TAG);
+})();
+
+
+
+/* ===== Beta 0.9.15：【天之王•神兵】 / 巨神兵覺醒 / 覺醒收納修正 ===== */
+(function(){
+ const TAG="0.9.15-heaven-king-colossus-v1";
+ const VERSION_NAME="傳承 Beta 0.9.15【天之王•神兵】";
+ const DUNGEON="colossusAwaken";
+ const TITLE_ID="skyGod";
+ const TITLE_NAME="天神";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ document.title=VERSION_NAME;
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function isBoss(t){try{return isBossLike(t)}catch(e){return !!t&&(t.type==="boss"||t.abyss||t.mode==="abyss")}}
+ function isAwakenImmune(t){return !!t&&(t.awakenBoss||t.mirrorBoss||t.name==="鏡像門神")}
+ function titleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function hasTitle(){return !!(p&&titleState().unlocked&&titleState().unlocked[TITLE_ID])}
+ function unlockTitle(){const t=titleState();if(t.unlocked[TITLE_ID])return false;t.unlocked[TITLE_ID]=Date.now();log("🏷️ 解鎖稱號：「"+TITLE_NAME+"」");return true}
+ function awakenState(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.colossusAwakenKills=Math.max(0,Math.floor(n(a.colossusAwakenKills,0)));
+  a.colossusDungeonClears=Math.max(0,Math.floor(n(a.colossusDungeonClears,0)));
+  a.colossusAwakened=!!a.colossusAwakened;
+  a.heavenShield=Math.max(0,n(a.heavenShield,0));
+  a.heavenFloatCd=Math.max(0,n(a.heavenFloatCd,0));
+  a.heavenStunCd=Math.max(0,n(a.heavenStunCd,0));
+  a.ohmNukeTimer=Math.max(0,n(a.ohmNukeTimer,5));
+  return a;
+ }
+ function isAwakened(){return !!(p&&awakenState().colossusAwakened)}
+ function colossusLv(){try{return specialWeaponLevel("colossus")}catch(e){return p&&p.specialWeapons?Math.floor(n(p.specialWeapons.gauntlet,0)):0}}
+ function hasKillReq(){return awakenState().colossusAwakenKills>=100}
+ function hasLevelReq(){return colossusLv()>=5}
+ function hasDungeonReq(){return awakenState().colossusDungeonClears>=1}
+ function canAwaken(){return hasKillReq()&&hasLevelReq()&&hasDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function isActiveHeaven(){return curJob()==="colossus"&&isAwakened()}
+ function shieldCap(){const mul=hasTitle()?1.5:1;return Math.max(1,Math.floor(playerMaxHp()*1.5*mul))}
+ function shieldRegen(dt){const mul=hasTitle()?1.5:1;return Math.max(1,playerMaxHp()*.05*mul*dt)}
+ function clearHeavenShield(reason=""){if(!p)return;const a=awakenState();if(a.heavenShield>0&&reason)log(reason);a.heavenShield=0;save(false)}
+ function reqLines(){const a=awakenState();return `
+   <div class="cc0915Req ${hasKillReq()?"ok":"no"}">${check(hasKillReq())} 使用巨神兵擊殺野怪：${Math.min(a.colossusAwakenKills,100)} / 100</div>
+   <div class="cc0915Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 巨神兵職業等級：Lv.${colossusLv()} / Lv.5</div>
+   <div class="cc0915Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【天空之王】：${Math.min(a.colossusDungeonClears,1)} / 1</div>`}
+ function openModal(html){let m=by("cc0915Modal");if(!m){m=document.createElement("div");m.id="cc0915Modal";m.className="cc0915Modal hidden";document.body.appendChild(m)}m.innerHTML=`<div class="cc0915ModalCard">${html}</div>`;m.classList.remove("hidden")}
+ function closeModal(){const m=by("cc0915Modal");if(m)m.classList.add("hidden")}
+ function showPanel(){
+  ensureNewSystems();const a=awakenState(),cur=curJob();
+  openModal(`
+   <div class="row"><b>⚡ 巨神兵覺醒</b><button onclick="window.cc0915CloseModal()">關閉</button></div>
+   <div class="small">第四個覺醒職業：<b>巨神兵 → 【天之王•神兵】</b>。核心玩法是浮空、解控、巨量護盾與歐姆核能爆發。</div>
+   <hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="colossus"?(isAwakened()?"【天之王•神兵】":"巨神兵"):"需切換巨神兵"}</span></div>
+   <div class="card notice"><b>覺醒目標：【天之王•神兵】</b><div class="small">覺醒狀態：${a.colossusAwakened?"✅ 已覺醒":"未覺醒"}</div>${reqLines()}</div>
+   <div class="small"><b>覺醒被動</b><br>1. 普攻附加擊暈 5 秒，冷卻 15 秒。<br>2. 自身免疫控制類技能【擊暈、封鎖】等。<br>3. 戰鬥中每秒增加 5% 最大生命護盾，上限 150%；稱號【天神】會讓護盾效果 +50%。</div>
+   <div class="small"><b>專屬機制</b><br>【持續浮空】：延長版浮空免疫，時間更長、冷卻更長。<br>【解控】：不是解除一次，而是直接免疫控制。</div>
+   <div class="small"><b>專武變化</b><br>神兵•拳套 → 歐姆核能。每 5 秒對目前目標造成 3000% 攻擊力無視防禦傷害，Boss 為 1500%。</div>
+   <button class="purple" onclick="window.cc0915AwakenColossus()" ${canAwaken()&&!a.colossusAwakened?"":"disabled"}>覺醒：巨神兵 → 【天之王•神兵】</button>
+  `)
+ }
+ function showDungeonPanel(){
+  ensureNewSystems();const a=awakenState(),cur=curJob(),can=cur==="colossus"&&hasKillReq()&&hasLevelReq()&&!isDungeon()&&!a.colossusAwakened;
+  openModal(`
+   <div class="row"><b>⚡ 覺醒副本</b><button onclick="window.cc0915CloseModal()">關閉</button></div>
+   <div class="card notice"><b>【天空之王】</b><div class="small">Boss：歐爾卡｜挑戰時間：180 秒<br>通關後完成副本條件，但不會自動覺醒，需回到覺醒面板手動按下覺醒。</div></div>
+   <div class="small"><b>開啟條件</b>${reqLines().replace(/通關【天空之王】：[^<]+<\/div>/,'通關【天空之王】：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>Boss 特性</b><br>歐爾卡免疫秒殺、擊暈與封鎖，會使用控制技能，但不會使用浮空技能。</div>
+   <button class="purple" onclick="window.cc0915StartColossusAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為巨神兵 / 已覺醒則收納")}</button>
+   <div class="small">目前通關：${Math.min(a.colossusDungeonClears,1)} / 1｜稱號：${hasTitle()?"✅ 【"+TITLE_NAME+"】":"未取得"}</div>
+  `)
+ }
+ function showArchivePanel(){
+  ensureNewSystems();const a=awakenState();
+  openModal(`
+   <div class="row"><b>📦 已完成覺醒收納</b><button onclick="window.cc0915CloseModal()">關閉</button></div>
+   <div class="card"><b>🔫 終幕槍神</b><div class="small">狀態：${a.gunnerAwakened?"✅ 已覺醒":"未完成"}<br>副本：【槍手的自覺】${a.gunnerAwakened?"已收納":"未完成"}</div></div>
+   <div class="card"><b>🔥 【我回來了】魔戰神</b><div class="small">狀態：${a.berserkerAwakened?"✅ 已覺醒":"未完成"}<br>副本：【魔神甦醒】${a.berserkerAwakened?"已收納":"未完成"}<br>修正：封鎖觸發後進入 60 秒冷卻。</div></div>
+   <div class="card"><b>⚡ 【天之王•神兵】</b><div class="small">狀態：${a.colossusAwakened?"✅ 已覺醒":"未完成"}<br>副本：【天空之王】${a.colossusAwakened?"已收納":"未完成"}<br>專武：神兵•拳套 → 歐姆核能<br>稱號：【天神】</div></div>
+  `)
+ }
+ function ensureDrawerButtons(){
+  const panel=by("featureDrawer");if(!panel)return;
+  if(panel.dataset.cc0915AwakenButtons!=="1"){
+   panel.dataset.cc0915AwakenButtons="1";
+   function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}
+   panel.appendChild(b("⚡ 天之王覺醒",showPanel));
+   panel.appendChild(b("⚡ 天空之王",showDungeonPanel));
+   panel.appendChild(b("📦 已完成覺醒",showArchivePanel));
+  }
+  try{
+   const a=p&&p.awakening?p.awakening:{};
+   for(const btn of panel.querySelectorAll("button")){
+    const txt=btn.textContent||"";
+    if((txt.includes("魔神甦醒")||txt.includes("魔戰神覺醒"))&&a.berserkerAwakened)btn.style.display="none";
+    if((txt.includes("天空之王")||txt.includes("天之王覺醒"))&&a.colossusAwakened)btn.style.display="none";
+   }
+  }catch(e){}
+ }
+ function createSkyBoss(){
+  const hp=Math.max(1,Math.floor(playerMaxHp()*42));
+  const atkV=Math.max(1,Math.floor(atk()*10));
+  const defV=Math.max(0,Math.floor(playerDef()*12));
+  const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:"歐爾卡",emoji:"⚡",hp,def:defV,reg:Math.floor(hp*.004),gold:0,xp:0,drop:0,timer:180,mAtk:atkV,armorBreak:0,mAspd:2.2,skill:"skyControl",skillCd:12,awakenBoss:true,targetKey:"colossusAwaken"});
+  return typeof finalizeMonster==="function"?finalizeMonster(m):m;
+ }
+ function startDungeon915(){
+  ensureNewSystems();
+  if(isDungeon())return log("副本進行中，不能重複進入");
+  if(isAwakened())return log("⚡ 巨神兵已覺醒為【天之王•神兵】，【天空之王】已收納");
+  if(curJob()!=="colossus")return log("⚡ 天空之王需要目前職業為巨神兵");
+  if(!hasKillReq())return log("⚡ 巨神兵擊殺數不足："+awakenState().colossusAwakenKills+"/100");
+  if(!hasLevelReq())return log("⚡ 巨神兵職業等級不足：Lv."+colossusLv()+"/5");
+  closeModal();dungeon={type:DUNGEON,timer:180,kills:0,gain:0,running:true};fight=createSkyBoss();p.queue=0;hold=false;budget=0;show("main");
+  log("⚡ 天空之王開始：180秒內擊敗歐爾卡");save(false);render();
+ }
+ function showCutscene(success){
+  window.cc0915CutsceneActive=true;
+  const text=success?"恭喜你進入伊甸園":"滾回你的凡界";
+  const cls=success?"win":"lose";
+  let ov=by("cc0915Cutscene");if(!ov){ov=document.createElement("div");ov.id="cc0915Cutscene";document.body.appendChild(ov)}
+  ov.className="cc0915Cutscene "+cls;
+  ov.innerHTML=`<div class="cc0915BossTalk"><div class="cc0915BossEmoji">⚡</div><div class="small">歐爾卡</div><div class="cc0915TalkText">「${text}」</div><button onclick="window.cc0915CloseCutscene(${success?1:0})">確認</button></div>`;
+  ov.classList.remove("hidden");
+ }
+ function closeCutscene(success){
+  const ov=by("cc0915Cutscene");if(ov)ov.classList.add("hidden");
+  window.cc0915CutsceneActive=false;dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();clearHeavenShield();save(false);spawnMain();
+  if(success)log("⚡ 你通過了天空之王。歐爾卡：伊甸園，交給你了。巨神兵已具備覺醒資格。");
+  else log("⚡ 天空之王挑戰失敗：滾回你的凡界");
+ }
+ function endRun(success){
+  const a=awakenState();
+  if(success){a.colossusDungeonClears=Math.max(1,a.colossusDungeonClears||0);save(false)}
+  showCutscene(!!success);
+ }
+ function awakenColossus(){
+  ensureNewSystems();const a=awakenState();
+  if(a.colossusAwakened)return log("⚡ 巨神兵已覺醒為【天之王•神兵】");
+  if(!canAwaken())return log("⚡ 天之王•神兵覺醒條件尚未完成");
+  a.colossusAwakened=true;unlockTitle();save(false);log("⚡ 覺醒成功：巨神兵 → 【天之王•神兵】");floatText("天門已開，神兵登位",true);render();showPanel();
+ }
+ function applyHeavenStun(target){
+  if(!target||target.hp<=0||isAwakenImmune(target))return false;
+  const a=awakenState();if(a.heavenStunCd>0)return false;
+  const e=ensureEffectBag(target);e.freeze=Math.max(e.freeze||0,5);e.heavenStun=Math.max(e.heavenStun||0,5);a.heavenStunCd=15;floatText((target.emoji||"")+"⚡擊暈5秒",true);return true;
+ }
+ function ohmNuke(target){
+  if(!target||target.hp<=0)return false;
+  const boss=isBoss(target),mul=boss?15:30;
+  const d=Math.max(1,Math.floor(atk()*mul));
+  const before=Math.max(0,target.hp||0);target.hp=Math.max(0,before-d);
+  const dealt=Math.max(0,Math.min(before,d));
+  if(dealt>0)floatText((target.emoji||"")+"⚛️歐姆核能 -"+fmt(dealt),true);
+  return dealt>0;
+ }
+ // 系統補值與版本資料。
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;awakenState();titleState();if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.gauntlet=Math.max(0,Math.floor(n(p.specialWeapons.gauntlet,0)))};
+ // 擊殺進度：只計算使用巨神兵擊殺的非副本野怪。
+ const oldReward=rewardMonster;
+ rewardMonster=function(m,dropState){
+  const countable=m&&!m.rewarded&&!m.escaped&&!m.escapedByFear&&!isDungeon()&&curJob()==="colossus"&&m.type!=="boss";
+  const r=oldReward(m,dropState);
+  if(countable&&m&&m.rewarded&&!m.escaped&&!m.escapedByFear){const a=awakenState();a.colossusAwakenKills=Math.min(999999,a.colossusAwakenKills+1);if(a.colossusAwakenKills>=100&&!a.colossusKillReqNotified){a.colossusKillReqNotified=1;log("⚡ 巨神兵擊殺條件達成：100/100")}}
+  return r;
+ };
+ // 覺醒副本通關 / 失敗。
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(true);return}return oldDungeonKill()};
+ const oldEndDungeon=endDungeon;
+ endDungeon=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldEndDungeon()};
+ // 歐爾卡副本內仍會普攻與使用控制技能。
+ const oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){
+  if(dungeon&&dungeon.type===DUNGEON&&fight){const m=fight;if(!m)return;const e=ensureEffectBag(m);if(e.freeze>0)return;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<4){monsterNormalAttack(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}if(m.skill&&m.skillCd){if(m.skillTimer==null)m.skillTimer=m.skillCd;m.skillTimer-=dt;if(m.skillTimer<=0){monsterUseSkill(m);m.skillTimer=m.skillCd}}return}
+  return oldTickMonsterAI(dt);
+ };
+ const oldMonsterUseSkill=monsterUseSkill;
+ monsterUseSkill=function(m){
+  if(m&&m.skill==="skyControl"){
+   const d=playerTakeDamage((m.mAtk||1)*1.8,"天空制裁",m);if(p.hp<=0){playerDeath();return}
+   if(!isActiveHeaven()){applyPlayerStun(2.5,`${m.emoji} ${m.name} 使用天空制裁，玩家暈眩 2.5 秒`);floatText("⚡天空制裁",true)}
+   else floatText("⚡解控免疫",true);
+   log(`${m.emoji} ${m.name} 使用天空制裁，造成 ${d} 傷害${isActiveHeaven()?"，但天之王•神兵免疫控制":"並附加控制"}`);return;
+  }
+  return oldMonsterUseSkill(m);
+ };
+ // 解控：覺醒巨神兵免疫控制類效果。
+ const oldApplyPlayerStun=applyPlayerStun;
+ applyPlayerStun=function(sec,msg=""){if(isActiveHeaven()){floatText("⚡解控免疫");return false}return oldApplyPlayerStun(sec,msg)};
+ const oldIsPlayerStunned=isPlayerStunned;
+ isPlayerStunned=function(){if(isActiveHeaven()){const st=playerStatus();st.stun=0;return false}return oldIsPlayerStunned()};
+ // 歐姆核能與普攻擊暈。
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  const normal=!label&&!(opt&&opt.skill)&&!(opt&&opt.forceSingle);
+  const oldFight=fight;
+  const targetsBefore=(fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean):[]);
+  const r=oldDamage(mult,label,opt);
+  try{if(normal&&oldFight&&fight===oldFight&&isActiveHeaven())for(const t of targetsBefore)applyHeavenStun(t)}catch(e){}
+  return r;
+ };
+ // 護盾先吃，之後再吃其他護盾。
+ const oldAbsorb=absorbWithShields;
+ absorbWithShields=function(amount,trueDamage=false){let left=Math.max(0,amount);try{if(!trueDamage&&isActiveHeaven()){const a=awakenState();if(a.heavenShield>0){const used=Math.min(a.heavenShield,left);a.heavenShield-=used;left-=used;if(used>0)floatText("⚡天盾-"+fmt(used))}}}catch(e){}return oldAbsorb(left,trueDamage)};
+ // 通關 / 失敗清除天空護盾，避免帶到下一關。
+ const oldKillEnemy=killEnemy;
+ killEnemy=function(){const clear=!isDungeon()&&isActiveHeaven();const r=oldKillEnemy();if(clear)clearHeavenShield();return r};
+ const oldBossFail=typeof bossFail==="function"?bossFail:null;
+ if(oldBossFail)bossFail=function(){try{clearHeavenShield()}catch(e){}return oldBossFail()};
+ // 戰鬥循環：護盾恢復、持續浮空、歐姆核能、冷卻倒數。
+ const oldTick=tick;
+ tick=function(dt){
+  if(window.cc0915CutsceneActive)return;
+  try{
+   if(p){const a=awakenState();if(a.heavenStunCd>0)a.heavenStunCd=Math.max(0,a.heavenStunCd-dt);if(a.heavenFloatCd>0)a.heavenFloatCd=Math.max(0,a.heavenFloatCd-dt);}
+   if(isActiveHeaven()&&fight&&p.hp>0){
+    const a=awakenState(),st=playerStatus();
+    a.heavenShield=Math.min(shieldCap(),a.heavenShield+shieldRegen(dt));
+    if((st.float||0)<=0&&a.heavenFloatCd<=0){st.float=Math.max(st.float||0,8);st.floatTime=Math.max(st.floatTime||0,8);a.heavenFloatCd=45;floatText("⚡持續浮空",true)}
+    a.ohmNukeTimer-=dt;
+    if(a.ohmNukeTimer<=0){a.ohmNukeTimer+=5;const t=activeMonster();if(ohmNuke(t)){if(fight&&fight.monsters){refreshTotalHp();settleFormationDeaths()}else if(fight)fight.hp=t?t.hp:fight.hp;if(fight&&fight.hp<=0)killEnemy();}}
+   }
+   if(fight){for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);if(e.heavenStun>0)e.heavenStun=Math.max(0,e.heavenStun-dt)}}
+  }catch(e){}
+  return oldTick(dt);
+ };
+ // 職業面板與狀態顯示。
+ const oldJobPanel=jobPanelHtml;
+ jobPanelHtml=function(){let h=String(oldJobPanel()||"");try{if(isAwakened()){h=h.replace(/🤖\s*巨神兵/g,"🤖 【天之王•神兵】");h=h.replace(/神兵•拳套/g,"歐姆核能");if(curJob()==="colossus")h+=`<div class="small">⚡ 【天之王•神兵】：持續浮空、解控、天盾與歐姆核能已啟動。</div><div class="small">⚛️ 歐姆核能：每 5 秒對目前目標造成 3000% 無視防禦傷害，Boss 為 1500%。</div>`}}catch(e){}return h};
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatus();try{if(isActiveHeaven()){if(h==="玩家狀態：無")h="";const a=awakenState();h+=`<span class="badge freeze">⚡ 覺醒：巨神兵 → 【天之王•神兵】｜解控免疫</span><span class="badge break">⚡ 天盾 ${fmt(a.heavenShield)} / ${fmt(shieldCap())}</span><span class="badge freeze">🪁 持續浮空冷卻 ${Math.ceil(a.heavenFloatCd||0)}秒｜擊暈冷卻 ${Math.ceil(a.heavenStunCd||0)}秒</span>`}}catch(e){}return h};
+ const oldStatus=statusHtml;
+ statusHtml=function(){let h=oldStatus();try{if(fight){let add="";for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);if(e.heavenStun>0)add+=`<span class='badge freeze'>⚡ 擊暈 ${e.heavenStun.toFixed(1)}秒</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
+ function renderTitleTools(){
+  if(!p||!p.titles)return;
+  if(p.titles.equipped===TITLE_ID){const el=by("equippedTitleHud");if(el){el.textContent="【"+TITLE_NAME+"】";el.classList.remove("hidden");el.classList.add("cc0915YellowTitleHud")}}
+  const box=by("equippedTitleBox");if(box&&hasTitle()&&!by("cc0915SkyGodTitleBtn")){
+   const list=box.querySelector(".titleEquipList")||box;
+   const b=document.createElement("button");b.type="button";b.id="cc0915SkyGodTitleBtn";b.className="titleChoice cc0915YellowTitle"+(p.titles.equipped===TITLE_ID?" active":"");b.dataset.titleId=TITLE_ID;b.textContent="🏷️ "+TITLE_NAME;
+   b.addEventListener("pointerdown",ev=>ev.stopPropagation());
+   b.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();p.titles.equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render()});
+   list.appendChild(b);
+  }
+ }
+ const oldRender=render;
+ render=function(){const r=oldRender();ensureDrawerButtons();renderTitleTools();try{if(isDungeon()&&dungeon&&dungeon.type===DUNGEON){if(by("enemyType"))by("enemyType").textContent="覺醒副本｜天空之王｜Boss：歐爾卡｜抗性：秒殺/擊暈/封鎖無效";if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>⚡ 天空之王</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜歐爾卡會使用控制技能，但不會浮空</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>⚡ 天空之王進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：歐爾卡<br>狀態：挑戰中</div></div>`;}}catch(e){}return r};
+ const oldSetTitle=window.cc097SetEquippedTitle;
+ window.cc097SetEquippedTitle=function(id){if(id===TITLE_ID){if(!hasTitle())return log("尚未解鎖此稱號");titleState().equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」｜護盾效果 +50%");render();return}return oldSetTitle?oldSetTitle(id):undefined};
+ const style=document.createElement("style");
+ style.textContent=`
+  .cc0915Modal{position:fixed;inset:0;z-index:123000;background:rgba(2,6,23,.80);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+  .cc0915Modal.hidden{display:none!important}.cc0915ModalCard{width:min(680px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#172554,#020617);border:1px solid rgba(250,204,21,.55);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.66)}
+  .cc0915Req{padding:6px 8px;margin:5px 0;border-radius:10px;background:rgba(15,23,42,.72)}.cc0915Req.ok{border:1px solid rgba(34,197,94,.45);color:#bbf7d0}.cc0915Req.no{border:1px solid rgba(248,113,113,.35);color:#fecaca}
+  .cc0915Cutscene{position:fixed;inset:0;z-index:133000;background:#030712;display:flex;align-items:center;justify-content:center;color:#fff;animation:cc0915FadeIn .38s ease both}.cc0915Cutscene.hidden{display:none!important}.cc0915Cutscene.lose{background:rgba(7,10,18,.94)}
+  .cc0915BossTalk{width:min(590px,90vw);text-align:center;background:linear-gradient(180deg,rgba(30,64,175,.96),rgba(0,0,0,.95));border:1px solid rgba(250,204,21,.62);border-radius:22px;padding:22px;box-shadow:0 0 80px rgba(250,204,21,.24)}
+  .cc0915BossEmoji{font-size:68px;filter:drop-shadow(0 0 22px rgba(250,204,21,.80))}.cc0915TalkText{font-size:22px;font-weight:900;margin:16px 0;line-height:1.55;color:#fef08a}@keyframes cc0915FadeIn{from{opacity:0}to{opacity:1}}
+  .cc0915YellowTitle,.cc0915YellowTitle.active{background:linear-gradient(135deg,#facc15,#fef08a)!important;color:#1f2937!important;border-color:#fff7ad!important;box-shadow:0 0 0 2px rgba(250,204,21,.25),0 0 18px rgba(250,204,21,.35)!important}.cc0915YellowTitleHud{color:#fef08a!important;text-shadow:0 0 13px rgba(250,204,21,.9)!important}
+ `;
+ document.head.appendChild(style);
+ setTimeout(()=>{try{ensureDrawerButtons()}catch(e){}},0);
+ window.cc0915ShowColossusAwakeningPanel=showPanel;
+ window.cc0915ShowColossusAwakenDungeonPanel=showDungeonPanel;
+ window.cc0915ShowAwakeningArchive=showArchivePanel;
+ window.cc0915StartColossusAwakenDungeon=startDungeon915;
+ window.cc0915AwakenColossus=awakenColossus;
+ window.cc0915CloseModal=closeModal;
+ window.cc0915CloseCutscene=closeCutscene;
+ window.cc0915Info=()=>({tag:TAG,awakened:isAwakened(),kills:awakenState().colossusAwakenKills,lv:colossusLv(),dungeon:awakenState().colossusDungeonClears,title:hasTitle(),sealCdHotfix:true});
  console.log("傳承",TAG);
 })();
 
