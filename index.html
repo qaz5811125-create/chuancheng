@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.9 戰鐮覺醒</title>
+<title>傳承 Beta 0.9.13 終幕槍神</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.12 領域世界</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.13 終幕槍神</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.12";
+const GAME_VERSION="0.9.13";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4208,6 +4208,291 @@ console.log("傳承",FLICKER_FIX_TAG);
   return oldRender912();
  }}
  window.cc0912DomainInfo=()=>{const d=domainState912();return{tag:TAG,job:isDomainJob(),active:activeDomain(),kind:d.kind,time:d.time,cd:d.cd,miss:d.miss,atkBonus:d.atkB,aspdBonus:d.aspB,evadeBonus:d.evaB}};
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.13：槍手覺醒 / 終幕槍神 / 更燙的狙擊步槍 ===== */
+(function(){
+ const TAG="0.9.13-final-gun-god-v1";
+ const VERSION_NAME="傳承 Beta 0.9.13 終幕槍神";
+ const DUNGEON="gunnerAwaken";
+ const TITLE_ID="sniperChosen";
+ const TITLE_NAME="狙神非你莫屬";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ document.title=VERSION_NAME;
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function isMirror(t){return !!t&&(t.mirrorBoss||t.targetKey==="mirror"||t.name==="鏡像門神")}
+ function isBoss(t){try{return isBossLike(t)}catch(e){return !!t&&(t.type==="boss"||t.abyss||t.mode==="abyss")}}
+ function isElite(t){return !!t&&t.type==="elite"}
+ function isImmune(t){return !t||isMirror(t)||t.awakenBoss}
+ function gunnerSwLv(){try{return specialWeaponLevel("gunner")}catch(e){return p&&p.specialWeapons?Math.floor(n(p.specialWeapons.gun,0)):0}}
+ function titleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function hasTitle(){return !!(p&&titleState().unlocked&&titleState().unlocked[TITLE_ID])}
+ function unlockTitle(){const t=titleState();if(t.unlocked[TITLE_ID])return false;t.unlocked[TITLE_ID]=Date.now();log("🏷️ 解鎖稱號：「"+TITLE_NAME+"」");return true}
+ function awakenState(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.gunnerKills=Math.max(0,Math.floor(n(a.gunnerKills,0)));
+  a.gunnerDungeonClears=Math.max(0,Math.floor(n(a.gunnerDungeonClears,0)));
+  a.gunnerAwakened=!!a.gunnerAwakened;
+  return a;
+ }
+ function isAwakened(){return !!(p&&awakenState().gunnerAwakened)}
+ function hasKillReq(){return awakenState().gunnerKills>=100}
+ function hasLevelReq(){return gunnerSwLv()>=5}
+ function hasDungeonReq(){return awakenState().gunnerDungeonClears>=1}
+ function canAwaken(){return hasKillReq()&&hasLevelReq()&&hasDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function reqLines(){const a=awakenState();return `
+   <div class="cc0913Req ${hasKillReq()?"ok":"no"}">${check(hasKillReq())} 使用槍手擊殺怪物：${Math.min(a.gunnerKills,100)} / 100</div>
+   <div class="cc0913Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 槍手職業等級：Lv.${gunnerSwLv()} / Lv.5</div>
+   <div class="cc0913Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【槍手的自覺】：${Math.min(a.gunnerDungeonClears,1)} / 1</div>`}
+ function openModal(html){
+  let m=by("cc0913Modal");
+  if(!m){m=document.createElement("div");m.id="cc0913Modal";m.className="cc0913Modal hidden";document.body.appendChild(m)}
+  m.innerHTML=`<div class="cc0913ModalCard">${html}</div>`;
+  m.classList.remove("hidden");
+ }
+ function closeModal(){const m=by("cc0913Modal");if(m)m.classList.add("hidden")}
+ function showPanel(){
+  ensureNewSystems();const a=awakenState();const cur=curJob();
+  openModal(`
+   <div class="row"><b>🔫 槍手覺醒</b><button onclick="window.cc0913CloseModal()">關閉</button></div>
+   <div class="small">第二個覺醒職業：<b>槍手 → 終幕槍神</b>。核心玩法是一發流、處決、秒殺與終幕一擊。</div>
+   <hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="gunner"?(isAwakened()?"槍手 → 終幕槍神":"槍手"):"請切換槍手"}</span></div>
+   <div class="card notice"><b>覺醒目標：終幕槍神</b><div class="small">覺醒狀態：${a.gunnerAwakened?"✅ 已覺醒":"未覺醒"}</div>${reqLines()}</div>
+   <div class="small"><b>覺醒效果</b><br>1. 終幕處決：一般怪90%秒殺，成功後50%連鎖，最多3隻；精英40%；Boss改為最大生命傷害。<br>2. 槍神之速：攻速 +20%。<br>3. 終幕火力：攻擊 +4000%，終幕一擊 ×10。<br>4. 專武變化：燙手的狙擊步槍 → 更燙的狙擊步槍。</div>
+   <button class="purple" onclick="window.cc0913AwakenGunner()" ${canAwaken()&&!a.gunnerAwakened?"":"disabled"}>覺醒：槍手 → 終幕槍神</button>
+   <div class="small">稱號：${hasTitle()?"✅ 【"+TITLE_NAME+"】":"未取得"}｜效果：使用終幕槍神時，終幕一擊冷卻 -20%。</div>
+  `);
+ }
+ function showDungeonPanel(){
+  ensureNewSystems();const a=awakenState();const cur=curJob();
+  const can=cur==="gunner"&&hasKillReq()&&hasLevelReq()&&!isDungeon();
+  openModal(`
+   <div class="row"><b>🔫 覺醒副本</b><button onclick="window.cc0913CloseModal()">關閉</button></div>
+   <div class="card notice"><b>【槍手的自覺】</b><div class="small">副標：最後一槍，不准打偏。<br>Boss：槍神｜挑戰時間：120秒<br>通關後完成副本條件，並獲得稱號【${TITLE_NAME}】。</div></div>
+   <div class="small"><b>開啟條件</b>${reqLines().replace(/通關【槍手的自覺】：[^<]+<\/div>/,'通關【槍手的自覺】：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>Boss 特性</b><br>槍神免疫秒殺、處決、終幕處決與終幕一擊；以正面火力檢驗槍手是否能真正覺醒。</div>
+   <button class="purple" onclick="window.cc0913StartGunnerAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為槍手")}</button>
+   <div class="small">目前通關：${Math.min(a.gunnerDungeonClears,1)} / 1｜稱號：${hasTitle()?"✅ "+TITLE_NAME:"未取得"}</div>
+  `);
+ }
+ function ensureDrawerButtons(){
+  const panel=by("featureDrawer");if(!panel||panel.dataset.cc0913GunnerButtons==="1")return;
+  panel.dataset.cc0913GunnerButtons="1";
+  function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}
+  panel.appendChild(b("🔫 槍手覺醒",showPanel));
+  panel.appendChild(b("🔫 槍手副本",showDungeonPanel));
+ }
+ function createGunnerBoss(){
+  const hp=Math.max(1,Math.floor(playerMaxHp()*24));
+  const atkV=Math.max(1,Math.floor(atk()*5));
+  const defV=Math.max(0,Math.floor(playerDef()*8));
+  const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:"槍神",emoji:"🔫",hp,def:defV,reg:Math.floor(hp*.003),gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:2.2,awakenBoss:true,targetKey:"gunnerAwaken"});
+  return typeof finalizeMonster==="function"?finalizeMonster(m):m;
+ }
+ function startDungeon913(){
+  ensureNewSystems();
+  if(isDungeon())return log("副本進行中，不能重複進入");
+  if(curJob()!=="gunner")return log("🔫 槍手覺醒副本需要目前職業為槍手");
+  if(!hasKillReq())return log("🔫 槍手擊殺數不足："+awakenState().gunnerKills+"/100");
+  if(!hasLevelReq())return log("🔫 槍手職業等級不足：Lv."+gunnerSwLv()+"/5");
+  closeModal();
+  dungeon={type:DUNGEON,timer:120,kills:0,gain:0,running:true};
+  fight=createGunnerBoss();p.queue=0;hold=false;budget=0;show("main");
+  log("🔫 槍手的自覺開始：120秒內擊敗槍神");save(false);render();
+ }
+ function awakenGunner(){
+  ensureNewSystems();const a=awakenState();
+  if(a.gunnerAwakened)return log("🔫 槍手已覺醒為終幕槍神");
+  if(!canAwaken())return log("🔫 終幕槍神覺醒條件尚未完成");
+  a.gunnerAwakened=true;save(false);log("🔫 覺醒成功：槍手 → 終幕槍神");floatText("槍手→終幕槍神！",true);render();showPanel();
+ }
+ function endRun(success){
+  window.cc0913CutsceneActive=true;
+  const a=awakenState();
+  if(success){a.gunnerDungeonClears=Math.max(1,a.gunnerDungeonClears||0);unlockTitle();save(false)}
+  const text=success?"狙神非你莫屬。從今以後，你開槍，不是為了命中，而是為了落幕。":"回去再練練吧，菜狗。";
+  let ov=by("cc0913Cutscene");if(!ov){ov=document.createElement("div");ov.id="cc0913Cutscene";document.body.appendChild(ov)}
+  ov.className="cc0913Cutscene "+(success?"win":"lose");
+  ov.innerHTML=`<div class="cc0913BossTalk"><div class="cc0913BossEmoji">🔫</div><div class="small">槍神</div><div class="cc0913TalkText">「${text}」</div><button onclick="window.cc0913CloseCutscene(${success?1:0})">確認</button></div>`;
+  ov.classList.remove("hidden");
+ }
+ function closeCutscene(success){
+  const ov=by("cc0913Cutscene");if(ov)ov.classList.add("hidden");
+  window.cc0913CutsceneActive=false;
+  dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();save(false);spawnMain();
+  if(success)log("🔫 你通過了槍手的自覺。獲得稱號【"+TITLE_NAME+"】，槍手已具備覺醒資格。");
+  else log("🔫 槍手覺醒副本挑戰失敗");
+ }
+ function syncFightHp(){if(!fight)return;if(fight.monsters){refreshTotalHp()}else{const t=activeMonster();if(t)fight.hp=Math.max(0,t.hp||0)}}
+ function settleAfterTerminal(){if(!fight)return;if(fight.monsters){refreshTotalHp();settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}else if(fight&&fight.hp<=0)killEnemy()}
+ function lineTargetsAfter(target){if(!fight||!fight.monsters)return[];const list=aliveMonsters();return list.filter(m=>m!==target)}
+ function showShot(text,big=false){floatText(text,big)}
+ function applyTerminalExecute(target){
+  if(!isAwakened()||curJob()!=="gunner"||!target||target.hp<=0||isImmune(target))return false;
+  const e=ensureEffectBag(target);
+  if(isBoss(target)){
+   if((e.gunnerBossProcCd||0)>0)return false;
+   const dmg=Math.max(1,Math.floor((target.max||target.hp||1)*.05));
+   target.hp=Math.max(1,(target.hp||0)-dmg);e.gunnerBossProcCd=10;
+   showShot((target.emoji||"")+"🔫終幕處決 -"+fmt(dmg),true);return true;
+  }
+  const chance=isElite(target)?.50:1.00;
+  if(Math.random()>=chance)return false;
+  target.hp=0;showShot((target.emoji||"")+"🔫終幕處決！",true);
+  let chain=1;
+  let nexts=lineTargetsAfter(target);
+  while(chain<3&&nexts.length&&Math.random()<.50){
+   const nTarget=nexts.shift();
+   if(!nTarget||nTarget.hp<=0||isBoss(nTarget)||isImmune(nTarget))continue;
+   nTarget.hp=0;chain++;showShot((nTarget.emoji||"")+"🔫連鎖處決！",true);
+  }
+  return true;
+ }
+ function applyFinalShot(target){
+  if(!isAwakened()||curJob()!=="gunner"||!target||target.hp<=0||isImmune(target))return false;
+  const hp=Number(target.hp||0),max=Number(target.max||0);if(max<=0||hp>max*.30)return false;
+  const e=ensureEffectBag(target);
+  if(isBoss(target)){
+   if((e.gunnerFinalCd||0)>0)return false;
+   const cd=hasTitle()?12:15;
+   const rate=hasTitle()?.15:.15; // 覺醒專武：Boss受到終幕一擊傷害 +50%，10% → 15%。稱號只降冷卻。
+   const dmg=Math.max(1,Math.floor(max*rate));
+   target.hp=Math.max(1,hp-dmg);e.gunnerFinalCd=cd;
+   showShot("🔫 終幕一擊 -"+fmt(dmg),true);log("🔫 終幕一擊：Boss最大生命 "+Math.round(rate*100)+"% 傷害");return true;
+  }
+  target.hp=0;showShot("🔫 終幕一擊！",true);return true;
+ }
+ function terminalBanner(){
+  let layer=by("cc0913ShotFx");if(!layer){layer=document.createElement("div");layer.id="cc0913ShotFx";document.body.appendChild(layer)}
+  layer.className="cc0913ShotFx show";
+  layer.innerHTML=`<div class="cc0913ShotSeal">🔫</div><div class="cc0913ShotText">這槍，有點燙。</div>`;
+  setTimeout(()=>{if(layer)layer.classList.remove("show")},850);
+ }
+ // 系統補值。
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;awakenState();titleState();if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.gun=Math.max(0,Math.floor(n(p.specialWeapons.gun,0)))};
+ // 覺醒條件：槍手擊殺 100 隻。
+ const oldReward=rewardMonster;
+ rewardMonster=function(m,dropState){
+  const countable=m&&!m.rewarded&&!m.escaped&&!m.escapedByFear&&curJob()==="gunner";
+  const r=oldReward(m,dropState);
+  if(countable&&m&&m.rewarded&&!m.escaped&&!m.escapedByFear){const a=awakenState();a.gunnerKills=Math.min(999999,a.gunnerKills+1)}
+  return r;
+ };
+ // 覺醒副本通關 / 失敗。
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(true);return}return oldDungeonKill()};
+ const oldEndDungeon=endDungeon;
+ endDungeon=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldEndDungeon()};
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldPlayerDeath()};
+ // 覺醒副本 Boss AI。
+ const oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){
+  if(dungeon&&dungeon.type===DUNGEON&&fight){const m=fight;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<4){monsterNormalAttack(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}return}
+  return oldTickMonsterAI(dt);
+ };
+ const oldTick=tick;
+ tick=function(dt){
+  if(window.cc0913CutsceneActive)return;
+  const r=oldTick(dt);
+  if(fight){for(const m of (fight.monsters?fight.monsters:[fight]).filter(Boolean)){const e=ensureEffectBag(m);if(e.gunnerBossProcCd>0)e.gunnerBossProcCd=Math.max(0,e.gunnerBossProcCd-dt);if(e.gunnerFinalCd>0)e.gunnerFinalCd=Math.max(0,e.gunnerFinalCd-dt)}}
+  return r;
+ };
+ // 覺醒副本 Boss 免疫舊槍手處刑線。
+ if(typeof cc093_tryGunnerExecute==="function"){
+  const oldGunnerExec=cc093_tryGunnerExecute;
+  cc093_tryGunnerExecute=function(target){if(target&&(target.awakenBoss||isMirror(target)))return false;if(isAwakened()&&curJob()==="gunner")return false;return oldGunnerExec(target)};
+  window.cc093_tryGunnerExecute=cc093_tryGunnerExecute;
+ }
+ // 終幕槍神數值。
+ const oldJobAtk=jobAtkBonus;
+ jobAtkBonus=function(){let v=oldJobAtk();if(curJob()==="gunner"&&isAwakened())v+=40;return v};
+ const oldJobAspd=jobAspdBonus;
+ jobAspdBonus=function(){let v=oldJobAspd();if(curJob()==="gunner"&&isAwakened())v+=.20;return v};
+ // 普攻觸發終幕處決與終幕一擊。
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){
+  const normal=!label&&!(opt&&opt.skill)&&!(opt&&opt.forceSingle);
+  if(!(normal&&curJob()==="gunner"&&isAwakened()))return oldDamage(mult,label,opt);
+  const oldFight=fight;
+  const before=(fight?(fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean).map(t=>[t,Math.max(0,t.hp||0)]):[]);
+  const r=oldDamage(mult,label,opt);
+  if(!oldFight||fight!==oldFight)return r;
+  let changed=false;
+  for(const [t,hp0] of before){
+   if(!t||t.hp<=0)continue;
+   const lost=hp0-Math.max(0,t.hp||0);
+   if(lost<=0)continue;
+   if(applyFinalShot(t)){changed=true;terminalBanner();continue}
+   if(applyTerminalExecute(t)){changed=true;terminalBanner()}
+  }
+  if(changed){syncFightHp();settleAfterTerminal();render()}
+  return r;
+ };
+ // UI：職業欄、玩家狀態、怪物狀態。
+ const oldJobPanel=jobPanelHtml;
+ jobPanelHtml=function(){
+  let h=oldJobPanel();
+  if(isAwakened()){
+   h=String(h||"").replace(/<span class="pill">🔫 槍手<\/span>/,'<span class="pill">🔫 槍手 → 終幕槍神</span>');
+   h=h.replace(/燙手的狙擊步槍/g,"更燙的狙擊步槍");
+   if(curJob()==="gunner")h+=`<div class="small">🔫 終幕槍神：攻速+20%、攻擊+4000%；終幕處決與終幕一擊已解鎖。</div><div class="small">🔫 更燙的狙擊步槍：一般怪處決100%、精英50%；Boss終幕一擊傷害 +50%。</div>`;
+  }
+  return h;
+ };
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatus();if(curJob()==="gunner"&&isAwakened()){if(h==="玩家狀態：無")h="";h+=`<span class="badge break">🔫 覺醒：槍手 → 終幕槍神｜更燙的狙擊步槍</span>`}return h};
+ const oldStatus=statusHtml;
+ statusHtml=function(){
+  let h=oldStatus();if(!fight)return h;
+  let bossCd=0,finalCd=0;
+  for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){const e=ensureEffectBag(m);bossCd=Math.max(bossCd,e.gunnerBossProcCd||0);finalCd=Math.max(finalCd,e.gunnerFinalCd||0)}
+  let add="";if(bossCd>0)add+=`<span class='badge break'>🔫 Boss終幕處決冷卻 ${bossCd.toFixed(1)}秒</span>`;if(finalCd>0)add+=`<span class='badge break'>🔫 終幕一擊冷卻 ${finalCd.toFixed(1)}秒</span>`;
+  if(add&&h==="<span class='small'>無狀態</span>")h="";
+  return h+add;
+ };
+ function renderTitleTools(){
+  if(!p||!p.titles)return;
+  if(p.titles.equipped===TITLE_ID){const el=by("equippedTitleHud");if(el){el.textContent="【"+TITLE_NAME+"】";el.classList.remove("hidden")}}
+  const box=by("equippedTitleBox");if(box&&hasTitle()&&!by("cc0913TitleBtn")){
+   const list=box.querySelector(".titleEquipList")||box;
+   const b=document.createElement("button");b.type="button";b.id="cc0913TitleBtn";b.className="titleChoice"+(p.titles.equipped===TITLE_ID?" active":"");b.dataset.titleId=TITLE_ID;b.textContent="🏷️ "+TITLE_NAME;
+   b.addEventListener("pointerdown",ev=>ev.stopPropagation());
+   b.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();p.titles.equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render()});
+   list.appendChild(b);
+  }
+ }
+ const oldRender=render;
+ render=function(){const r=oldRender();ensureDrawerButtons();renderTitleTools();return r};
+ const oldSetTitle=window.cc097SetEquippedTitle;
+ window.cc097SetEquippedTitle=function(id){if(id===TITLE_ID){if(!hasTitle())return log("尚未解鎖此稱號");titleState().equipped=TITLE_ID;save(false);log("🏷️ 裝備稱號：「"+TITLE_NAME+"」");render();return}return oldSetTitle?oldSetTitle(id):undefined};
+ const style=document.createElement("style");
+ style.textContent=`
+  .cc0913Modal{position:fixed;inset:0;z-index:121000;background:rgba(2,6,23,.74);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+  .cc0913Modal.hidden{display:none!important}.cc0913ModalCard{width:min(640px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(248,113,113,.36);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.62)}
+  .cc0913Req{padding:6px 8px;margin:5px 0;border-radius:10px;background:rgba(15,23,42,.72)}.cc0913Req.ok{border:1px solid rgba(34,197,94,.45);color:#bbf7d0}.cc0913Req.no{border:1px solid rgba(248,113,113,.35);color:#fecaca}
+  .cc0913Cutscene{position:fixed;inset:0;z-index:131000;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;animation:cc0913FadeIn .38s ease both}.cc0913Cutscene.hidden{display:none!important}.cc0913Cutscene.lose{background:rgba(0,0,0,.88)}
+  .cc0913BossTalk{width:min(580px,90vw);text-align:center;background:linear-gradient(180deg,rgba(15,23,42,.96),rgba(0,0,0,.95));border:1px solid rgba(248,113,113,.48);border-radius:22px;padding:22px;box-shadow:0 0 60px rgba(248,113,113,.14)}
+  .cc0913BossEmoji{font-size:64px;filter:drop-shadow(0 0 18px rgba(248,250,252,.25))}.cc0913TalkText{font-size:21px;font-weight:900;margin:16px 0;line-height:1.55;color:#fecaca}@keyframes cc0913FadeIn{from{opacity:0}to{opacity:1}}
+  .cc0913ShotFx{position:fixed;left:0;right:0;top:22%;z-index:132000;display:none;align-items:center;justify-content:center;flex-direction:column;pointer-events:none}.cc0913ShotFx.show{display:flex;animation:cc0913ShotPop .85s ease-out forwards}.cc0913ShotSeal{font-size:54px;filter:drop-shadow(0 0 16px rgba(248,113,113,.9))}.cc0913ShotText{font-size:26px;font-weight:900;color:#fee2e2;text-shadow:0 0 16px rgba(248,113,113,.95)}@keyframes cc0913ShotPop{0%{opacity:0;transform:scale(.8)}22%,72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.08)}}
+ `;
+ document.head.appendChild(style);
+ setTimeout(()=>{try{ensureDrawerButtons()}catch(e){}},0);
+ window.cc0913ShowGunnerAwakeningPanel=showPanel;
+ window.cc0913ShowGunnerAwakenDungeonPanel=showDungeonPanel;
+ window.cc0913StartGunnerAwakenDungeon=startDungeon913;
+ window.cc0913AwakenGunner=awakenGunner;
+ window.cc0913CloseModal=closeModal;
+ window.cc0913CloseCutscene=closeCutscene;
+ window.cc0913Info=()=>({tag:TAG,awakened:isAwakened(),kills:awakenState().gunnerKills,lv:gunnerSwLv(),dungeon:awakenState().gunnerDungeonClears,title:hasTitle()});
  console.log("傳承",TAG);
 })();
 
