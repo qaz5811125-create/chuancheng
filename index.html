@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.15【天之王•神兵】</title>
+<title>傳承 Beta 0.9.16【覺醒試煉重鑄】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.15【天之王•神兵】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.16【覺醒試煉重鑄】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.15";
+const GAME_VERSION="0.9.16";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4800,7 +4800,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.15：【天之王•神兵】 / 巨神兵覺醒 / 覺醒收納修正 ===== */
 (function(){
  const TAG="0.9.15-heaven-king-colossus-v1";
- const VERSION_NAME="傳承 Beta 0.9.15【天之王•神兵】";
+ const VERSION_NAME="傳承 Beta 0.9.16【覺醒試煉重鑄】";
  const DUNGEON="colossusAwaken";
  const TITLE_ID="skyGod";
  const TITLE_NAME="天神";
@@ -5066,6 +5066,97 @@ console.log("傳承",FLICKER_FIX_TAG);
  window.cc0915CloseModal=closeModal;
  window.cc0915CloseCutscene=closeCutscene;
  window.cc0915Info=()=>({tag:TAG,awakened:isAwakened(),kills:awakenState().colossusAwakenKills,lv:colossusLv(),dungeon:awakenState().colossusDungeonClears,title:hasTitle(),sealCdHotfix:true});
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.16：覺醒試煉重鑄 / 防秒殺 / 副本壓制 ===== */
+(()=>{
+ const TAG="0.9.16-awakening-trial-reforge-v1";
+ const VERSION_NAME="傳承 Beta 0.9.16【覺醒試煉重鑄】";
+ const AWAKEN_TYPES=new Set(["reaperAwaken","gunnerAwaken","berserkerAwaken","colossusAwaken"]);
+ const GATES=[.80,.60,.40,.20];
+ function safeN(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function isAwakenDungeonActive(){return !!(dungeon&&AWAKEN_TYPES.has(String(dungeon.type||"")))}
+ function isAwakenBoss(m){return !!(m&&(m.awakenBoss||AWAKEN_TYPES.has(String(m.dungeonType||""))||AWAKEN_TYPES.has(String(m.targetKey||""))))}
+ function awakenBosses(){if(!fight)return[];const arr=fight.monsters?aliveMonsters():[activeMonster()||fight];return arr.filter(m=>m&&m.hp!==undefined&&isAwakenBoss(m))}
+ function syncBossHp(){try{if(!fight)return;if(fight.monsters)refreshTotalHp();else{const m=activeMonster()||fight;if(m){fight.hp=Math.max(0,safeN(m.hp,0));fight.max=Math.max(1,safeN(m.max,fight.max||1));}}}catch(e){}}
+ function playerDamageBase(){try{return Math.max(1,Math.floor(typeof atk==="function"?atk():safeN(p&&p.baseAtk,1)))}catch(e){return Math.max(1,Math.floor(safeN(p&&p.baseAtk,1)))}}
+ function standardHp(){return Math.max(1,Math.floor(playerDamageBase()*70))}
+ function standardizeBoss(m){
+  if(!m||!isAwakenBoss(m))return false;
+  const e=ensureEffectBag(m);m.awakenBoss=true;
+  if(e.cc0916Standardized)return false;
+  const oldMax=Math.max(1,safeN(m.max,m.hp||1));
+  const ratio=Math.max(.05,Math.min(1,safeN(m.hp,oldMax)/oldMax));
+  const hp=standardHp();
+  m.max=hp;m.hp=Math.max(1,Math.floor(hp*ratio));
+  m.reg=Math.max(0,Math.floor(hp*.004));
+  e.cc0916Standardized=1;
+  e.cc0916Gate80=0;e.cc0916Gate60=0;e.cc0916Gate40=0;e.cc0916Gate20=0;
+  floatText((m.emoji||"")+"覺醒試煉強化",true);
+  log((m.emoji||"")+" 覺醒Boss強度套用：血量 = 玩家傷害 ×70，血線無敵已啟用");
+  syncBossHp();return true;
+ }
+ function standardizeAll(){if(!isAwakenDungeonActive())return false;let changed=false;for(const m of awakenBosses())changed=standardizeBoss(m)||changed;return changed}
+ function gateKey(th){return "cc0916Gate"+Math.round(th*100)}
+ function applyGate(m){
+  if(!isAwakenDungeonActive()||!m||!isAwakenBoss(m))return false;
+  standardizeBoss(m);
+  const e=ensureEffectBag(m),max=Math.max(1,safeN(m.max,1));
+  for(const th of GATES){
+   const key=gateKey(th);
+   if(!e[key]&&safeN(m.hp,0)<=max*th){
+    e[key]=1;
+    m.hp=Math.max(1,Math.floor(max*th));
+    e.invincible=Math.max(safeN(e.invincible,0),10);
+    floatText((m.emoji||"")+"血線無敵 "+Math.round(th*100)+"%",true);
+    log((m.emoji||"")+" 覺醒Boss血量低於 "+Math.round(th*100)+"%，觸發 10 秒無敵");
+    syncBossHp();
+    return true;
+   }
+  }
+  return false;
+ }
+ function enforceGates(){if(!isAwakenDungeonActive())return false;let gated=false;for(const m of awakenBosses())gated=applyGate(m)||gated;return gated}
+ function wrapStart(name){
+  const fn=window[name];if(typeof fn!=="function"||fn.cc0916Wrapped)return;
+  const wrapped=function(){const r=fn.apply(this,arguments);try{standardizeAll();syncBossHp();render()}catch(e){}return r};
+  wrapped.cc0916Wrapped=true;window[name]=wrapped;
+ }
+ ["cc099StartReaperAwakenDungeon","cc0913StartGunnerAwakenDungeon","cc0914StartBerserkerAwakenDungeon","cc0915StartColossusAwakenDungeon"].forEach(wrapStart);
+ const oldAsp=asp;
+ asp=function(){let v=oldAsp();if(isAwakenDungeonActive())v*=.10;return Math.max(.02,v)};
+ const oldPlayerTakeDamage=playerTakeDamage;
+ playerTakeDamage=function(raw,source="怪物",m=null){
+  if(isAwakenDungeonActive()&&isAwakenBoss(m)){
+   const dmg=dealPlayerDamage(raw,{trueDamage:true,status:false,source,m});
+   if(dmg>0)floatText((m&&m.emoji?m.emoji:"")+"真傷-"+dmg,true);
+   return dmg;
+  }
+  return oldPlayerTakeDamage(raw,source,m);
+ };
+ const oldDamage=damage;
+ damage=function(mult=1,label="",opt={}){if(isAwakenDungeonActive())standardizeAll();const r=oldDamage(mult,label,opt);if(isAwakenDungeonActive())enforceGates();return r};
+ const oldTickEffects=tickEffects;
+ tickEffects=function(dt){const r=oldTickEffects(dt);if(isAwakenDungeonActive())enforceGates();return r};
+ const oldForceStrike=forceStrike;
+ forceStrike=function(){const r=oldForceStrike();if(isAwakenDungeonActive())enforceGates();return r};
+ const oldKillEnemy=killEnemy;
+ killEnemy=function(){if(isAwakenDungeonActive()){standardizeAll();if(enforceGates())return}return oldKillEnemy()};
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(isAwakenDungeonActive()){standardizeAll();if(enforceGates())return}return oldDungeonKill()};
+ const oldTick=tick;
+ tick=function(dt){if(isAwakenDungeonActive())standardizeAll();const r=oldTick(dt);if(isAwakenDungeonActive())enforceGates();return r};
+ const oldStatus=statusHtml;
+ statusHtml=function(){let h=oldStatus();try{if(isAwakenDungeonActive()&&fight){let add="";for(const m of awakenBosses()){const e=ensureEffectBag(m);const done=GATES.filter(th=>safeN(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";add+=`<span class='badge break'>🛡️ 覺醒試煉｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
+ const oldRender=render;
+ render=function(){const r=oldRender();try{if(isAwakenDungeonActive()){standardizeAll();if(by("enemyType"))by("enemyType").textContent=(by("enemyType").textContent||"覺醒副本")+"｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo")&&!isAbyss()){by("mainDungeonInfo").innerHTML+=`<div class="small">🛡️ 覺醒試煉重鑄：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次 10 秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`}}}catch(e){}return r};
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.16【覺醒試煉重鑄】"}}catch(e){}}
+ const oldBind=bind;
+ bind=function(){const r=oldBind();patchVersionText();return r};
+ setTimeout(()=>{try{patchVersionText();standardizeAll()}catch(e){}},0);
+ window.cc0916AwakeningTrialInfo=()=>({tag:TAG,active:isAwakenDungeonActive(),bosses:awakenBosses().map(m=>({name:m.name,hp:m.hp,max:m.max,atkBase:playerDamageBase(),gates:GATES.map(th=>({at:th,done:!!ensureEffectBag(m)[gateKey(th)]}))}))});
  console.log("傳承",TAG);
 })();
 
