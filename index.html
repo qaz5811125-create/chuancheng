@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.19";
+const GAME_VERSION="0.9.20";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -5547,6 +5547,291 @@ console.log("傳承",FLICKER_FIX_TAG);
  const oldRender=typeof render==="function"?render:null;if(oldRender)render=function(){const r=oldRender();patchVersionText();return r};
  setTimeout(patchVersionText,0);
  window.cc0919OverheatInfo=()=>({tag:TAG,state:oh(),rules:"500連擊過熱，第三階熔毀後核爆"});
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.20：技能師覺醒 / 天師・獄使 / 世界之王？ ===== */
+(()=>{
+ const TAG="0.9.20-skillmaster-heaven-hell-v1";
+ const VERSION_NAME="傳承 Beta 0.9.20【世界之王？】";
+ const DUNGEON="skillmasterAwaken";
+ const AWAKEN_NAME="天師/獄使";
+ const BOSS_NAME="諾麗（傀儡）";
+ const BOSS_ICON="🧟‍♀️";
+ const GATES=[.80,.60,.40,.20];
+ const by=id=>document.getElementById(id);
+ const num=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const esc=s=>String(s??"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]));
+ function astate(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.skillmasterDungeonClears=Math.max(0,Math.floor(num(a.skillmasterDungeonClears,0)));
+  a.skillmasterAwakened=!!a.skillmasterAwakened;
+  if(a.skillmasterForm!=="hell")a.skillmasterForm="heaven";
+  a.heavenHitCount=Math.max(0,Math.floor(num(a.heavenHitCount,0)));
+  a.heavenLock=Math.max(0,num(a.heavenLock,0));
+  a.heavenLockCd=Math.max(0,num(a.heavenLockCd,0));
+  a.heavenReviveUsed=!!a.heavenReviveUsed;
+  a.heavenReviving=Math.max(0,num(a.heavenReviving,0));
+  a.heavenChessCd=Math.max(0,num(a.heavenChessCd,0));
+  a.hellPhase=Math.max(1,Math.min(3,Math.floor(num(a.hellPhase,1))));
+  a.hellHitCount=Math.max(0,Math.floor(num(a.hellHitCount,0)));
+  a.hellInvTimer=Math.max(0,num(a.hellInvTimer,15));
+  a.hellLock=Math.max(0,num(a.hellLock,0));
+  a.hellShield=Math.max(0,num(a.hellShield,0));
+  a.hellGroundCd=Math.max(0,num(a.hellGroundCd,0));
+  if(!a.hellLockUsed||typeof a.hellLockUsed!=="object"||Array.isArray(a.hellLockUsed))a.hellLockUsed={};
+  return a;
+ }
+ function isAwakened(){return !!(p&&astate().skillmasterAwakened)}
+ function isActive(){return currentJobKey&&currentJobKey()==="skillmaster"&&isAwakened()}
+ function form(){return astate().skillmasterForm||"heaven"}
+ function isHeaven(){return isActive()&&form()==="heaven"}
+ function isHell(){return isActive()&&form()==="hell"}
+ function skillmasterLv(){try{return Math.max(0,Math.floor(num(p.specialWeapons&&p.specialWeapons.magicGlove,0)),Math.floor(num(p.specialWeapons&&p.specialWeapons.glove,0)))}catch(e){return 0}}
+ function hasLevelReq(){return skillmasterLv()>=5}
+ function hasDungeonReq(){return astate().skillmasterDungeonClears>=1}
+ function canAwaken(){return hasLevelReq()&&hasDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function isSkillDungeon(){return !!(dungeon&&dungeon.type===DUNGEON)}
+ function syncJobDef(){
+  if(!JOBS.skillmaster)return;
+  if(isAwakened()){
+   const nm=form()==="hell"?"亡靈鎖":"神權劍";
+   Object.assign(JOBS.skillmaster,{icon:"☯️",name:"天師/獄使",weapon:"magicGlove",weaponName:nm,desc:"技能師覺醒雙型態。天師：強攻、鎖血、每關一次瀕死復活；獄使：週期無敵、三階段復活、真傷、護盾。專武等級共用。"});
+  }else{
+   Object.assign(JOBS.skillmaster,{icon:"🪁",name:"技能師",weapon:"magicGlove",weaponName:"魔法手套",desc:"傳說職業。關閉普攻，改以特殊狀態傷害攻擊敵人；撕裂、中毒、擊暈、破甲、虛弱、混沌、禁錮皆可無限堆層。專武使特殊狀態堆層翻倍。"});
+  }
+ }
+ function resetStageState(reason=""){
+  if(!p)return;const a=astate();
+  a.heavenHitCount=0;a.heavenLock=0;a.heavenReviving=0;a.heavenReviveUsed=false;
+  a.hellPhase=1;a.hellHitCount=0;a.hellInvTimer=15;a.hellLock=0;a.hellLockUsed={};a.hellShield=0;
+  if(reason)log(reason);
+ }
+ function formLabel(){return form()==="hell"?"獄使":"天師"}
+ function openModal(html){let m=by("cc0920Modal");if(!m){m=document.createElement("div");m.id="cc0920Modal";m.className="cc0920Modal hidden";document.body.appendChild(m)}m.innerHTML=`<div class="cc0920ModalCard">${html}</div>`;m.classList.remove("hidden")}
+ function closeModal(){const m=by("cc0920Modal");if(m)m.classList.add("hidden")}
+ function reqLines(){const a=astate();return `
+   <div class="cc0920Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 技能師職業等級：Lv.${skillmasterLv()} / Lv.5</div>
+   <div class="cc0920Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【世界之王？】：${Math.min(a.skillmasterDungeonClears,1)} / 1</div>`}
+ function showAwakenPanel(){
+  ensureNewSystems();syncJobDef();const a=astate();const cur=currentJobKey();
+  openModal(`
+   <div class="row"><b>☯️ 技能師覺醒</b><button onclick="window.cc0920CloseModal()">關閉</button></div>
+   <div class="small">覺醒目標：<b>技能師 → 天師/獄使</b>。覺醒後可自由切換雙型態，天界落白棋，地獄收棋盤。</div><hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="skillmaster"?(a.skillmasterAwakened?"天師/獄使":"技能師"):"需切換技能師"}</span></div>
+   <div class="card notice"><b>覺醒狀態：${a.skillmasterAwakened?"✅ 已覺醒":"未覺醒"}</b>${reqLines()}</div>
+   <div class="small"><b>天師</b><br>強攻：普攻傷害+80%。殘血鎖血：血量低於5%鎖血10秒，普攻+190%，每秒回最大生命5%，冷卻30秒。瀕死復活：每關一次，死亡3秒後復活並無敵3秒。第4次普攻造成1700%。</div>
+   <div class="small"><b>獄使</b><br>每15秒無敵1秒；每段生命10%鎖血10秒並普攻+700%；攻擊附帶無視防禦；三階段復活：正常、+15%、+30%；普攻三次獲得最大生命5%護盾，上限150%。</div>
+   <button class="purple" onclick="window.cc0920AwakenSkillmaster()" ${canAwaken()&&!a.skillmasterAwakened?"":"disabled"}>覺醒：技能師 → 天師/獄使</button>
+  `)
+ }
+ function showDungeonPanel(){
+  ensureNewSystems();const a=astate();const cur=currentJobKey();const can=cur==="skillmaster"&&hasLevelReq()&&!isDungeon()&&!a.skillmasterAwakened;
+  openModal(`
+   <div class="row"><b>🧟‍♀️ 覺醒副本</b><button onclick="window.cc0920CloseModal()">關閉</button></div>
+   <div class="card notice"><b>【世界之王？】</b><div class="small">Boss：${BOSS_ICON} ${BOSS_NAME}｜挑戰時間：180秒<br>通關後完成副本條件，但不會自動覺醒，需回覺醒面板手動按下覺醒。</div></div>
+   <div class="small"><b>開啟條件</b>${reqLines().replace(/通關【世界之王？】：[^<]+<\/div>/,'通關【世界之王？】：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>諾麗（傀儡）</b><br>有三次死亡後100%生命復活。最後一次復活後發動【亡靈進行曲】：召喚三隻隨機地圖Boss，場上變4V1；三隻Boss擊敗前諾麗無敵。</div>
+   <div class="small"><b>副本壓制：情感動搖</b><br>每秒增加0.5%猶豫值。每10%猶豫值，玩家所有狀態施加率-5%，最高-50%。離開副本重置。</div>
+   <button class="purple" onclick="window.cc0920StartSkillmasterDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為技能師 / 已覺醒則收納")}</button>
+   <div class="small">目前通關：${Math.min(a.skillmasterDungeonClears,1)} / 1</div>
+  `)
+ }
+ function ensureDrawerButtons(){
+  const panel=by("featureDrawer");if(!panel||panel.dataset.cc0920SkillmasterButtons==="1")return;
+  panel.dataset.cc0920SkillmasterButtons="1";
+  function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}
+  panel.appendChild(b("☯️ 技能師覺醒",showAwakenPanel));
+  panel.appendChild(b("🧟‍♀️ 世界之王？",showDungeonPanel));
+ }
+ function playerDmgBase(){try{return Math.max(1,Math.floor(atk()))}catch(e){return Math.max(1,Math.floor(num(p&&p.baseAtk,1)))}}
+ function standardHp(){return Math.max(1,Math.floor(playerDmgBase()*70))}
+ function makeNori(){
+  const hp=standardHp(),def=Math.max(0,Math.floor(playerDef()*12)),atkV=Math.max(1,Math.floor(atk()*12));
+  const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:BOSS_NAME,emoji:BOSS_ICON,hp,def,reg:Math.floor(hp*.004),gold:0,xp:0,drop:0,timer:180,mAtk:atkV,armorBreak:0,mAspd:1.8,awakenBoss:true,targetKey:"noriPuppet"});
+  m.cc0920Nori=true;m.cc0920Revives=0;m.cc0920MarchUsed=false;
+  const e=ensureEffectBag(m);e.cc0920Gate80=0;e.cc0920Gate60=0;e.cc0920Gate40=0;e.cc0920Gate20=0;
+  return finalizeMonster(m);
+ }
+ function bossPool(){return[
+  ["🌳","木偶王"],["🦖","森林暴龍"],["🦕","森林古龍"],["🌵","沙漠霸主"],["🐍","火焰蛇王"],["🦈","深海霸主"],["🐙","海淵章魚"],["☁️","天域守門者"],["🔥","下獄魔將"]
+ ]}
+ function makeSummonBoss(i){
+  const pick=bossPool()[Math.floor(Math.random()*bossPool().length)];
+  const hp=Math.max(1,Math.floor(standardHp()*.35)),def=Math.max(0,Math.floor(playerDef()*6)),atkV=Math.max(1,Math.floor(atk()*7));
+  const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:pick[1],emoji:pick[0],hp,def,reg:Math.floor(hp*.002),gold:0,xp:0,drop:0,timer:0,mAtk:atkV,armorBreak:0,mAspd:1.4+Math.random()*.8,targetKey:"summonedBoss"+i});
+  m.cc0920SummonedBoss=true;return finalizeMonster(m);
+ }
+ function startDungeon0920(){
+  ensureNewSystems();syncJobDef();
+  if(isDungeon())return log("副本進行中，不能重複進入");
+  if(currentJobKey()!=="skillmaster")return log("☯️ 【世界之王？】需要目前職業為技能師");
+  if(!hasLevelReq())return log("☯️ 技能師職業等級不足：Lv."+skillmasterLv()+"/5");
+  if(astate().skillmasterAwakened)return log("☯️ 技能師已覺醒，【世界之王？】已收納");
+  closeModal();resetStageState();
+  dungeon={type:DUNGEON,timer:180,kills:0,gain:0,running:true,hesitation:0};
+  fight=makeNori();p.queue=0;hold=false;budget=0;show("main");
+  log("🧟‍♀️ 覺醒副本【世界之王？】開始：諾麗（傀儡）站在世界中心。情感動搖開始累積。");save(false);render();
+ }
+ function awakenSkillmaster(){
+  ensureNewSystems();const a=astate();
+  if(a.skillmasterAwakened)return log("☯️ 技能師已覺醒為天師/獄使");
+  if(!canAwaken())return log("☯️ 技能師覺醒條件尚未完成");
+  a.skillmasterAwakened=true;a.skillmasterForm="heaven";syncJobDef();save(false);floatText("☯️ 天師/獄使！",true);log("☯️ 覺醒成功：技能師 → 天師/獄使。雙型態已開放自由切換。");render();showAwakenPanel();
+ }
+ function endRun(success){
+  const a=astate();
+  if(success){a.skillmasterDungeonClears=Math.max(1,a.skillmasterDungeonClears||0);log("🧟‍♀️ 你通過了【世界之王？】。諾麗（傀儡）沉默了，技能師已具備覺醒資格。");}
+  else log("🧟‍♀️ 【世界之王？】挑戰失敗，情感動搖歸零。");
+  dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();try{clearPlayerStatus()}catch(e){};save(false);spawnMain();
+ }
+ function gateKey(th){return "cc0920Gate"+Math.round(th*100)}
+ function noriBoss(){if(!fight)return null;const arr=fight.monsters||[fight];return arr.find(m=>m&&m.cc0920Nori)||null}
+ function minionsAlive(){if(!fight||!fight.monsters)return[];return fight.monsters.filter(m=>m&&m.cc0920SummonedBoss&&m.hp>0)}
+ function resetNoriGates(m){const e=ensureEffectBag(m);for(const th of GATES)e[gateKey(th)]=0;}
+ function applyNoriGate(m){
+  if(!isSkillDungeon()||!m||!m.cc0920Nori||minionsAlive().length)return false;
+  const e=ensureEffectBag(m),max=Math.max(1,num(m.max,1));
+  for(const th of GATES){const k=gateKey(th);if(!e[k]&&num(m.hp,0)<=max*th){e[k]=1;m.hp=Math.max(1,Math.floor(max*th));e.invincible=Math.max(num(e.invincible,0),10);floatText("🛡️諾麗血線無敵 "+Math.round(th*100)+"%",true);log("🧟‍♀️ 諾麗（傀儡）血量低於 "+Math.round(th*100)+"%，觸發 10 秒無敵");syncHp(m);return true}}
+  return false;
+ }
+ function syncHp(m){try{if(fight&&fight.monsters)refreshTotalHp();else if(fight){fight.hp=Math.max(0,num(m&&m.hp,fight.hp));fight.max=Math.max(1,num(m&&m.max,fight.max));}}catch(e){}}
+ function triggerMarch(nori){
+  if(!nori||nori.cc0920MarchUsed)return;
+  nori.cc0920MarchUsed=true;
+  const e=ensureEffectBag(nori);e.invincible=Math.max(e.invincible||0,9999);e.cc0920NoriMinionLock=1;
+  const summons=[makeSummonBoss(1),makeSummonBoss(2),makeSummonBoss(3)];
+  fight.monsters=[...summons,nori];fight.name="亡靈進行曲";fight.emoji=summons.map(x=>x.emoji).join("")+BOSS_ICON;fight.max=fight.monsters.reduce((s,m)=>s+Math.max(1,m.max||m.hp||1),0);refreshTotalHp();
+  floatText("🧟‍♀️亡靈進行曲！",true);log("🧟‍♀️ 諾麗（傀儡）發動【亡靈進行曲】：召喚三隻隨機地圖Boss。擊敗三隻Boss前，諾麗無敵。");
+ }
+ function checkNoriReviveOrWin(){
+  if(!isSkillDungeon())return false;
+  const nori=noriBoss()||fight;if(!nori||!nori.cc0920Nori)return false;
+  if(nori.hp>0)return false;
+  if((nori.cc0920Revives||0)<3){
+   nori.cc0920Revives=(nori.cc0920Revives||0)+1;nori.hp=nori.max;resetNoriGates(nori);
+   const e=ensureEffectBag(nori);e.invincible=0;e.cc0920NoriMinionLock=0;
+   floatText(`🧟‍♀️復活 ${nori.cc0920Revives}/3`,true);log(`🧟‍♀️ 諾麗（傀儡）第 ${nori.cc0920Revives} 次以 100% 生命復活`);
+   if(nori.cc0920Revives===3)triggerMarch(nori);syncHp(nori);render();return true;
+  }
+  endRun(true);return true;
+ }
+ function releaseNoriIfMinionsDead(){
+  if(!isSkillDungeon())return;const nori=noriBoss();if(!nori)return;
+  if(nori.cc0920MarchUsed&&minionsAlive().length===0){const e=ensureEffectBag(nori);if(e.cc0920NoriMinionLock){e.cc0920NoriMinionLock=0;if(e.invincible>100)e.invincible=0;floatText("🧟‍♀️諾麗無敵解除",true);log("🧟‍♀️ 亡靈進行曲的三隻Boss已被擊敗，諾麗無敵解除。")}}
+ }
+ function hesitationPenalty(){if(!isSkillDungeon())return 0;return Math.min(.5,Math.floor(num(dungeon.hesitation,0)/10)*.05)}
+ function statusAllowed(){const pen=hesitationPenalty();if(pen<=0)return true;if(Math.random()<pen){floatText("💔猶豫，狀態失敗",true);log("💔 情感動搖：狀態施加被壓制 -"+Math.round(pen*100)+"%");return false}return true}
+ function directMonsterDamage(target,raw,label="",trueDamage=false){
+  if(!target||target.hp<=0)return 0;const e=ensureEffectBag(target);if(e.invincible>0){floatText((target.emoji||"")+"無敵");return 0}
+  let dmg=trueDamage?Math.max(1,Math.floor(raw)):Math.max(1,Math.floor(raw*(100/(100+Math.max(0,effDefForTarget(target))))));
+  target.hp=Math.max(0,target.hp-dmg);if(label)floatText((target.emoji||"")+label+" "+dmg.toLocaleString(),true);syncHp(target);return dmg;
+ }
+ function applyPermaBurn(target){if(!target||target.hp<=0)return;const e=ensureEffectBag(target);e.cc0920PermaBurn=1;e.cc0920NoRegen=1;floatText((target.emoji||"")+"🔥永久燃燒",true)}
+ const oldSkillmasterAttack=typeof skillmasterAttack==="function"?skillmasterAttack:null;
+ if(oldSkillmasterAttack)skillmasterAttack=function(mult=1){
+  if(!isActive())return oldSkillmasterAttack(mult);
+  if(!fight||isPlayerStunned()||p.hp<=0)return;
+  const target=activeMonster();if(!target||target.hp<=0)return;
+  if(!statusAllowed()){addCombo();showHitEffect("skill");return;}
+  const beforeHp=target.hp;
+  oldSkillmasterAttack(mult);
+  if(!fight||!target||target.hp<=0)return;
+  const a=astate();
+  if(form()==="heaven"){
+   a.heavenHitCount=(a.heavenHitCount||0)+1;
+   let m=1.8;if(a.heavenLock>0)m*=2.9;
+   const sw=1.5;directMonsterDamage(target,atk()*m*sw,"⚪天師普攻",false);
+   if(a.heavenHitCount>=4){a.heavenHitCount=0;directMonsterDamage(target,atk()*17*sw,"⚪強化普攻1700%",false);log("⚪ 天師第四次普攻：打出 1700% 強化普攻")}
+  }else{
+   const phase=a.hellPhase||1,phaseMul=phase===3?1.3:phase===2?1.15:1;
+   let m=1*phaseMul;if(a.hellLock>0)m*=8;
+   directMonsterDamage(target,atk()*m,"⛓️獄使真傷",true);applyPermaBurn(target);
+   a.hellHitCount=(a.hellHitCount||0)+1;
+   if(a.hellHitCount>=3){a.hellHitCount=0;const maxShield=playerMaxHp()*1.5;const add=playerMaxHp()*.05;a.hellShield=Math.min(maxShield,(a.hellShield||0)+add);floatText("⛓️護盾+"+Math.floor(add).toLocaleString(),true)}
+  }
+  if(fight&&fight.monsters){settleFormationDeaths();refreshTotalHp()} if(fight&&fight.hp<=0)killEnemy();
+ };
+ function triggerHeavenLock(){const a=astate();if(!isHeaven()||a.heavenLock>0||a.heavenLockCd>0)return false;a.heavenLock=10;a.heavenLockCd=30;p.hp=Math.max(1,p.hp||1);floatText("⚪殘血鎖血！",true);log("⚪ 天師殘血鎖血：10秒內鎖血，普攻+190%，每秒回血最大生命5%");return true}
+ function triggerHellLock(){const a=astate();if(!isHell()||a.hellLock>0)return false;const ph=a.hellPhase||1;if(a.hellLockUsed[String(ph)])return false;a.hellLockUsed[String(ph)]=1;a.hellLock=10;p.hp=Math.max(1,p.hp||1);floatText("⛓️獄使鎖血！",true);log("⛓️ 獄使第 "+ph+" 階段生命低於10%，鎖血10秒，普攻傷害+700%");return true}
+ function afterDamageCheck(){if(!isActive()||p.hp<=0)return;if(isHeaven()&&(p.hp||0)<=playerMaxHp()*.05)triggerHeavenLock();if(isHell()&&(p.hp||0)<=playerMaxHp()*.10)triggerHellLock();const a=astate();if((a.heavenLock>0||a.hellLock>0)&&p.hp<=0)p.hp=1;}
+ const oldDealPlayerDamage=typeof dealPlayerDamage==="function"?dealPlayerDamage:null;
+ if(oldDealPlayerDamage)dealPlayerDamage=function(raw,opt={}){const a=astate();if(isHeaven()&&a.heavenReviving>0){floatText("⚪復活中");return 0}if(isActive()&&((a.heavenLock>0)||(a.hellLock>0))){const before=p.hp||0;const r=oldDealPlayerDamage(raw,opt);if(p.hp<=0)p.hp=1;afterDamageCheck();return Math.min(before,Math.max(0,r))}const r=oldDealPlayerDamage(raw,opt);afterDamageCheck();return r};
+ const oldAbsorb=typeof absorbWithShields==="function"?absorbWithShields:null;
+ if(oldAbsorb)absorbWithShields=function(amount,trueDamage=false){let left=Math.max(0,amount);if(isHell()){const a=astate();if((a.hellShield||0)>0){const used=Math.min(a.hellShield,left);a.hellShield-=used;left-=used;if(used>0)floatText("⛓️獄盾-"+Math.floor(used).toLocaleString())}}return oldAbsorb(left,trueDamage)};
+ const oldPlayerDeath=typeof playerDeath==="function"?playerDeath:null;
+ if(oldPlayerDeath)playerDeath=function(){
+  const a=astate();
+  if(isHeaven()&&!a.heavenReviveUsed){a.heavenReviveUsed=true;a.heavenReviving=3;p.hp=1;p.queue=0;hold=false;budget=0;floatText("⚪瀕死復活準備",true);log("⚪ 天師瀕死復活：3秒後復活，本關只能一次");render();return;}
+  if(isHell()&&a.hellPhase<3){a.hellPhase++;a.hellLock=0;a.hellHitCount=0;a.hellInvTimer=15;p.hp=playerMaxHp();playerStatus().undying=Math.max(playerStatus().undying||0,1.5);floatText("⛓️獄使復活 第"+a.hellPhase+"階",true);log("⛓️ 獄使進入第 "+a.hellPhase+" 階段：所有數值 +"+(a.hellPhase===2?15:30)+"%");render();return;}
+  return oldPlayerDeath();
+ };
+ const oldPlayerMaxHp=typeof playerMaxHp==="function"?playerMaxHp:null;
+ if(oldPlayerMaxHp)playerMaxHp=function(){let v=oldPlayerMaxHp();if(isHell()){const ph=astate().hellPhase||1;if(ph===2)v=Math.floor(v*1.15);if(ph===3)v=Math.floor(v*1.30)}return v};
+ const oldJobAtk=typeof jobAtkBonus==="function"?jobAtkBonus:null;
+ if(oldJobAtk)jobAtkBonus=function(){let v=oldJobAtk();if(isHell()){const ph=astate().hellPhase||1;if(ph===2)v+=.15;if(ph===3)v+=.30}return v};
+ const oldPlayerRegen=typeof playerRegen==="function"?playerRegen:null;
+ if(oldPlayerRegen)playerRegen=function(){let v=oldPlayerRegen();if(isHell()){const ph=astate().hellPhase||1;if(ph===2)v=Math.floor(v*1.15);if(ph===3)v=Math.floor(v*1.30)}return v};
+ const oldAsp=typeof asp==="function"?asp:null;
+ if(oldAsp)asp=function(){let v=oldAsp();if(isSkillDungeon())v*=.10;return Math.max(.02,v)};
+ function useHeavenChess(){ensureNewSystems();const a=astate();if(!isHeaven())return log("⚪ 只有天師型態可以使用【以天為棋】");if(a.heavenChessCd>0)return log("⚪ 以天為棋冷卻中："+Math.ceil(a.heavenChessCd)+"秒");if(!canPlayerAct("無法行動"))return;const t=activeMonster();if(!t||t.hp<=0)return;directMonsterDamage(t,atk()*7,"⚪白棋一段",false);directMonsterDamage(t,atk()*7,"⚪白棋二段",false);const e=ensureEffectBag(t);e.skillStun=Math.max(e.skillStun||0,5);e.freeze=Math.max(e.freeze||0,5);a.heavenChessCd=15;log("⚪【以天為棋】：白棋落下，造成兩段700%傷害並暈眩5秒");if(fight&&fight.hp<=0)killEnemy();render()}
+ function useHellGround(){ensureNewSystems();const a=astate();if(!isHell())return log("⛓️ 只有獄使型態可以使用【以地為局】");if(a.hellGroundCd>0)return log("⛓️ 以地為局冷卻中："+Math.ceil(a.hellGroundCd)+"秒");if(!canPlayerAct("無法行動"))return;const t=activeMonster();if(!t||t.hp<=0)return;const e=ensureEffectBag(t);e.cc0920HellSeal=Math.max(e.cc0920HellSeal||0,10);e.cc0920HellSealTick=.5;a.hellGroundCd=25;floatText("⛓️以地為局",true);log("⛓️【以地為局】：封鎖目標任何行動10秒，每0.5秒扣除最大生命5%");render()}
+ function switchForm(to){ensureNewSystems();if(!isAwakened()||currentJobKey()!=="skillmaster")return log("☯️ 技能師覺醒後才能切換天師/獄使");const a=astate();a.skillmasterForm=to||(a.skillmasterForm==="heaven"?"hell":"heaven");a.heavenHitCount=0;a.hellHitCount=0;syncJobDef();floatText("☯️ 切換："+formLabel(),true);log("☯️ 已切換為【"+formLabel()+"】型態");save(false);render()}
+ const oldCanPlayerAct=typeof canPlayerAct==="function"?canPlayerAct:null;
+ if(oldCanPlayerAct)canPlayerAct=function(msg="暫時無法行動"){if(isHeaven()&&astate().heavenReviving>0){if(msg)log("⚪ 天師復活準備中，暫時無法行動");return false}return oldCanPlayerAct(msg)};
+ const oldTickPlayer=typeof tickPlayer==="function"?tickPlayer:null;
+ if(oldTickPlayer)tickPlayer=function(dt){const a=astate();const r=oldTickPlayer(dt);if(isActive()){a.heavenLockCd=Math.max(0,a.heavenLockCd-dt);a.heavenChessCd=Math.max(0,a.heavenChessCd-dt);a.hellGroundCd=Math.max(0,a.hellGroundCd-dt);if(a.heavenLock>0){a.heavenLock=Math.max(0,a.heavenLock-dt);p.hp=Math.max(1,Math.min(playerMaxHp(),(p.hp||1)+playerMaxHp()*.05*dt));}if(a.hellLock>0){a.hellLock=Math.max(0,a.hellLock-dt);if(p.hp<=0)p.hp=1}if(a.heavenReviving>0){a.heavenReviving=Math.max(0,a.heavenReviving-dt);p.hp=1;p.queue=0;hold=false;budget=0;if(a.heavenReviving<=0){p.hp=playerMaxHp();playerStatus().undying=Math.max(playerStatus().undying||0,3);floatText("⚪天師復活！",true);log("⚪ 天師復活完成：無敵3秒")}}if(isHell()){a.hellInvTimer-=dt;if(a.hellInvTimer<=0){playerStatus().undying=Math.max(playerStatus().undying||0,1);a.hellInvTimer=15;floatText("⛓️獄使無敵1秒",true)}}}return r};
+ const oldTickEffects=typeof tickEffects==="function"?tickEffects:null;
+ if(oldTickEffects)tickEffects=function(dt){const r=oldTickEffects(dt);try{if(fight){const list=fight.monsters?aliveMonsters():[fight];let changed=false;for(const t of list){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);if(e.cc0920PermaBurn>0&&!(e.invincible>0)){const d=Math.max(1,(t.max||1)*.005*dt);t.hp-=d;changed=true;if(fight.dotFloat<=0)floatText("🔥永久-"+Math.max(1,Math.floor(d/.35)).toLocaleString())}if(e.cc0920HellSeal>0){e.cc0920HellSeal=Math.max(0,e.cc0920HellSeal-dt);e.cc0920HellSealTick=(e.cc0920HellSealTick||.5)-dt;while(e.cc0920HellSealTick<=0&&e.cc0920HellSeal>0){e.cc0920HellSealTick+=.5;if(!(e.invincible>0)){const d=Math.max(1,Math.floor((t.max||1)*.05));t.hp-=d;changed=true;floatText("⛓️地局-"+d.toLocaleString(),true)}}}}
+   if(changed){if(fight.monsters){refreshTotalHp();settleFormationDeaths()}else fight.hp=Math.max(0,fight.hp);if(fight.hp<=0)killEnemy();}
+  }}catch(e){}return r};
+ const oldPoisonRegen=typeof poisonRegenMultiplier==="function"?poisonRegenMultiplier:null;
+ if(oldPoisonRegen)poisonRegenMultiplier=function(t){try{if(t&&ensureEffectBag(t).cc0920NoRegen>0)return 0}catch(e){}return oldPoisonRegen(t)};
+ const oldTickMonsterAI=typeof tickMonsterAI==="function"?tickMonsterAI:null;
+ if(oldTickMonsterAI)tickMonsterAI=function(dt){if(isSkillDungeon()&&fight){for(const m of aliveMonsters()){if(!m||m.hp<=0)continue;const e=ensureEffectBag(m);if(e.cc0920HellSeal>0||e.skillStun>0||e.freeze>0)continue;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<2){monsterNormalAttack(m);m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}}return}return oldTickMonsterAI(dt)};
+ const oldPlayerTakeDamage=typeof playerTakeDamage==="function"?playerTakeDamage:null;
+ if(oldPlayerTakeDamage)playerTakeDamage=function(raw,source="怪物",m=null){if(isSkillDungeon()&&m&&(m.cc0920Nori||m.cc0920SummonedBoss)){const d=dealPlayerDamage(raw,{trueDamage:true,status:false,source,m});if(d>0)floatText((m.emoji||"")+"真傷-"+d,true);return d}return oldPlayerTakeDamage(raw,source,m)};
+ const oldDamage=typeof damage==="function"?damage:null;
+ if(oldDamage)damage=function(mult=1,label="",opt={}){const r=oldDamage(mult,label,opt);if(isSkillDungeon()){releaseNoriIfMinionsDead();const n=noriBoss();if(n){applyNoriGate(n);checkNoriReviveOrWin()}}return r};
+ const oldDungeonKill=typeof dungeonKill==="function"?dungeonKill:null;
+ if(oldDungeonKill)dungeonKill=function(){if(isSkillDungeon()){releaseNoriIfMinionsDead();const n=noriBoss()||fight;if(n&&checkNoriReviveOrWin())return;endRun(true);return}return oldDungeonKill()};
+ const oldKillEnemy=typeof killEnemy==="function"?killEnemy:null;
+ if(oldKillEnemy)killEnemy=function(){if(isSkillDungeon()){releaseNoriIfMinionsDead();const n=noriBoss()||fight;if(n&&checkNoriReviveOrWin())return;endRun(true);return}return oldKillEnemy()};
+ const oldEndDungeon=typeof endDungeon==="function"?endDungeon:null;
+ if(oldEndDungeon)endDungeon=function(){if(isSkillDungeon()){endRun(false);return}return oldEndDungeon()};
+ const oldTick=typeof tick==="function"?tick:null;
+ if(oldTick)tick=function(dt){if(isSkillDungeon()){dungeon.hesitation=Math.min(100,num(dungeon.hesitation,0)+.5*dt)}const r=oldTick(dt);if(isSkillDungeon()){releaseNoriIfMinionsDead();const n=noriBoss();if(n){applyNoriGate(n);checkNoriReviveOrWin()}}return r};
+ const oldSetJob=typeof setJob==="function"?setJob:null;
+ if(oldSetJob)setJob=function(key){const r=oldSetJob(key);syncJobDef();save(false);return r};
+ const oldSpawnMain=typeof spawnMain==="function"?spawnMain:null;
+ if(oldSpawnMain)spawnMain=function(){const r=oldSpawnMain();resetStageState();syncJobDef();return r};
+ const oldEnsure=typeof ensureNewSystems==="function"?ensureNewSystems:null;
+ if(oldEnsure)ensureNewSystems=function(){const r=oldEnsure();if(!p)return r;if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.magicGlove=Math.max(0,Math.floor(num(p.specialWeapons.magicGlove,p.specialWeapons.glove||0)));astate();syncJobDef();return r};
+ const oldJobPanel=typeof jobPanelHtml==="function"?jobPanelHtml:null;
+ if(oldJobPanel)jobPanelHtml=function(){ensureNewSystems();let h=oldJobPanel();try{if(currentJobKey()==="skillmaster"&&isAwakened()){const a=astate();const mode=form();const weapon=mode==="heaven"?"神權劍":"亡靈鎖";const skillBtn=mode==="heaven"?`<button class="purple" onclick="window.cc0920UseHeavenChess()" ${a.heavenChessCd>0?"disabled":""}>⚪ 以天為棋 ${a.heavenChessCd>0?Math.ceil(a.heavenChessCd)+"秒":""}</button>`:`<button class="red" onclick="window.cc0920UseHellGround()" ${a.hellGroundCd>0?"disabled":""}>⛓️ 以地為局 ${a.hellGroundCd>0?Math.ceil(a.hellGroundCd)+"秒":""}</button>`;h+=`<div class="card notice"><b>☯️ ${AWAKEN_NAME}｜目前型態：${formLabel()}</b><div class="small">專武：${weapon} Lv.${skillmasterLv()}（天師/獄使共用等級）｜${mode==="heaven"?"神權劍：普攻額外50%傷害":"亡靈鎖：普攻造成永久燃燒，目標無法回血"}</div><button onclick="window.cc0920SwitchSkillmasterForm()">切換為${mode==="heaven"?"獄使":"天師"}</button>${skillBtn}<div class="small">天師復活：${a.heavenReviveUsed?"本關已用":"本關可用"}｜獄使階段：${a.hellPhase}/3｜獄盾：${Math.floor(a.hellShield||0).toLocaleString()}/${Math.floor(playerMaxHp()*1.5).toLocaleString()}</div></div>`}}catch(e){}return h};
+ const oldPlayerStatusHtml=typeof playerStatusHtml==="function"?playerStatusHtml:null;
+ if(oldPlayerStatusHtml)playerStatusHtml=function(){let h=oldPlayerStatusHtml();try{if(isActive()){if(h==="玩家狀態：無")h="";const a=astate();h+=`<span class="badge poison">☯️ ${formLabel()}</span>`;if(a.heavenLock>0)h+=`<span class="badge freeze">⚪ 殘血鎖血 ${a.heavenLock.toFixed(1)}秒</span>`;if(a.heavenReviving>0)h+=`<span class="badge freeze">⚪ 瀕死復活 ${a.heavenReviving.toFixed(1)}秒</span>`;if(a.hellLock>0)h+=`<span class="badge burn">⛓️ 獄使鎖血 ${a.hellLock.toFixed(1)}秒</span>`;if(a.hellShield>0)h+=`<span class="badge break">⛓️ 獄盾 ${Math.floor(a.hellShield).toLocaleString()}</span>`}if(isSkillDungeon()){if(h==="玩家狀態：無")h="";const hes=num(dungeon.hesitation,0),pen=hesitationPenalty();h+=`<span class="badge poison">💔 情感動搖 ${hes.toFixed(1)}%｜狀態施加率 -${Math.round(pen*100)}%</span>`}}catch(e){}return h||"玩家狀態：無"};
+ const oldStatus=typeof statusHtml==="function"?statusHtml:null;
+ if(oldStatus)statusHtml=function(){let h=oldStatus();try{if(fight){let add="";const n=noriBoss();if(n){add+=`<span class='badge poison'>🧟‍♀️ 諾麗復活 ${n.cc0920Revives||0}/3${n.cc0920MarchUsed?"｜亡靈進行曲":""}</span>`;if(minionsAlive().length)add+=`<span class='badge freeze'>亡靈Boss剩餘 ${minionsAlive().length}/3｜諾麗無敵</span>`}const t=activeMonster();if(t){const e=ensureEffectBag(t);if(e.cc0920HellSeal>0)add+=`<span class='badge freeze'>⛓️ 以地為局 ${e.cc0920HellSeal.toFixed(1)}秒</span>`;if(e.cc0920PermaBurn>0)add+=`<span class='badge burn'>🔥 永久燃燒｜無法回血</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
+ const oldRender=typeof render==="function"?render:null;
+ if(oldRender)render=function(){const r=oldRender();ensureDrawerButtons();patchVersionText();try{if(isSkillDungeon()){if(by("enemyType"))by("enemyType").textContent="覺醒副本｜世界之王？｜Boss：諾麗（傀儡）｜情感動搖｜復活×3｜亡靈進行曲";if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>🧟‍♀️ 世界之王？</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜猶豫值：${num(dungeon.hesitation,0).toFixed(1)}%｜狀態施加率壓制：-${Math.round(hesitationPenalty()*100)}%</div><div class="small">諾麗三次復活，最後一次復活後召喚三隻隨機地圖Boss，三隻Boss擊敗前諾麗無敵。</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>🧟‍♀️ 世界之王？進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：諾麗（傀儡）<br>情感動搖：${num(dungeon.hesitation,0).toFixed(1)}%</div></div>`}}catch(e){}return r};
+ const oldBind=typeof bind==="function"?bind:null;
+ if(oldBind)bind=function(){const r=oldBind();ensureDrawerButtons();patchVersionText();return r};
+ function patchVersionText(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9.19")||(el.textContent||"").includes("Beta 0.9.18"))el.textContent="Beta 0.9.20【世界之王？】"})}catch(e){}}
+ const style=document.createElement("style");style.textContent=`.cc0920Modal{position:fixed;inset:0;z-index:125000;background:rgba(2,6,23,.84);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}.cc0920Modal.hidden{display:none!important}.cc0920ModalCard{width:min(760px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(196,181,253,.58);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.7)}.cc0920Req{margin:6px 0;padding:8px;border-radius:12px;background:rgba(255,255,255,.05)}.cc0920Req.ok{border:1px solid rgba(34,197,94,.45)}.cc0920Req.no{border:1px solid rgba(248,113,113,.35)}`;document.head.appendChild(style);
+ setTimeout(()=>{try{ensureNewSystems();ensureDrawerButtons();patchVersionText()}catch(e){}},0);
+ window.cc0920ShowSkillmasterAwakenPanel=showAwakenPanel;
+ window.cc0920ShowSkillmasterDungeonPanel=showDungeonPanel;
+ window.cc0920StartSkillmasterDungeon=startDungeon0920;
+ window.cc0920AwakenSkillmaster=awakenSkillmaster;
+ window.cc0920SwitchSkillmasterForm=switchForm;
+ window.cc0920UseHeavenChess=useHeavenChess;
+ window.cc0920UseHellGround=useHellGround;
+ window.cc0920CloseModal=closeModal;
+ window.cc0920Info=()=>({tag:TAG,awakened:isAwakened(),form:form(),lv:skillmasterLv(),dungeon:astate().skillmasterDungeonClears,state:astate()});
  console.log("傳承",TAG);
 })();
 
