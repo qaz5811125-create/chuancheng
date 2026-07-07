@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.17【增益不錯我拿走了】通天盜</title>
+<title>傳承 Beta 0.9.18【通天盜修正】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.17【增益不錯我拿走了】通天盜</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.18【通天盜修正】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.17";
+const GAME_VERSION="0.9.18";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4800,7 +4800,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.15：【天之王•神兵】 / 巨神兵覺醒 / 覺醒收納修正 ===== */
 (function(){
  const TAG="0.9.15-heaven-king-colossus-v1";
- const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
+ const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
  const DUNGEON="colossusAwaken";
  const TITLE_ID="skyGod";
  const TITLE_NAME="天神";
@@ -5073,7 +5073,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.16：覺醒試煉重鑄 / 防秒殺 / 副本壓制 ===== */
 (()=>{
  const TAG="0.9.16-awakening-trial-reforge-v1";
- const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
+ const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
  const AWAKEN_TYPES=new Set(["reaperAwaken","gunnerAwaken","berserkerAwaken","colossusAwaken"]);
  const GATES=[.80,.60,.40,.20];
  function safeN(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
@@ -5152,7 +5152,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  statusHtml=function(){let h=oldStatus();try{if(isAwakenDungeonActive()&&fight){let add="";for(const m of awakenBosses()){const e=ensureEffectBag(m);const done=GATES.filter(th=>safeN(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";add+=`<span class='badge break'>🛡️ 覺醒試煉｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
  const oldRender=render;
  render=function(){const r=oldRender();try{if(isAwakenDungeonActive()){standardizeAll();if(by("enemyType"))by("enemyType").textContent=(by("enemyType").textContent||"覺醒副本")+"｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo")&&!isAbyss()){by("mainDungeonInfo").innerHTML+=`<div class="small">🛡️ 覺醒試煉重鑄：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次 10 秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`}}}catch(e){}return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.17【增益不錯我拿走了】通天盜"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
  const oldBind=bind;
  bind=function(){const r=oldBind();patchVersionText();return r};
  setTimeout(()=>{try{patchVersionText();standardizeAll()}catch(e){}},0);
@@ -5164,7 +5164,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.17：【增益不錯我拿走了】通天盜 / 盜賊覺醒 ===== */
 (()=>{
  const TAG="0.9.17-thief-buff-thief-v1";
- const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
+ const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
  const DUNGEON="thiefAwaken";
  const AWAKEN_NAME="【增益不錯我拿走了】通天盜";
  const TITLE_NAME="內褲都被你偷了";
@@ -5301,11 +5301,106 @@ console.log("傳承",FLICKER_FIX_TAG);
  const oldStatusHtml=statusHtml;statusHtml=function(){let h=oldStatusHtml();try{if(fight){let add="";const m=activeMonster()||fight;if(m&&isThiefBoss(m)){const arr=cleanBuffs(m);if(arr.length)add+=`<span class='badge poison'>🧤 偷天者增益：${arr.map(b=>b.icon+b.name+" "+Math.ceil(b.time)+"秒").join(" / ")}</span>`;const e=ensureEffectBag(m);if(num(e.cc0917Shield,0)>0)add+=`<span class='badge break'>🛡️ 偷天者護盾 ${Math.floor(e.cc0917Shield).toLocaleString()}</span>`;const done=GATES.filter(th=>num(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";if(isThiefDungeon())add+=`<span class='badge break'>🩲 我比你會偷｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
  const oldJobPanel=jobPanelHtml;jobPanelHtml=function(){ensureNewSystems();let h=oldJobPanel();try{if(currentJobKey()==="thief"&&isAwakened()){const a=awakenState0917();h+=`<div class="card notice"><b>🧤 ${AWAKEN_NAME}</b><div class="small">偷取增益 ${a.thiefBuffStealCount}/50｜隱身冷卻 ${Math.ceil(a.thiefStealthCd||0)}秒｜專武：虛空手套</div><button class="purple" onclick="window.cc0917UseStealth()" ${(a.thiefStealthCd>0||a.thiefStealth>0)?"disabled":""}>使用隱身</button></div>`}}catch(e){}return h};
  const oldRender=render;render=function(){const r=oldRender();ensureDrawerButtons();try{if(isThiefDungeon()){const m=activeMonster()||fight;if(m)standardizeBoss(m);if(by("enemyType"))by("enemyType").textContent="覺醒副本｜我比你會偷｜Boss：偷天者｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>🩲 我比你會偷</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜Boss：偷天者｜提示：恭喜玩家獲得Boss原味內褲×1</div><div class="small">🛡️ 覺醒試煉：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次10秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>🩲 我比你會偷進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：偷天者<br>狀態：挑戰中，正在偷與被偷</div></div>`}}catch(e){}return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.16")||(el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.17【增益不錯我拿走了】通天盜"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.16")||(el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
  const oldBind=bind;bind=function(){const r=oldBind();patchVersionText();ensureDrawerButtons();return r};
  setTimeout(()=>{try{ensureNewSystems();patchVersionText();ensureDrawerButtons()}catch(e){}},0);
  window.cc0917ShowThiefAwakenPanel=showPanel;window.cc0917ShowThiefDungeonPanel=showDungeonPanel;window.cc0917StartThiefAwakenDungeon=startDungeon0917;window.cc0917AwakenThief=awakenThief;window.cc0917UseStealth=useStealth;window.cc0917CloseModal=closeModal;window.cc0917Info=()=>({tag:TAG,awakened:isAwakened(),steals:awakenState0917().thiefBuffStealCount,lv:thiefLv(),dungeon:awakenState0917().thiefDungeonClears,stealth:awakenState0917().thiefStealth});
  const style=document.createElement("style");style.textContent=`.cc0917Modal{position:fixed;inset:0;z-index:124000;background:rgba(2,6,23,.82);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}.cc0917Modal.hidden{display:none!important}.cc0917ModalCard{width:min(720px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#052e16,#020617);border:1px solid rgba(34,197,94,.58);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.68)}.cc0917Req{margin:6px 0;padding:8px;border-radius:12px;background:rgba(255,255,255,.05)}.cc0917Req.ok{border:1px solid rgba(34,197,94,.45)}.cc0917Req.no{border:1px solid rgba(248,113,113,.35)}`;document.head.appendChild(style);
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.18：通天盜修正 / 稱號定位 / 海域戰鐮疊層顯示 ===== */
+(function(){
+ const TAG="0.9.18-thief-title-sea-reaper-hotfix-v1";
+ const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function mapId(){try{return currentMapId()}catch(e){return p&&p.map||"origin"}}
+ function titleStateSafe(){if(!p)return null;if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function titleNameSafe(id){
+  if(!id)return "";
+  try{if(typeof cc098TitleName==="function")return cc098TitleName(id)}catch(e){}
+  try{if(typeof titleName==="function")return titleName(id)}catch(e){}
+  const names={businessFirst:"業務第一名☠️",gunGod:"狙神非你莫屬",demonKai:"魔神•凱",skyGod:"天神",thiefUnderwear:"內褲都被你偷了"};
+  return names[id]||id;
+ }
+ function moveEquippedTitleHud(){
+  try{
+   const pp=document.querySelector(".playerPanel");if(!pp)return;
+   let el=by("equippedTitleHud");if(!el){el=document.createElement("div");el.id="equippedTitleHud";el.className="equippedTitleHud";}
+   const hp=pp.querySelector(".playerHp");
+   if(hp&&el.nextSibling!==hp)pp.insertBefore(el,hp);
+   else if(!hp&&el.parentNode!==pp)pp.appendChild(el);
+   const t=titleStateSafe(),id=t&&t.equipped||"",nm=titleNameSafe(id);
+   if(nm){el.textContent="【"+nm+"】";el.classList.remove("hidden")}else{el.textContent="";el.classList.add("hidden")}
+  }catch(e){}
+ }
+ function cleanTitleBadgesFromStatus(html){
+  // 裝備稱號只應顯示在玩家生存欄血量上方，不塞進玩家狀態列。
+  return String(html||"")
+   .replace(/<span class="badge poison" style="border-color:#22c55e;color:#86efac">🏷️ 【內褲都被你偷了】<\/span>/g,"")
+   .replace(/<span[^>]*>🏷️ 【(?:天神|內褲都被你偷了|魔神•凱|狙神非你莫屬|業務第一名☠️)】<\/span>/g,"");
+ }
+ function isThiefAwakened(){return !!(p&&p.awakening&&p.awakening.thiefAwakened&&curJob()==="thief")}
+ function thiefAwaken(){if(!p.awakening)p.awakening={};return p.awakening}
+ function autoStealth(dt){
+  try{
+   if(!isThiefAwakened()||!fight||p.hp<=0)return;
+   const a=thiefAwaken(),st=playerStatus();
+   a.thiefStealthCd=Math.max(0,n(a.thiefStealthCd,0));
+   a.thiefStealth=Math.max(0,n(a.thiefStealth,0));
+   if(a.thiefStealth>0||a.thiefStealthCd>0||n(st.thiefUntargetable,0)>0)return;
+   a.thiefStealth=5;
+   a.thiefStealthCd=10;
+   a.thiefStealthWasActive=true;
+   floatText("🧤自動隱身",true);
+   log("🧤 通天盜自動進入隱身：偷取率100%，偷來增益100%");
+  }catch(e){}
+ }
+ function fearCapSafe(){
+  try{return selectedArtifactKey()==="necroScythe"&&curJob()==="reaper"?500:300}catch(e){return p&&p.artifacts&&p.artifacts.selected==="necroScythe"&&curJob()==="reaper"?500:300}
+ }
+ function seaFearMonsterList(){
+  try{
+   if(mapId()!=="sea"||isDungeon()||!(fight&&fight.monsters&&by("monsterList")))return;
+   const target=activeMonster(),idx=fight.monsters.indexOf(target),cap=fearCapSafe();
+   by("monsterList").innerHTML=fight.monsters.map((m,i)=>{
+    const e=ensureEffectBag(m);
+    const shield=m.seaShield>0?`<span class="monsterAffixes">🛡️海盾 ${Math.floor(m.seaShield)}/${Math.floor(m.seaShieldMax||0)}</span>`:"";
+    const inv=e.invincible>0?`<span class="monsterAffixes">無敵 ${e.invincible.toFixed(1)}秒</span>`:"";
+    const fear=Math.max(0,Math.floor(n(e.fearStacks,0)));
+    const fearLine=fear>0?`<span class="monsterAffixes">😱 恐懼 ${fear}/${cap}${e.fearBroken>0?"｜崩潰":""}${e.fearDespair>0?"｜絕望":""}${(e.fearReapReady>0||fear>=500)?"｜待斬殺":""}</span>`:"";
+    const domainLine=e.domain>0?`<span class="monsterAffixes">🌀領域 ${e.domain.toFixed(1)}秒</span>`:"";
+    const aff=affixLabel(m)?`<span class="monsterAffixes">${esc(affixLabel(m))}</span>`:"";
+    return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${esc(m.name)}${shield}${inv}${aff}${fearLine}${domainLine}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${Math.floor(n(m.max,0)).toLocaleString()}</span></div>`;
+   }).join("");
+  }catch(e){}
+ }
+ const oldPlayerStatusHtml=typeof playerStatusHtml==="function"?playerStatusHtml:null;
+ if(oldPlayerStatusHtml)playerStatusHtml=function(){return cleanTitleBadgesFromStatus(oldPlayerStatusHtml())};
+ const oldJobPanelHtml=typeof jobPanelHtml==="function"?jobPanelHtml:null;
+ if(oldJobPanelHtml)jobPanelHtml=function(){
+  let h=String(oldJobPanelHtml()||"");
+  // 隱身改為自動釋放，移除手動按鈕，避免玩家以為需要自己點。
+  h=h.replace(/<button class="purple" onclick="window\.cc0917UseStealth\(\)"[^>]*>使用隱身<\/button>/g,"<div class=\"small\">🧤 隱身：自動釋放，冷卻10秒。</div>");
+  h=h.replace(/<button class="purple" onclick="window\.cc0917UseStealth\(\)"[^>]*>🧤 隱身<\/button>/g,"<span class=\"badge freeze\">🧤 隱身自動</span>");
+  return h;
+ };
+ const oldTickPlayer=typeof tickPlayer==="function"?tickPlayer:null;
+ if(oldTickPlayer)tickPlayer=function(dt){const r=oldTickPlayer(dt);autoStealth(dt);return r};
+ const oldRender=typeof render==="function"?render:null;
+ if(oldRender)render=function(){const r=oldRender();moveEquippedTitleHud();seaFearMonsterList();return r};
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.17"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
+ const oldBind=typeof bind==="function"?bind:null;
+ if(oldBind)bind=function(){const r=oldBind();patchVersionText();setTimeout(()=>{moveEquippedTitleHud();seaFearMonsterList()},0);return r};
+ const style=document.createElement("style");
+ style.textContent=`#equippedTitleHud.equippedTitleHud{display:block;margin:8px 0 6px 0;text-align:left;font-size:1.1rem;line-height:1.25}.playerPanel>#equippedTitleHud.hidden{display:none!important}`;
+ document.head.appendChild(style);
+ setTimeout(()=>{patchVersionText();moveEquippedTitleHud();seaFearMonsterList()},0);
+ window.cc0918HotfixInfo=()=>({tag:TAG,autoStealth:true,titleHud:"aboveHp",seaReaperFearList:true});
  console.log("傳承",TAG);
 })();
 
