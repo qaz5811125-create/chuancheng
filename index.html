@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.21【天域開門】</title>
+<title>傳承 Beta 0.9.21【天域開門】入口修正</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.21【天域開門】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.21【天域開門】入口修正</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -3765,7 +3765,7 @@ console.log("傳承",FLICKER_FIX_TAG);
   try{
    const d=WORLD_MAPS.find(x=>x.id==="sea");
    if(d){d.open=true;d.lv=150;d.name="海域";d.desc="正式開放：海底遺跡、潮汐、海浪、深海沉默、🐡🐠🐙🦈。";}
-   const sky=WORLD_MAPS.find(x=>x.id==="sky");if(sky)sky.open=false;
+   const sky=WORLD_MAPS.find(x=>x.id==="sky");if(sky){sky.open=true;sky.lv=200;sky.name="天域";sky.desc="正式開放：101 關挑戰，通關後自動返回主世界，所有關卡無時間限制。";}
    if(TARGET_OPTIONS){Object.assign(TARGET_OPTIONS,{puffer:["🐡","打了會痛的魚"],fastfish:["🐠","跑很快的魚"],octopus:["🐙","愛抱抱的毒章魚"],shark:["🦈","牙齒很尖的鯊魚"]});}
    if(MAP_TARGET_KEYS)MAP_TARGET_KEYS.sea=["auto","puffer","fastfish","octopus","shark"];
   }catch(e){console.warn("sea open patch failed",e)}
@@ -5839,7 +5839,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.21：天域開門 / 101 關挑戰 / 主神與七女神 ===== */
 (function(){
  const TAG="0.9.21-sky-domain-v1";
- const VERSION_NAME="傳承 Beta 0.9.21【天域開門】";
+ const VERSION_NAME="傳承 Beta 0.9.21【天域開門】入口修正";
  const SKY_ID="sky";
  const SKY_STATUS_RATE=0.60; // 神威壓制：玩家狀態施加保留 60%
  const SKY_REGEN_RATE=0.60;  // 神威壓制：玩家回血保留 60%
@@ -5925,7 +5925,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  const oldTick=typeof tick==="function"?tick:null;if(oldTick)tick=function(dt){const st=playerStatus();for(const k of ["cc0921EquipSeal","cc0921DefRegenSeal","cc0921AspdSeal","cc0921DmgDown","cc0921Silence","cc0921Seal"]){if(st[k]>0)st[k]=Math.max(0,st[k]-dt)}if(isSkyFight())tickSkyMonsterState(dt);const r=oldTick(dt);if(isSkyFight())tickSkyMonsterState(dt);return r};
  const oldRender=typeof render==="function"?render:null;if(oldRender)render=function(){const r=oldRender();patchVersionText();try{if(isSky()){if(by("mapNow"))by("mapNow").textContent="天域";if(by("mapHud"))by("mapHud").textContent="天域"}if(isSkyFight()){if(by("enemyType"))by("enemyType").textContent="天域挑戰｜第 "+stage()+"/101 關｜無時間限制｜神威壓制｜控制免疫";if(by("timerBox"))by("timerBox").classList.add("hidden");if(by("mainDungeonInfo")){by("mainDungeonInfo").classList.remove("hidden");by("mainDungeonInfo").innerHTML=`<b>☁️ 天域挑戰 第 ${stage()}/101 關</b><div class="small">無時間限制｜神威壓制：狀態施加率 -${Math.round((1-SKY_STATUS_RATE)*100)}%，回血 -${Math.round((1-SKY_REGEN_RATE)*100)}%</div><div class="small">怪物增益：免疫暈眩、恐懼、封鎖、沉默、禁錮、冰凍、混沌等控制類狀態。</div>`}if(by("monsterList")&&fight.monsters){const target=activeMonster(),idx=fight.monsters.indexOf(target);by("monsterList").innerHTML=fight.monsters.map((m,i)=>{const e=ensureEffectBag(m),tags=[];if(m.cc0921ReviveLeft>0)tags.push("復活"+m.cc0921ReviveLeft);if(e.cc0921Lock>0)tags.push("鎖血"+e.cc0921Lock.toFixed(1)+"秒");if(e.invincible>0)tags.push("無敵"+e.invincible.toFixed(1)+"秒");if(e.cc0921Dormant>0)tags.push("輪迴"+e.cc0921Dormant.toFixed(1)+"秒");if(m.cc0921GoddessId&&m.cc0921Data)tags.push("免死"+(m.cc0921Data.deathImmuneLeft||0));return `<div class="monsterLine ${m.hp<=0?"dead":""}"><span>${i===idx?"🎯 ":""}${m.emoji} ${m.name}${tags.length?`<span class="monsterAffixes">${tags.join("｜")}</span>`:""}</span><span>${Math.max(0,Math.floor(m.hp)).toLocaleString()}/${Math.floor(m.max||1).toLocaleString()}</span></div>`}).join("")}}}catch(e){}return r};
  const oldPlayerStatusHtml=typeof playerStatusHtml==="function"?playerStatusHtml:null;if(oldPlayerStatusHtml)playerStatusHtml=function(){let h=oldPlayerStatusHtml();try{const st=playerStatus(),add=[];if(isSky())add.push(`<span class="badge break">☁️ 神威壓制｜狀態 -${Math.round((1-SKY_STATUS_RATE)*100)}%｜回血 -${Math.round((1-SKY_REGEN_RATE)*100)}%</span>`);if(st.cc0921EquipSeal>0)add.push(`<span class="badge poison">👁️ 裝備特性拔除 ${st.cc0921EquipSeal.toFixed(1)}秒</span>`);if(st.cc0921DefRegenSeal>0)add.push(`<span class="badge bleed">👁️ 防禦/回血拔除 ${st.cc0921DefRegenSeal.toFixed(1)}秒</span>`);if(st.cc0921AspdSeal>0)add.push(`<span class="badge freeze">👁️ 攻速拔除 ${st.cc0921AspdSeal.toFixed(1)}秒</span>`);if(st.cc0921DmgDown>0)add.push(`<span class="badge poison">🔮 傷害降低 ${st.cc0921DmgDown.toFixed(1)}秒</span>`);if(st.cc0921Silence>0)add.push(`<span class="badge freeze">🧜‍♀️ 沉默 ${st.cc0921Silence.toFixed(1)}秒</span>`);if(add.length){if(h==="玩家狀態：無")h="";h+=add.join("")}}catch(e){}return h||"玩家狀態：無"};
- function patchVersionText(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.21【天域開門】"})}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.21【天域開門】入口修正"})}catch(e){}}
  const style=document.createElement("style");style.textContent=`.cc0921SkyIntro{position:fixed;inset:0;z-index:200000;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;transition:opacity .55s ease;pointer-events:none}.cc0921SkyIntro.out{opacity:0}.cc0921SkyText{font-size:clamp(24px,7vw,54px);font-weight:1000;color:#e0f2fe;text-shadow:0 0 18px #7dd3fc,0 0 42px #0f172a;letter-spacing:.08em;text-align:center;padding:20px}.monsterAffixes{margin-left:6px;color:#fde68a;font-size:12px}`;document.head.appendChild(style);
  setTimeout(()=>{try{patchVersionText();skyState()}catch(e){}},0);
  window.cc0921Info=()=>({tag:TAG,sky:isSky(),stage:p&&p.stage,state:p&&p.sky});
