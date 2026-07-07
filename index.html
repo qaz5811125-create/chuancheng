@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.18【通天盜修正】</title>
+<title>傳承 Beta 0.9.19【過熱保護】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.18【通天盜修正】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.19【過熱保護】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.18";
+const GAME_VERSION="0.9.19";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4800,7 +4800,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.15：【天之王•神兵】 / 巨神兵覺醒 / 覺醒收納修正 ===== */
 (function(){
  const TAG="0.9.15-heaven-king-colossus-v1";
- const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
+ const VERSION_NAME="傳承 Beta 0.9.19【過熱保護】";
  const DUNGEON="colossusAwaken";
  const TITLE_ID="skyGod";
  const TITLE_NAME="天神";
@@ -5073,7 +5073,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.16：覺醒試煉重鑄 / 防秒殺 / 副本壓制 ===== */
 (()=>{
  const TAG="0.9.16-awakening-trial-reforge-v1";
- const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
+ const VERSION_NAME="傳承 Beta 0.9.19【過熱保護】";
  const AWAKEN_TYPES=new Set(["reaperAwaken","gunnerAwaken","berserkerAwaken","colossusAwaken"]);
  const GATES=[.80,.60,.40,.20];
  function safeN(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
@@ -5152,7 +5152,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  statusHtml=function(){let h=oldStatus();try{if(isAwakenDungeonActive()&&fight){let add="";for(const m of awakenBosses()){const e=ensureEffectBag(m);const done=GATES.filter(th=>safeN(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";add+=`<span class='badge break'>🛡️ 覺醒試煉｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
  const oldRender=render;
  render=function(){const r=oldRender();try{if(isAwakenDungeonActive()){standardizeAll();if(by("enemyType"))by("enemyType").textContent=(by("enemyType").textContent||"覺醒副本")+"｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo")&&!isAbyss()){by("mainDungeonInfo").innerHTML+=`<div class="small">🛡️ 覺醒試煉重鑄：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次 10 秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`}}}catch(e){}return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.19【過熱保護】"}}catch(e){}}
  const oldBind=bind;
  bind=function(){const r=oldBind();patchVersionText();return r};
  setTimeout(()=>{try{patchVersionText();standardizeAll()}catch(e){}},0);
@@ -5164,7 +5164,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.17：【增益不錯我拿走了】通天盜 / 盜賊覺醒 ===== */
 (()=>{
  const TAG="0.9.17-thief-buff-thief-v1";
- const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
+ const VERSION_NAME="傳承 Beta 0.9.19【過熱保護】";
  const DUNGEON="thiefAwaken";
  const AWAKEN_NAME="【增益不錯我拿走了】通天盜";
  const TITLE_NAME="內褲都被你偷了";
@@ -5301,7 +5301,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  const oldStatusHtml=statusHtml;statusHtml=function(){let h=oldStatusHtml();try{if(fight){let add="";const m=activeMonster()||fight;if(m&&isThiefBoss(m)){const arr=cleanBuffs(m);if(arr.length)add+=`<span class='badge poison'>🧤 偷天者增益：${arr.map(b=>b.icon+b.name+" "+Math.ceil(b.time)+"秒").join(" / ")}</span>`;const e=ensureEffectBag(m);if(num(e.cc0917Shield,0)>0)add+=`<span class='badge break'>🛡️ 偷天者護盾 ${Math.floor(e.cc0917Shield).toLocaleString()}</span>`;const done=GATES.filter(th=>num(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";if(isThiefDungeon())add+=`<span class='badge break'>🩲 我比你會偷｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
  const oldJobPanel=jobPanelHtml;jobPanelHtml=function(){ensureNewSystems();let h=oldJobPanel();try{if(currentJobKey()==="thief"&&isAwakened()){const a=awakenState0917();h+=`<div class="card notice"><b>🧤 ${AWAKEN_NAME}</b><div class="small">偷取增益 ${a.thiefBuffStealCount}/50｜隱身冷卻 ${Math.ceil(a.thiefStealthCd||0)}秒｜專武：虛空手套</div><button class="purple" onclick="window.cc0917UseStealth()" ${(a.thiefStealthCd>0||a.thiefStealth>0)?"disabled":""}>使用隱身</button></div>`}}catch(e){}return h};
  const oldRender=render;render=function(){const r=oldRender();ensureDrawerButtons();try{if(isThiefDungeon()){const m=activeMonster()||fight;if(m)standardizeBoss(m);if(by("enemyType"))by("enemyType").textContent="覺醒副本｜我比你會偷｜Boss：偷天者｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>🩲 我比你會偷</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜Boss：偷天者｜提示：恭喜玩家獲得Boss原味內褲×1</div><div class="small">🛡️ 覺醒試煉：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次10秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>🩲 我比你會偷進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：偷天者<br>狀態：挑戰中，正在偷與被偷</div></div>`}}catch(e){}return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.16")||(el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.16")||(el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.19【過熱保護】"}}catch(e){}}
  const oldBind=bind;bind=function(){const r=oldBind();patchVersionText();ensureDrawerButtons();return r};
  setTimeout(()=>{try{ensureNewSystems();patchVersionText();ensureDrawerButtons()}catch(e){}},0);
  window.cc0917ShowThiefAwakenPanel=showPanel;window.cc0917ShowThiefDungeonPanel=showDungeonPanel;window.cc0917StartThiefAwakenDungeon=startDungeon0917;window.cc0917AwakenThief=awakenThief;window.cc0917UseStealth=useStealth;window.cc0917CloseModal=closeModal;window.cc0917Info=()=>({tag:TAG,awakened:isAwakened(),steals:awakenState0917().thiefBuffStealCount,lv:thiefLv(),dungeon:awakenState0917().thiefDungeonClears,stealth:awakenState0917().thiefStealth});
@@ -5313,7 +5313,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.18：通天盜修正 / 稱號定位 / 海域戰鐮疊層顯示 ===== */
 (function(){
  const TAG="0.9.18-thief-title-sea-reaper-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.18【通天盜修正】";
+ const VERSION_NAME="傳承 Beta 0.9.19【過熱保護】";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
  const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -5393,7 +5393,7 @@ console.log("傳承",FLICKER_FIX_TAG);
  if(oldTickPlayer)tickPlayer=function(dt){const r=oldTickPlayer(dt);autoStealth(dt);return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){const r=oldRender();moveEquippedTitleHud();seaFearMonsterList();return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.17"))el.textContent="Beta 0.9.18【通天盜修正】"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.17"))el.textContent="Beta 0.9.19【過熱保護】"}}catch(e){}}
  const oldBind=typeof bind==="function"?bind:null;
  if(oldBind)bind=function(){const r=oldBind();patchVersionText();setTimeout(()=>{moveEquippedTitleHud();seaFearMonsterList()},0);return r};
  const style=document.createElement("style");
@@ -5401,6 +5401,152 @@ console.log("傳承",FLICKER_FIX_TAG);
  document.head.appendChild(style);
  setTimeout(()=>{patchVersionText();moveEquippedTitleHud();seaFearMonsterList()},0);
  window.cc0918HotfixInfo=()=>({tag:TAG,autoStealth:true,titleHud:"aboveHp",seaReaperFearList:true});
+ console.log("傳承",TAG);
+})();
+
+
+
+/* ===== Beta 0.9.19：玩家狀態【過熱保護】/ 過熱爆走 / 過熱熔毀 / 核爆 ===== */
+(function(){
+ const TAG="0.9.19-overheat-protection-v1";
+ const VERSION_NAME="傳承 Beta 0.9.19【過熱保護】";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const now=()=>performance.now()/1000;
+ function oh(){
+  if(!p)return null;
+  if(!p.overheat)p.overheat={combo:0,stage:0,lock:0,lockStage:0,nextMult:0,burstHits:0,meltdownHits:0,noRegen:0};
+  const o=p.overheat;
+  o.combo=Math.max(0,Math.floor(n(o.combo,0)));
+  o.stage=Math.max(0,Math.floor(n(o.stage,0)));
+  o.lock=Math.max(0,n(o.lock,0));
+  o.lockStage=Math.max(0,Math.floor(n(o.lockStage,0)));
+  o.nextMult=Math.max(0,n(o.nextMult,0));
+  o.burstHits=Math.max(0,Math.floor(n(o.burstHits,0)));
+  o.meltdownHits=Math.max(0,Math.floor(n(o.meltdownHits,0)));
+  o.noRegen=Math.max(0,n(o.noRegen,0));
+  return o;
+ }
+ function resetOverheat(full=true){
+  if(!p)return;
+  p.overheat={combo:0,stage:0,lock:0,lockStage:0,nextMult:0,burstHits:0,meltdownHits:0,noRegen:0};
+  if(full)try{showComboToast("過熱重置")}catch(e){}
+ }
+ function isLocked(){const o=oh();return !!(o&&o.lock>0)}
+ function isPowered(){const o=oh();return !!(o&&(o.burstHits>0||o.meltdownHits>0))}
+ function startStage(stage){
+  const o=oh();if(!o)return;
+  o.combo=0;o.stage=stage;o.lock=10;o.lockStage=stage;o.nextMult=0;o.burstHits=0;o.meltdownHits=0;
+  p.queue=0;budget=0;hold=false;try{resetCombo()}catch(e){};
+  const name=stage===1?"🔥 過熱保護":stage===2?"🔥 過熱爆走準備":stage===3?"☢️ 過熱熔毀準備":"🔥 過熱";
+  floatText(name,true);log(name+"啟動：玩家停止攻擊 10 秒");
+ }
+ function finishLock(){
+  const o=oh();if(!o||o.lock>0||!o.lockStage)return;
+  const st=o.lockStage;o.lockStage=0;
+  if(st===1){o.nextMult=7;floatText("🔥 過熱反擊準備中",true);log("🔥 過熱保護結束：下一下攻擊造成 700% 傷害");}
+  else if(st===2){o.burstHits=500;floatText("🔥 過熱爆走 500/500",true);log("🔥 過熱爆走：接下來 500 下攻擊造成 7000% 傷害");}
+  else if(st===3){o.meltdownHits=500;floatText("☢️ 過熱熔毀 500/500",true);log("☢️ 過熱熔毀：接下來 500 下攻擊造成 70000% 傷害");}
+ }
+ function resetComboOnlyByStun(){const o=oh();if(!o)return;if(o.combo>0){o.combo=0;floatText("💫過熱連擊歸零");log("💫 暈眩中斷過熱累積：目前 0/500，過熱階段不變");}}
+ function overheatMult(){const o=oh();if(!o)return 1;if(o.lock>0)return 0;if(o.meltdownHits>0)return 700;if(o.burstHits>0)return 70;if(o.nextMult>0)return 7;return 1}
+ function consumePoweredHit(){
+  const o=oh();if(!o)return;
+  if(o.meltdownHits>0){o.meltdownHits=Math.max(0,o.meltdownHits-1);if(o.meltdownHits<=0)triggerNuclear();return;}
+  if(o.burstHits>0){o.burstHits=Math.max(0,o.burstHits-1);return;}
+  if(o.nextMult>0){o.nextMult=0;}
+ }
+ function countOverheatHit(){
+  const o=oh();if(!o||o.lock>0)return;
+  if(o.meltdownHits>0||o.burstHits>0){consumePoweredHit();return;}
+  const hadNext=o.nextMult>0;
+  if(hadNext)consumePoweredHit();
+  // 第一階 700% 的那一下也算新一輪過熱的第 1 下，手感比較直覺。
+  o.combo=Math.max(0,Math.floor(o.combo||0))+1;
+  if(o.combo>=500){
+   const nextStage=Math.min(3,Math.max(1,Math.floor(o.stage||0)+1));
+   startStage(nextStage);
+  }
+ }
+ function targetForNuke(){try{return activeMonster()}catch(e){return fight&&fight.monsters?fight.monsters.find(m=>m&&m.hp>0):fight}}
+ function forcedNuclearDeath(){
+  log("☢️ 核爆代價致死：此死亡不可被技能、被動、無敵、免死、復活、護盾或無法選中解除");
+  p.j.fail=(p.j.fail||0)+1;p.queue=0;hold=false;budget=0;try{resetCombo()}catch(e){};try{clearPlayerStatus()}catch(e){};
+  p.hp=playerMaxHp();if(p.artifacts&&typeof selectedArtifactKey==="function"&&selectedArtifactKey()==="vantosa")p.artifacts.shield=artifactShieldMax();
+  resetOverheat(false);save(false);spawnMain();
+ }
+ function triggerNuclear(){
+  const o=oh();if(!o||!fight||p.hp<=0)return;
+  o.noRegen=1.25;o.combo=0;o.nextMult=0;o.burstHits=0;o.meltdownHits=0;
+  floatText("☢️ 核爆！",true);log("☢️ 核爆觸發：玩家損失 99% 當前生命值，核爆期間不可回血");
+  const hpBefore=Math.max(0,n(p.hp,playerMaxHp()));
+  const selfLoss=hpBefore*.99;p.hp=Math.max(0,hpBefore-selfLoss);
+  const t=targetForNuke();let killed=false,dmg=0;
+  if(t&&t.hp>0){
+   const e=ensureEffectBag(t);
+   if(e&&e.invincible>0){floatText((t.emoji||"")+"核爆無效：無敵");log("☢️ 核爆打在無敵上，傷害未生效");}
+   else{
+    const before=Math.max(0,t.hp);dmg=Math.max(1,Math.floor(atk()*900));t.hp=Math.max(0,t.hp-dmg);killed=t.hp<=0;
+    floatText((t.emoji||"")+"☢️核爆 "+dmg,true);log("☢️ 核爆造成 "+dmg.toLocaleString()+" 傷害");
+    if(fight.monsters)refreshTotalHp();else fight.hp=t.hp;
+   }
+  }
+  if(t&&t.hp<=0)killed=true;
+  if(!killed){
+   log("請在1%的核爆稅收回前留下遺言");floatText("請在1%的核爆稅收回前留下遺言",true);
+   const tax=Math.max(1,playerMaxHp()*.01);p.hp=Math.max(0,p.hp-tax);
+   log("☢️ 核爆稅收回：玩家損失最大生命值 1%");
+  }
+  if(p.hp<=0){forcedNuclearDeath();return;}
+  if(fight&&fight.hp<=0){try{killEnemy()}catch(e){}}
+  // 核爆後本關過熱資料清空，避免連環核爆。
+  resetOverheat(false);render();
+ }
+ function overheatStatusHtml(){
+  const o=oh();if(!o)return "";const out=[];
+  if(o.lock>0){
+   const nm=o.lockStage===3?"☢️ 過熱熔毀準備中":o.lockStage===2?"🔥 過熱爆走準備中":"🔥 過熱保護";
+   out.push(`<span class="badge burn">${nm} ${o.lock.toFixed(1)}秒</span>`);
+  }else if(o.nextMult>0)out.push(`<span class="badge burn">🔥 過熱反擊準備中</span>`);
+  else if(o.burstHits>0)out.push(`<span class="badge burn">🔥 過熱爆走 ${o.burstHits}/500</span>`);
+  else if(o.meltdownHits>0)out.push(`<span class="badge poison">☢️ 過熱熔毀 ${o.meltdownHits}/500</span>`);
+  else out.push(`<span class="badge burn">🔥 過熱 ${Math.floor(o.combo||0)}/500｜第${Math.min(3,Math.floor(o.stage||0)+1)}階準備</span>`);
+  return out.join("");
+ }
+ const oldEnsureNewSystems=typeof ensureNewSystems==="function"?ensureNewSystems:null;
+ if(oldEnsureNewSystems)ensureNewSystems=function(){const r=oldEnsureNewSystems();oh();return r};
+ const oldRequest=typeof request==="function"?request:null;
+ if(oldRequest)request=function(n=1){if(isLocked()){p.queue=0;budget=0;hold=false;return}return oldRequest(n)};
+ const oldCanPlayerAct=typeof canPlayerAct==="function"?canPlayerAct:null;
+ if(oldCanPlayerAct)canPlayerAct=function(msg="暫時無法行動"){if(isLocked()){if(msg)log("🔥 過熱保護中，無法行動");return false}return oldCanPlayerAct(msg)};
+ const oldDamage=typeof damage==="function"?damage:null;
+ if(oldDamage)damage=function(mult=1,label="",opt={}){const m=overheatMult();if(m<=0){p.queue=0;budget=0;hold=false;return}const boosted=mult*m;if(m>1){if(m===7)floatText("🔥過熱反擊 ×700%",true);else if(m===70)floatText("🔥過熱爆走 ×7000%",true);else if(m===700)floatText("☢️過熱熔毀 ×70000%",true);}return oldDamage(boosted,label,opt||{})};
+ const oldResetCombo=typeof resetCombo==="function"?resetCombo:null;
+ if(oldResetCombo)resetCombo=function(){const r=oldResetCombo();try{const o=oh();if(o&&!isLocked()&&!isPowered())o.combo=0;}catch(e){};return r};
+ const oldAddCombo=typeof addCombo==="function"?addCombo:null;
+ if(oldAddCombo)addCombo=function(){const r=oldAddCombo();try{countOverheatHit()}catch(e){console.warn("overheat combo failed",e)};return r};
+ const oldApplyPlayerStun=typeof applyPlayerStun==="function"?applyPlayerStun:null;
+ if(oldApplyPlayerStun)applyPlayerStun=function(duration,sourceText=""){const ok=oldApplyPlayerStun(duration,sourceText);if(ok)resetComboOnlyByStun();return ok};
+ const oldEffectivePlayerRegen=typeof effectivePlayerRegen==="function"?effectivePlayerRegen:null;
+ if(oldEffectivePlayerRegen)effectivePlayerRegen=function(){const o=oh();if(o&&o.noRegen>0)return 0;return oldEffectivePlayerRegen()};
+ const oldTick=typeof tick==="function"?tick:null;
+ if(oldTick)tick=function(dt){const o=oh();if(o){if(o.noRegen>0)o.noRegen=Math.max(0,o.noRegen-dt);if(o.lock>0){o.lock=Math.max(0,o.lock-dt);p.queue=0;budget=0;hold=false;if(o.lock<=0)finishLock();}}
+  return oldTick(dt)};
+ const oldPlayerStatusHtml=typeof playerStatusHtml==="function"?playerStatusHtml:null;
+ if(oldPlayerStatusHtml)playerStatusHtml=function(){const base=String(oldPlayerStatusHtml()||"");return base.replace("玩家狀態：無","")+overheatStatusHtml()||"玩家狀態：無"};
+ for(const fn of ["spawnMain","endDungeon","dungeonKill","enterWorldMap","returnOriginMap"]){
+  const old=window[fn]||eval("typeof "+fn+"==='function'?"+fn+":null");
+  if(old){
+   const wrapped=function(...args){const r=old.apply(this,args);resetOverheat(false);return r};
+   try{eval(fn+"=wrapped")}catch(e){}
+   window[fn]=wrapped;
+  }
+ }
+ function patchVersionText(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9.18")||((el.textContent||"").includes("Beta 0.9.19")))el.textContent="Beta 0.9.19【過熱保護】"})}catch(e){}}
+ const style=document.createElement("style");style.textContent=`.playerStatusBox .badge{margin:2px 3px}.badge.poison{border-color:#84cc16;color:#bef264}`;document.head.appendChild(style);
+ const oldRender=typeof render==="function"?render:null;if(oldRender)render=function(){const r=oldRender();patchVersionText();return r};
+ setTimeout(patchVersionText,0);
+ window.cc0919OverheatInfo=()=>({tag:TAG,state:oh(),rules:"500連擊過熱，第三階熔毀後核爆"});
  console.log("傳承",TAG);
 })();
 
