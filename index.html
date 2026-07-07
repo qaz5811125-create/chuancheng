@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.16【覺醒試煉重鑄】</title>
+<title>傳承 Beta 0.9.17【增益不錯我拿走了】通天盜</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.16【覺醒試煉重鑄】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.17【增益不錯我拿走了】通天盜</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.16";
+const GAME_VERSION="0.9.17";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -4800,7 +4800,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.15：【天之王•神兵】 / 巨神兵覺醒 / 覺醒收納修正 ===== */
 (function(){
  const TAG="0.9.15-heaven-king-colossus-v1";
- const VERSION_NAME="傳承 Beta 0.9.16【覺醒試煉重鑄】";
+ const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
  const DUNGEON="colossusAwaken";
  const TITLE_ID="skyGod";
  const TITLE_NAME="天神";
@@ -5073,7 +5073,7 @@ console.log("傳承",FLICKER_FIX_TAG);
 /* ===== Beta 0.9.16：覺醒試煉重鑄 / 防秒殺 / 副本壓制 ===== */
 (()=>{
  const TAG="0.9.16-awakening-trial-reforge-v1";
- const VERSION_NAME="傳承 Beta 0.9.16【覺醒試煉重鑄】";
+ const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
  const AWAKEN_TYPES=new Set(["reaperAwaken","gunnerAwaken","berserkerAwaken","colossusAwaken"]);
  const GATES=[.80,.60,.40,.20];
  function safeN(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
@@ -5152,11 +5152,160 @@ console.log("傳承",FLICKER_FIX_TAG);
  statusHtml=function(){let h=oldStatus();try{if(isAwakenDungeonActive()&&fight){let add="";for(const m of awakenBosses()){const e=ensureEffectBag(m);const done=GATES.filter(th=>safeN(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";add+=`<span class='badge break'>🛡️ 覺醒試煉｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
  const oldRender=render;
  render=function(){const r=oldRender();try{if(isAwakenDungeonActive()){standardizeAll();if(by("enemyType"))by("enemyType").textContent=(by("enemyType").textContent||"覺醒副本")+"｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo")&&!isAbyss()){by("mainDungeonInfo").innerHTML+=`<div class="small">🛡️ 覺醒試煉重鑄：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次 10 秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`}}}catch(e){}return r};
- function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.16【覺醒試煉重鑄】"}}catch(e){}}
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.17【增益不錯我拿走了】通天盜"}}catch(e){}}
  const oldBind=bind;
  bind=function(){const r=oldBind();patchVersionText();return r};
  setTimeout(()=>{try{patchVersionText();standardizeAll()}catch(e){}},0);
  window.cc0916AwakeningTrialInfo=()=>({tag:TAG,active:isAwakenDungeonActive(),bosses:awakenBosses().map(m=>({name:m.name,hp:m.hp,max:m.max,atkBase:playerDamageBase(),gates:GATES.map(th=>({at:th,done:!!ensureEffectBag(m)[gateKey(th)]}))}))});
+ console.log("傳承",TAG);
+})();
+
+
+/* ===== Beta 0.9.17：【增益不錯我拿走了】通天盜 / 盜賊覺醒 ===== */
+(()=>{
+ const TAG="0.9.17-thief-buff-thief-v1";
+ const VERSION_NAME="傳承 Beta 0.9.17【增益不錯我拿走了】通天盜";
+ const DUNGEON="thiefAwaken";
+ const AWAKEN_NAME="【增益不錯我拿走了】通天盜";
+ const TITLE_NAME="內褲都被你偷了";
+ const BOSS_NAME="偷天者";
+ const GATES=[.80,.60,.40,.20];
+ const BUFFS={
+  atk:{icon:"⚔️",name:"攻擊提升",power:.50,dur:12},
+  def:{icon:"🛡️",name:"防禦提升",power:.50,dur:12},
+  aspd:{icon:"💨",name:"攻速提升",power:.50,dur:12},
+  regen:{icon:"💚",name:"回血提升",power:.006,dur:12},
+  evade:{icon:"👟",name:"閃避提升",power:.30,dur:12},
+  crit:{icon:"💥",name:"暴擊提升",power:.25,dur:12},
+  reduce:{icon:"🧱",name:"傷害減免",power:.25,dur:12},
+  shield:{icon:"🛡️",name:"護盾",power:.15,dur:12}
+ };
+ function by(id){return document.getElementById(id)}
+ function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function st(){return playerStatus()}
+ function awakenState0917(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.thiefBuffStealCount=Math.max(0,Math.floor(num(a.thiefBuffStealCount,0)));
+  a.thiefDungeonClears=Math.max(0,Math.floor(num(a.thiefDungeonClears,0)));
+  a.thiefAwakened=!!a.thiefAwakened;
+  a.thiefStealth=Math.max(0,num(a.thiefStealth,0));
+  a.thiefStealthCd=Math.max(0,num(a.thiefStealthCd,0));
+  a.thiefStealthWasActive=!!a.thiefStealthWasActive;
+  if(!a.thiefStolenBuffs||typeof a.thiefStolenBuffs!=="object"||Array.isArray(a.thiefStolenBuffs))a.thiefStolenBuffs={};
+  return a;
+ }
+ function isAwakened(){return !!(p&&awakenState0917().thiefAwakened)}
+ function isActiveThief(){return currentJobKey()==="thief"&&isAwakened()}
+ function thiefLv(){try{return Math.max(0,Math.floor(num(p.specialWeapons&&p.specialWeapons.darkGlove,0)),Math.floor(num(p.specialWeapons&&p.specialWeapons.voidGlove,0)),Math.floor(num(p.specialWeapons&&p.specialWeapons.glove,0)))}catch(e){return 0}}
+ function hasStealReq(){return awakenState0917().thiefBuffStealCount>=50}
+ function hasLevelReq(){return thiefLv()>=5}
+ function hasDungeonReq(){return awakenState0917().thiefDungeonClears>=1}
+ function canAwaken(){return hasStealReq()&&hasLevelReq()&&hasDungeonReq()}
+ function check(v){return v?"✅":"❌"}
+ function syncThiefJobDef(){
+  if(!JOBS.thief)return;
+  if(isAwakened())Object.assign(JOBS.thief,{icon:"🧤",name:AWAKEN_NAME,weapon:"voidGlove",weaponName:"虛空手套",desc:"普攻70%偷取敵人增益；隱身期間偷取率100%，解除隱身後5秒無法選中。虛空手套：偷取到的增益效果比例+10%。"});
+  else Object.assign(JOBS.thief,{icon:"🧤",name:"盜賊",weapon:"darkGlove",weaponName:"暗黑手套",desc:"攻速+20%；普攻偷取目標增益。專武：提高偷取率並降低目標命中。"});
+ }
+ function openModal(html){let m=by("cc0917Modal");if(!m){m=document.createElement("div");m.id="cc0917Modal";m.className="cc0917Modal hidden";document.body.appendChild(m)}m.innerHTML=`<div class="cc0917ModalCard">${html}</div>`;m.classList.remove("hidden")}
+ function closeModal(){const m=by("cc0917Modal");if(m)m.classList.add("hidden")}
+ function reqLines(){const a=awakenState0917();return `
+   <div class="cc0917Req ${hasStealReq()?"ok":"no"}">${check(hasStealReq())} 偷取增益累積次數：${Math.min(a.thiefBuffStealCount,50)} / 50</div>
+   <div class="cc0917Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 盜賊職業等級：Lv.${thiefLv()} / Lv.5</div>
+   <div class="cc0917Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【我比你會偷】：${Math.min(a.thiefDungeonClears,1)} / 1</div>`}
+ function showPanel(){
+  ensureNewSystems();const a=awakenState0917(),cur=currentJobKey();syncThiefJobDef();
+  openModal(`
+   <div class="row"><b>🧤 盜賊覺醒</b><button onclick="window.cc0917CloseModal()">關閉</button></div>
+   <div class="small">第五個覺醒職業：<b>盜賊 → ${AWAKEN_NAME}</b>。核心玩法是偷取增益、隱身、無法選中，把 Boss 的強化搬進自己口袋。</div>
+   <hr>
+   <div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="thief"?(a.thiefAwakened?AWAKEN_NAME:"盜賊"):"需切換盜賊"}</span></div>
+   <div class="card notice"><b>覺醒目標：${AWAKEN_NAME}</b><div class="small">覺醒狀態：${a.thiefAwakened?"✅ 已覺醒":"未覺醒"}</div>${reqLines()}</div>
+   <div class="small"><b>覺醒被動 / 專屬機制</b><br>1. 【增加自身增益】：普攻70%偷取敵人增益，偷來效果為原效果50%。<br>2. 【隱身】：冷卻10秒，隱身期間偷取率100%，偷來效果100%。<br>3. 【無法選中】：解除隱身後自動觸發5秒，敵方攻擊命中率降為0%。</div>
+   <div class="small"><b>專武變化</b><br>暗黑手套 → 虛空手套｜偷取到的增益效果比例 +10%。一般50%→60%，隱身100%→110%。</div>
+   <button class="purple" onclick="window.cc0917AwakenThief()" ${canAwaken()&&!a.thiefAwakened?"":"disabled"}>覺醒：盜賊 → ${AWAKEN_NAME}</button>
+   <div class="small">稱號：${a.thiefTitle?"✅ 【"+TITLE_NAME+"】":"未取得"}｜綠色稱號。</div>
+  `)
+ }
+ function showDungeonPanel(){
+  ensureNewSystems();const a=awakenState0917(),cur=currentJobKey(),can=cur==="thief"&&hasStealReq()&&hasLevelReq()&&!isDungeon()&&!a.thiefAwakened;
+  openModal(`
+   <div class="row"><b>🩲 覺醒副本</b><button onclick="window.cc0917CloseModal()">關閉</button></div>
+   <div class="card notice"><b>【我比你會偷】</b><div class="small">Boss：${BOSS_NAME}｜挑戰時間：120 秒<br>通關後完成副本條件，但不會自動覺醒，需回到覺醒面板手動按下覺醒。</div></div>
+   <div class="small"><b>開啟條件</b>${reqLines().replace(/通關【我比你會偷】：[^<]+<\/div>/,'通關【我比你會偷】：通關後完成 / 1</div>')}</div>
+   <div class="small"><b>Boss 特性</b><br>偷天者會週期性獲得攻擊、防禦、攻速、回血、閃避、護盾等增益，讓盜賊可以偷。覺醒試煉標準血線無敵不可被偷走。</div>
+   <button class="purple" onclick="window.cc0917StartThiefAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為盜賊 / 已覺醒則收納")}</button>
+   <div class="small">目前通關：${Math.min(a.thiefDungeonClears,1)} / 1｜稱號：${a.thiefTitle?"✅ 【"+TITLE_NAME+"】":"未取得"}</div>
+  `)
+ }
+ function showArchivePanel(){
+  ensureNewSystems();const a=awakenState0917();
+  openModal(`<div class="row"><b>📦 通天盜覺醒收納</b><button onclick="window.cc0917CloseModal()">關閉</button></div>
+  <div class="card"><b>${AWAKEN_NAME}</b><div class="small">狀態：${a.thiefAwakened?"✅ 已覺醒":"未完成"}<br>副本：【我比你會偷】${a.thiefAwakened?"已收納":"未完成"}<br>稱號：【${TITLE_NAME}】${a.thiefTitle?"已取得":"未取得"}</div></div>`)
+ }
+ function ensureDrawerButtons(){const panel=by("featureDrawer");if(!panel||panel.dataset.cc0917ThiefButtons==="1")return;panel.dataset.cc0917ThiefButtons="1";function b(text,fn){const x=document.createElement("button");x.textContent=text;x.addEventListener("click",ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add("hidden");fn()});return x}panel.appendChild(b("🧤 通天盜覺醒",showPanel));panel.appendChild(b("🩲 我比你會偷",()=>isAwakened()?showArchivePanel():showDungeonPanel()))}
+ function standardHp(){try{return Math.max(1,Math.floor(atk()*70))}catch(e){return 3500}}
+ function gateKey(th){return "cc0917Gate"+Math.round(th*100)}
+ function isThiefDungeon(){return !!(dungeon&&dungeon.type===DUNGEON)}
+ function isThiefBoss(m){return !!(m&&(m.targetKey==="thiefAwaken"||m.dungeonType===DUNGEON||m.name===BOSS_NAME))}
+ function syncHp(m){try{if(fight&&fight.monsters)refreshTotalHp();else if(fight&&m){fight.hp=m.hp;fight.max=m.max}}catch(e){}}
+ function standardizeBoss(m){if(!m||!isThiefBoss(m))return false;const e=ensureEffectBag(m);m.awakenBoss=true;if(e.cc0917Standardized)return false;const oldMax=Math.max(1,num(m.max,m.hp||1)),ratio=Math.max(.05,Math.min(1,num(m.hp,oldMax)/oldMax)),hp=standardHp();m.max=hp;m.hp=Math.max(1,Math.floor(hp*ratio));m.reg=Math.max(0,Math.floor(hp*.004));for(const th of GATES)e[gateKey(th)]=0;e.cc0917Standardized=1;floatText("🧤覺醒試煉強化",true);log("🧤 偷天者強度套用：血量 = 玩家傷害 ×70，血線無敵已啟用");syncHp(m);return true}
+ function applyGate(m){if(!isThiefDungeon()||!m||!isThiefBoss(m))return false;standardizeBoss(m);const e=ensureEffectBag(m),max=Math.max(1,num(m.max,1));for(const th of GATES){const key=gateKey(th);if(!e[key]&&num(m.hp,0)<=max*th){e[key]=1;m.hp=Math.max(1,Math.floor(max*th));e.invincible=Math.max(num(e.invincible,0),10);floatText("🩲血線無敵 "+Math.round(th*100)+"%",true);log("🧤 偷天者血量低於 "+Math.round(th*100)+"%，觸發 10 秒無敵");syncHp(m);return true}}return false}
+ function enforceGates(){if(!isThiefDungeon())return false;return applyGate(activeMonster()||fight)}
+ function buffList(target){const e=ensureEffectBag(target);if(!Array.isArray(e.cc0917Buffs))e.cc0917Buffs=[];return e.cc0917Buffs}
+ function buffPower(target,id){try{return buffList(target).filter(b=>b&&b.id===id&&num(b.time,0)>0).reduce((a,b)=>a+num(b.power,0),0)}catch(e){return 0}}
+ function cleanBuffs(target){const arr=buffList(target);for(let i=arr.length-1;i>=0;i--)if(!arr[i]||num(arr[i].time,0)<=0)arr.splice(i,1);return arr}
+ function addBossBuff(m,id){if(!m||!BUFFS[id])return;const e=ensureEffectBag(m),arr=buffList(m),def=BUFFS[id];const old=arr.find(b=>b.id===id);if(old){old.time=def.dur;old.power=def.power}else arr.push({id,icon:def.icon,name:def.name,power:def.power,time:def.dur});if(id==="shield"){e.cc0917Shield=Math.max(num(e.cc0917Shield,0),Math.floor((m.max||m.hp||1)*def.power));}floatText((m.emoji||"🧤")+def.icon+def.name,true);log("🧤 偷天者獲得增益：「"+def.name+"」")}
+ function randomBossBuff(m){const ids=Object.keys(BUFFS);addBossBuff(m,ids[Math.floor(Math.random()*ids.length)])}
+ function createThiefBoss(){const hp=standardHp(),atkV=Math.max(1,Math.floor(atk()*9)),defV=Math.max(0,Math.floor(playerDef()*10));const m=enemy({mode:"dungeon",dungeonType:DUNGEON,type:"boss",name:BOSS_NAME,emoji:"🧤",hp,def:defV,reg:Math.floor(hp*.004),gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:2.4,awakenBoss:true,targetKey:"thiefAwaken"});finalizeMonster(m);const e=ensureEffectBag(m);e.cc0917BuffTimer=2;addBossBuff(m,"atk");addBossBuff(m,"evade");return m}
+ function startDungeon0917(){ensureNewSystems();if(isDungeon())return log("副本進行中，不能重複進入");const a=awakenState0917();if(currentJobKey()!=="thief")return log("🧤 【我比你會偷】需要目前職業為盜賊");if(a.thiefAwakened)return log("🧤 通天盜已覺醒，【我比你會偷】已收納");if(!hasStealReq())return log("🧤 偷取增益次數不足："+a.thiefBuffStealCount+"/50");if(!hasLevelReq())return log("🧤 盜賊職業等級不足：Lv."+thiefLv()+"/5");closeModal();dungeon={type:DUNGEON,timer:120,kills:0,gain:0,running:true};fight=createThiefBoss();p.queue=0;hold=false;budget=0;show("main");log("🧤 覺醒副本【我比你會偷】開始：120 秒內擊敗偷天者");save(false);render()}
+ function endRun(success){const a=awakenState0917();dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();if(success){a.thiefDungeonClears=Math.max(1,a.thiefDungeonClears||0);log("🩲 恭喜玩家獲得Boss原味內褲×1");log("🧤 偷天者：「不要偷我內褲」");save(false);spawnMain();showPanel()}else{log("🧤 偷天者：「你看看你的內褲還在不在」");save(false);spawnMain()}}
+ function awakenThief(){ensureNewSystems();const a=awakenState0917();if(a.thiefAwakened)return log("🧤 盜賊已覺醒為"+AWAKEN_NAME);if(!canAwaken())return log("🧤 通天盜覺醒條件尚未完成");a.thiefAwakened=true;a.thiefTitle=1;if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.voidGlove=Math.max(num(p.specialWeapons.voidGlove,0),num(p.specialWeapons.darkGlove,0),num(p.specialWeapons.glove,0));syncThiefJobDef();save(false);log("🧤 覺醒成功：盜賊 → "+AWAKEN_NAME);log("🏷️ 獲得綠色稱號【"+TITLE_NAME+"】");floatText("通天盜覺醒！",true);render();showPanel()}
+ function stealthActive(){return isActiveThief()&&awakenState0917().thiefStealth>0}
+ function stealRate(){return isActiveThief()?(stealthActive()?1:.70):1}
+ function stealRatio(){if(!isActiveThief())return .50;let r=stealthActive()?1:.50;r+=.10;return r}
+ function addStealCount(){const a=awakenState0917();a.thiefBuffStealCount=Math.min(999999,a.thiefBuffStealCount+1);if(a.thiefBuffStealCount===50)log("🧤 盜賊覺醒條件達成：偷取增益 50/50")}
+ function addPlayerBuff(id,power,sec=10,label="") {const a=awakenState0917();if(!a.thiefStolenBuffs[id])a.thiefStolenBuffs[id]={time:0,power:0,label:label||id};a.thiefStolenBuffs[id].time=Math.max(num(a.thiefStolenBuffs[id].time,0),sec);a.thiefStolenBuffs[id].power=Math.max(num(a.thiefStolenBuffs[id].power,0),power);a.thiefStolenBuffs[id].label=label||a.thiefStolenBuffs[id].label||id}
+ function playerBuff(id){const a=awakenState0917(),b=a.thiefStolenBuffs&&a.thiefStolenBuffs[id];return b&&num(b.time,0)>0?num(b.power,0):0}
+ function applyStolen(id,power,name){const ratio=stealRatio(),v=Math.max(0,power*ratio),st0=st();if(id==="shield"){const shield=Math.max(1,Math.floor(playerMaxHp()*Math.max(.05,v)));st0.bloodShield=Math.max(num(st0.bloodShield,0),shield);st0.bloodShieldTime=Math.max(num(st0.bloodShieldTime,0),10)}else addPlayerBuff(id,v,10,name);floatText("🧤偷到"+(name||id)+" "+Math.round(ratio*100)+"%",true)}
+ function popCustomBuff(target){const arr=cleanBuffs(target);if(!arr.length)return null;const i=Math.floor(Math.random()*arr.length),b=arr.splice(i,1)[0];if(b.id==="shield"){const e=ensureEffectBag(target);e.cc0917Shield=0}return b}
+ function popLegacyBuff(target){const e=ensureEffectBag(target);if(e.berserk>0){e.berserk=0;return{id:"aspd",name:"狂暴攻速",power:.50}}if(e.dodge>0){e.dodge=0;return{id:"evade",name:"閃避本能",power:.30}}if(e.invincible>0&&!isThiefBoss(target)&&!target.awakenBoss){e.invincible=0;return{id:"shield",name:"無敵殘影",power:.30}}return null}
+ function popAffixBuff(target){if(!target||target.cc0917AffixStolen||!Array.isArray(target.affixes)||!target.affixes.length)return null;target.cc0917AffixStolen=1;const a=target.affixes[0],id=a.id==="berserk"?"aspd":a.id==="hard"?"def":a.id==="evasive"?"evade":a.id==="resilient"?"reduce":a.id==="treasure"?"crit":"atk";return{id,name:a.name||"詞綴增益",power:(BUFFS[id]&&BUFFS[id].power)||.25}}
+ function trySteal(target,{forced=false}={}){if(!target||target.hp<=0)return false;if(!forced&&Math.random()>stealRate())return false;let b=popCustomBuff(target)||popLegacyBuff(target)||popAffixBuff(target);if(!b){if(!isActiveThief()&&Math.random()<.35){p.buff.gale=Math.max(p.buff.gale||0,3);floatText("🧤偷速");return false}return false}applyStolen(b.id,b.power,b.name);addStealCount();log("🧤 盜賊偷取「"+(b.name||b.id)+"」成功，累積 "+awakenState0917().thiefBuffStealCount+"/50");save(false);return true}
+ let suppressBaseSteal=false;
+ stealMonsterBuff=function(target){if(suppressBaseSteal&&isActiveThief())return false;return trySteal(target,{forced:true})};
+ function useStealth(){ensureNewSystems();const a=awakenState0917();if(!isActiveThief())return log("🧤 只有通天盜可以使用隱身");if(a.thiefStealthCd>0)return log("🧤 隱身冷卻中："+Math.ceil(a.thiefStealthCd)+"秒");a.thiefStealth=5;a.thiefStealthCd=10;a.thiefStealthWasActive=true;floatText("🧤隱身",true);log("🧤 通天盜進入隱身：偷取率100%，偷來增益100%") ;save(false);render()}
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;if(!p.specialWeapons)p.specialWeapons={};for(const w of ["darkGlove","voidGlove","glove"]){p.specialWeapons[w]=Math.max(0,Math.floor(num(p.specialWeapons[w],0)))}awakenState0917();const s=st();s.thiefUntargetable=Math.max(0,num(s.thiefUntargetable,0));syncThiefJobDef()};
+ const oldPlayerStatus=playerStatus;
+ playerStatus=function(){const s=oldPlayerStatus();if(typeof s.thiefUntargetable!=="number"||Number.isNaN(s.thiefUntargetable))s.thiefUntargetable=0;return s};
+ const oldAsp=asp;asp=function(){let v=oldAsp();if(isThiefDungeon())v*=.10;if(isActiveThief())v*=1+playerBuff("aspd");return Math.max(.02,v)};
+ const oldJobAtk=jobAtkBonus;jobAtkBonus=function(){let v=oldJobAtk();if(isActiveThief())v+=playerBuff("atk");return v};
+ const oldPlayerDef=playerDef;playerDef=function(){let v=oldPlayerDef();if(isActiveThief())v=Math.floor(v*(1+playerBuff("def")));return v};
+ const oldPlayerRegen=playerRegen;playerRegen=function(){let v=oldPlayerRegen();if(isActiveThief())v=Math.floor(v*(1+playerBuff("regen")*100));return v};
+ const oldDealPlayerDamage=dealPlayerDamage;dealPlayerDamage=function(raw,opt={}){if(isActiveThief()&&playerBuff("reduce")>0)raw=Math.max(0,raw*(1-playerBuff("reduce")));return oldDealPlayerDamage(raw,opt)};
+ const oldPlayerTakeDamage=playerTakeDamage;playerTakeDamage=function(raw,source="怪物",m=null){if(m&&buffPower(m,"atk")>0)raw*=1+buffPower(m,"atk");if(isThiefDungeon()&&isThiefBoss(m)){const dmg=dealPlayerDamage(raw,{trueDamage:true,status:false,source,m});if(dmg>0)floatText((m&&m.emoji?m.emoji:"")+"真傷-"+dmg,true);return dmg}return oldPlayerTakeDamage(raw,source,m)};
+ const oldMonsterInterval=monsterAttackInterval;monsterAttackInterval=function(m){let iv=oldMonsterInterval(m);if(m&&buffPower(m,"aspd")>0)iv=iv/(1+buffPower(m,"aspd"));return Math.max(.18,iv)};
+ const oldEffDef=effDefForTarget;effDefForTarget=function(t){let v=oldEffDef(t);if(t&&buffPower(t,"def")>0)v=Math.floor(v*(1+buffPower(t,"def")));return v};
+ const oldEvade=evadeRate;evadeRate=function(target=activeMonster()){let v=oldEvade(target);if(target&&buffPower(target,"evade")>0)v+=buffPower(target,"evade");return Math.max(0,Math.min(.95,v))};
+ const oldMonsterAttack=monsterNormalAttack;monsterNormalAttack=function(m){const s=st();if(isActiveThief()&&s.thiefUntargetable>0){floatText("🧤無法選中MISS",true);return true}if(isActiveThief()&&playerBuff("evade")>0&&Math.random()<playerBuff("evade")){floatText("🧤偷來閃避MISS");return true}return oldMonsterAttack(m)};
+ const oldTickEffects=tickEffects;tickEffects=function(dt){const r=oldTickEffects(dt);try{if(fight){const list=fight.monsters?aliveMonsters():[fight];for(const m of list){if(!m||m.hp<=0)continue;const arr=buffList(m);for(const b of arr)b.time=Math.max(0,num(b.time,0)-dt);cleanBuffs(m);const rg=buffPower(m,"regen");if(rg>0){m.hp=Math.min(m.max,m.hp+m.max*rg*dt);syncHp(m)}}}}catch(e){}return r};
+ const oldTickPlayer=tickPlayer;tickPlayer=function(dt){const a=awakenState0917(),s=st();const was=a.thiefStealth>0;const r=oldTickPlayer(dt);a.thiefStealthCd=Math.max(0,num(a.thiefStealthCd,0)-dt);if(a.thiefStealth>0)a.thiefStealth=Math.max(0,a.thiefStealth-dt);if(was&&a.thiefStealth<=0){s.thiefUntargetable=Math.max(num(s.thiefUntargetable,0),5);a.thiefStealthWasActive=false;floatText("🧤無法選中5秒",true);log("🧤 通天盜解除隱身，觸發無法選中 5 秒")}if(s.thiefUntargetable>0)s.thiefUntargetable=Math.max(0,s.thiefUntargetable-dt);if(a.thiefStolenBuffs)for(const k of Object.keys(a.thiefStolenBuffs)){const b=a.thiefStolenBuffs[k];b.time=Math.max(0,num(b.time,0)-dt)}return r};
+ const oldDamage=damage;damage=function(mult=1,label="",opt={}){const normal=!label&&!opt.skill&&!opt.forceSingle,cur=activeMonster();if(isActiveThief()&&normal)suppressBaseSteal=true;const r=oldDamage(mult,label,opt);suppressBaseSteal=false;if(isActiveThief()&&normal&&cur&&cur.hp>0)trySteal(cur,{forced:false});if(isThiefDungeon())enforceGates();return r};
+ const oldKillEnemy=killEnemy;killEnemy=function(){if(isThiefDungeon()){standardizeBoss(activeMonster()||fight);if(enforceGates())return;endRun(true);return}return oldKillEnemy()};
+ const oldDungeonKill=dungeonKill;dungeonKill=function(){if(isThiefDungeon()){standardizeBoss(activeMonster()||fight);if(enforceGates())return;endRun(true);return}return oldDungeonKill()};
+ const oldEndDungeon=endDungeon;endDungeon=function(){if(isThiefDungeon()){endRun(false);return}return oldEndDungeon()};
+ const oldTick=tick;tick=function(dt){if(isThiefDungeon()){const m=activeMonster()||fight;if(m){standardizeBoss(m);const e=ensureEffectBag(m);e.cc0917BuffTimer=num(e.cc0917BuffTimer,3)-dt;if(e.cc0917BuffTimer<=0){randomBossBuff(m);e.cc0917BuffTimer=5+Math.random()*3}}}const r=oldTick(dt);if(isThiefDungeon())enforceGates();return r};
+ const oldPlayerStatusHtml=playerStatusHtml;playerStatusHtml=function(){let h=oldPlayerStatusHtml();try{if(isActiveThief()){if(h==="玩家狀態：無")h="";const a=awakenState0917(),s=st(),buffs=Object.keys(a.thiefStolenBuffs||{}).filter(k=>num(a.thiefStolenBuffs[k].time,0)>0).map(k=>`${a.thiefStolenBuffs[k].label||k} ${Math.ceil(a.thiefStolenBuffs[k].time)}秒`).join(" / ")||"無";h+=`<span class="badge poison">🧤 覺醒：盜賊 → ${AWAKEN_NAME}</span><span class="badge freeze">隱身 ${Math.ceil(a.thiefStealth||0)}秒｜冷卻 ${Math.ceil(a.thiefStealthCd||0)}秒｜無法選中 ${Math.ceil(s.thiefUntargetable||0)}秒</span><span class="badge poison">偷來增益：${buffs}</span><button class="purple" onclick="window.cc0917UseStealth()" ${(a.thiefStealthCd>0||a.thiefStealth>0)?"disabled":""}>🧤 隱身</button>`}if(p&&p.awakening&&p.awakening.thiefTitle)h+=`<span class="badge poison" style="border-color:#22c55e;color:#86efac">🏷️ 【${TITLE_NAME}】</span>`}catch(e){}return h};
+ const oldStatusHtml=statusHtml;statusHtml=function(){let h=oldStatusHtml();try{if(fight){let add="";const m=activeMonster()||fight;if(m&&isThiefBoss(m)){const arr=cleanBuffs(m);if(arr.length)add+=`<span class='badge poison'>🧤 偷天者增益：${arr.map(b=>b.icon+b.name+" "+Math.ceil(b.time)+"秒").join(" / ")}</span>`;const e=ensureEffectBag(m);if(num(e.cc0917Shield,0)>0)add+=`<span class='badge break'>🛡️ 偷天者護盾 ${Math.floor(e.cc0917Shield).toLocaleString()}</span>`;const done=GATES.filter(th=>num(e[gateKey(th)],0)>0).map(th=>Math.round(th*100)+"%").join(" / ")||"尚未觸發";if(isThiefDungeon())add+=`<span class='badge break'>🩲 我比你會偷｜血線無敵：${done}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h="";h+=add}}catch(e){}return h};
+ const oldJobPanel=jobPanelHtml;jobPanelHtml=function(){ensureNewSystems();let h=oldJobPanel();try{if(currentJobKey()==="thief"&&isAwakened()){const a=awakenState0917();h+=`<div class="card notice"><b>🧤 ${AWAKEN_NAME}</b><div class="small">偷取增益 ${a.thiefBuffStealCount}/50｜隱身冷卻 ${Math.ceil(a.thiefStealthCd||0)}秒｜專武：虛空手套</div><button class="purple" onclick="window.cc0917UseStealth()" ${(a.thiefStealthCd>0||a.thiefStealth>0)?"disabled":""}>使用隱身</button></div>`}}catch(e){}return h};
+ const oldRender=render;render=function(){const r=oldRender();ensureDrawerButtons();try{if(isThiefDungeon()){const m=activeMonster()||fight;if(m)standardizeBoss(m);if(by("enemyType"))by("enemyType").textContent="覺醒副本｜我比你會偷｜Boss：偷天者｜試煉壓制：攻速-90%｜Boss真傷｜血線無敵";if(by("mainDungeonInfo"))by("mainDungeonInfo").innerHTML=`<b>🩲 我比你會偷</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))}秒｜Boss：偷天者｜提示：恭喜玩家獲得Boss原味內褲×1</div><div class="small">🛡️ 覺醒試煉：Boss血量=玩家傷害×70，80/60/40/20% 各觸發一次10秒無敵；玩家攻速-90%，Boss攻擊無視防禦。</div>`;if(by("dungeonInfo"))by("dungeonInfo").innerHTML=`<div class="card notice"><b>🩲 我比你會偷進行中</b><div class="small">剩餘時間：${Math.max(0,Math.ceil(dungeon.timer))} 秒<br>Boss：偷天者<br>狀態：挑戰中，正在偷與被偷</div></div>`}}catch(e){}return r};
+ function patchVersionText(){try{document.title=VERSION_NAME;for(const el of document.querySelectorAll(".pill")){if((el.textContent||"").includes("Beta 0.9.16")||(el.textContent||"").includes("Beta 0.9.15"))el.textContent="Beta 0.9.17【增益不錯我拿走了】通天盜"}}catch(e){}}
+ const oldBind=bind;bind=function(){const r=oldBind();patchVersionText();ensureDrawerButtons();return r};
+ setTimeout(()=>{try{ensureNewSystems();patchVersionText();ensureDrawerButtons()}catch(e){}},0);
+ window.cc0917ShowThiefAwakenPanel=showPanel;window.cc0917ShowThiefDungeonPanel=showDungeonPanel;window.cc0917StartThiefAwakenDungeon=startDungeon0917;window.cc0917AwakenThief=awakenThief;window.cc0917UseStealth=useStealth;window.cc0917CloseModal=closeModal;window.cc0917Info=()=>({tag:TAG,awakened:isAwakened(),steals:awakenState0917().thiefBuffStealCount,lv:thiefLv(),dungeon:awakenState0917().thiefDungeonClears,stealth:awakenState0917().thiefStealth});
+ const style=document.createElement("style");style.textContent=`.cc0917Modal{position:fixed;inset:0;z-index:124000;background:rgba(2,6,23,.82);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}.cc0917Modal.hidden{display:none!important}.cc0917ModalCard{width:min(720px,94vw);max-height:84vh;overflow:auto;background:linear-gradient(180deg,#052e16,#020617);border:1px solid rgba(34,197,94,.58);border-radius:20px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.68)}.cc0917Req{margin:6px 0;padding:8px;border-radius:12px;background:rgba(255,255,255,.05)}.cc0917Req.ok{border:1px solid rgba(34,197,94,.45)}.cc0917Req.no{border:1px solid rgba(248,113,113,.35)}`;document.head.appendChild(style);
  console.log("傳承",TAG);
 })();
 
