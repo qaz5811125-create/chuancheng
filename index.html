@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.21【天域開門】七女神免死修正</title>
+<title>傳承 Beta 0.9.22【下獄迷宮】職業誓約開門</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.21【天域開門】七女神免死修正</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22【下獄迷宮】職業誓約開門</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -354,7 +354,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);
-const GAME_VERSION="0.9.21";
+const GAME_VERSION="0.9.22";
 const BUILD_TAG_093_REPACK="0.9.9-reaper-awakening-v1";
 const SAVE_KEY="chuan_cheng_beta_052_monster_formation";
 const OLD_SAVE_KEYS=["chuan_cheng_beta_051_combat_update","chuan_cheng_beta_050_offline_test","chuan_cheng_beta_043_pwa_install","chuan_cheng_beta_042_pwa_icon","chuan_cheng_beta_041_skill_altar","chuan_cheng_beta_040_equipment_age","chuan_cheng_beta_037_equipment_dungeon"];
@@ -5936,6 +5936,332 @@ window.unlockJob=unlockJob;window.drawCareer=drawCareer;window.startHero=startHe
 
 window.setPriorityTarget=setPriorityTarget;window.setJob=setJob;window.upgradeSpecialWeapon=upgradeSpecialWeapon;window.setArtifact=setArtifact;window.upgradeArtifact=upgradeArtifact;window.setPointMul=setPointMul;window.setUpMul=setUpMul;window.enterWorldMap=enterWorldMap;window.returnOriginMap=returnOriginMap;window.slash=slash;window.shatter=shatter;window.gale=gale;window.forceStrike=forceStrike;window.cleanse=cleanse;window.bloodShield=bloodShield;window.upgradeSkill=upgradeSkill;window.equipItem=equipItem;window.sellItem=sellItem;window.unequip=unequip;window.selectSlot=selectSlot;window.setBagFilter=setBagFilter;window.startDungeon=startDungeon;window.exitAbyss=exitAbyss;
 if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCurrentMap();normalizeSpeed();const pendingOffline=calculateOfflineRewards();bind();bindExtended();spawnMain();if(pendingOffline)showOfflineRewards();setInterval(()=>{touchOfflineTime();save(false)},10000);window.addEventListener("pagehide",()=>{touchOfflineTime();save(false)});window.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden"){touchOfflineTime();save(false)}});requestAnimationFrame(loop);
+
+
+/* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
+(function(){
+ const TAG="0.9.22-hell-maze-oath-lock-v1";
+ const VERSION_NAME="傳承 Beta 0.9.22【下獄迷宮】職業誓約開門";
+ const HELL_TYPE="hellMaze";
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ const rint=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
+ const choice=a=>a[Math.floor(Math.random()*a.length)];
+ const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ const OATHS={
+  survival:{icon:"🕯️",name:"活命誓約",desc:"怪物數量降低、陷阱減少、獎勵降低。",reward:.65,trap:.65,elite:.65,hint:1},
+  greed:{icon:"💰",name:"貪婪誓約",desc:"寶箱、神器碎片、下獄材料增加，但精英怪與陷阱增加。",reward:1.45,trap:1.35,elite:1.15,hint:1},
+  slaughter:{icon:"🩸",name:"殺戮誓約",desc:"精英怪出現率提升，擊殺精英可削弱最終 Boss。",reward:1.15,trap:1.0,elite:1.75,hint:1},
+  blind:{icon:"🌑",name:"盲行誓約",desc:"迷宮提示變少，但通關獎勵倍率提高。",reward:1.75,trap:1.1,elite:1.1,hint:.45}
+ };
+ const HINTS={
+  combat:["聽見低吼聲","門後有爪子刮牆","一陣熱氣從門縫吐出"],
+  elite:["門上有血跡","門後傳來厚重呼吸","地上有被拖行的痕跡"],
+  trap:["完全沒有聲音","門縫吹出冷風","腳邊的灰突然往門內流"],
+  altar:["門上刻著符文","門後傳來低聲祈禱","門把像活物一樣發燙"],
+  supply:["門縫有微光","門內有微弱燭火","空氣裡有乾淨的灰味"],
+  key:["傳來鎖鏈聲","門後有鐵環拖地聲","鎖孔正在滲出黑光"],
+  prisoner:["門後傳來哭聲","有人在門後敲三下","牆內傳來求救聲"],
+  treasury:["金屬碰撞聲","門縫有暗金色光","門上掛著三道銹鎖"],
+  exit:["遠處吹來不是下獄的風","門縫外有正常的光","地上的灰往外流去"],
+  boss:["門後傳來守門者的腳步","符文在門上睜眼","整座迷宮都在叫你停下"],
+  jailer:["獄卒的鑰匙聲逼近","牆壁開始替你數罪","身後傳來鐵靴聲"]
+ };
+ const CURSES=[
+  ["斷回血詛咒","護盾獲得量降低"],["獄火詛咒","每進入 3 個房間受到一次傷害"],["盲目詛咒","門的提示變少"],
+  ["重鎖詛咒","鑰匙壓力提升"],["弱骨詛咒","防禦降低"],["裂魂詛咒","精英與獄卒傷害提升"],
+  ["貪婪詛咒","獎勵提升，但陷阱傷害提升"],["沉默詛咒","技能冷卻被拉長"]
+ ];
+ function addStyle(){
+  if(by("cc0922HellStyle"))return;
+  const st=document.createElement("style");st.id="cc0922HellStyle";st.textContent=`
+  .cc0922HellModal{position:fixed;inset:0;background:rgba(2,6,23,.76);z-index:9998;display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(3px)}
+  .cc0922HellModal.hidden{display:none}.cc0922HellCard{width:min(760px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(30,12,12,.98));border:1px solid rgba(248,113,113,.38);border-radius:18px;padding:14px;box-shadow:0 22px 70px rgba(0,0,0,.55)}
+  .cc0922HellGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:8px}.cc0922HellDoor{border:1px solid rgba(248,113,113,.26);border-radius:14px;padding:10px;background:rgba(15,23,42,.78)}
+  .cc0922HellDoor b{display:block;margin-bottom:4px}.cc0922HellStat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin:8px 0}.cc0922HellStat span{border:1px solid rgba(148,163,184,.22);border-radius:999px;padding:5px 8px;background:rgba(2,6,23,.42)}
+  .cc0922Warn{border-color:rgba(251,191,36,.55)!important;background:rgba(120,53,15,.35)!important}.cc0922Bad{color:#fecaca}.cc0922Good{color:#bbf7d0}.cc0922Tiny{font-size:12px;color:#cbd5e1;line-height:1.55}.cc0922Choice button{margin:4px}.cc0922HellTitle{font-size:18px;font-weight:1000}.cc0922DoorHint{min-height:38px}`;
+  document.head.appendChild(st);
+ }
+ function ensureHellMapOpen(){
+  try{const m=WORLD_MAPS.find(x=>x.id==="hell");if(m){m.open=true;m.lv=250;m.name="下獄";m.icon="🔥";m.desc="正式開放：節點式迷宮、下獄誓約、魂燈、追獄值、職業鎖定。一條命，把獎勵活著帶出去。";}}catch(e){}
+ }
+ function defaultHell(){return{materials:0,artifactFragments:0,soulCoins:0,runes:0,bossCores:0,bestDepth:0,clears:0,run:null,lastResult:""}}
+ function blankTemp(){return{materials:0,artifactFragments:0,soulCoins:0,runes:0,soul:0,bossCores:0,items:0}}
+ function hell(){if(!p.hell)p.hell=defaultHell();p.hell=Object.assign(defaultHell(),p.hell||{});return p.hell}
+ function run(){const h=hell();return h.run&&h.run.active?h.run:null}
+ function oathOf(r=run()){return OATHS[(r&&r.oath)||"survival"]||OATHS.survival}
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||"warrior"}}
+ function jobName(k){return (JOBS[k]?((JOBS[k].icon||"")+" "+JOBS[k].name):k)||"未知職業"}
+ function isHellDungeon(){return !!(dungeon&&dungeon.type===HELL_TYPE&&dungeon.running)}
+ function isHellActive(){return !!run()}
+ function openModal(html){addStyle();let m=by("cc0922HellModal");if(!m){m=document.createElement("div");m.id="cc0922HellModal";m.className="cc0922HellModal hidden";document.body.appendChild(m)}m.innerHTML=`<div class="cc0922HellCard">${html}</div>`;m.classList.remove("hidden")}
+ function closeModal(){const m=by("cc0922HellModal");if(m)m.classList.add("hidden")}
+ function runStatsHtml(r=run()){
+  if(!r)return"";const o=oathOf(r),cs=(r.curses||[]).map(c=>c[0]).join("、")||"無";
+  return `<div class="cc0922HellStat"><span>誓約：${o.icon} ${o.name}</span><span>鎖定：${esc(jobName(r.lockedJob))}</span><span>層數：${r.depth}/${r.maxDepth}</span><span>魂燈：${r.soulLamp}</span><span>追獄值：${r.pursuit}/${r.pursuitMax}</span><span>鑰匙：${r.keys}</span></div><div class="cc0922Tiny">詛咒：${esc(cs)}<br>臨時獎勵：下獄材料 ${Math.floor(r.temp.materials)}｜神器碎片 ${Math.floor(r.temp.artifactFragments)}｜亡魂幣 ${Math.floor(r.temp.soulCoins)}｜獄紋 ${Math.floor(r.temp.runes)}｜傳承之魂 ${Math.floor(r.temp.soul)}｜裝備 ${Math.floor(r.temp.items)}</div>`
+ }
+ function permHtml(){const h=hell();return `<div class="cc0922Tiny">永久資源：下獄材料 ${Math.floor(h.materials)}｜神器碎片 ${Math.floor(h.artifactFragments)}｜亡魂幣 ${Math.floor(h.soulCoins)}｜獄紋 ${Math.floor(h.runes)}｜Boss核心 ${Math.floor(h.bossCores)}｜通關 ${Math.floor(h.clears)} 次｜最深 ${Math.floor(h.bestDepth)} 層</div>`}
+ function showGate(){
+  ensureHellSystems();ensureHellMapOpen();
+  if(p.lv<250){log("下獄需要 Lv250 才能進入");return}
+  const r=run();
+  if(r&&r.lockedJob&&r.lockedJob!==curJob()){showMismatch(r);return}
+  if(r){showRunPanel();return}
+  const oathCards=Object.keys(OATHS).map(k=>{const o=OATHS[k];return `<div class="cc0922HellDoor"><b>${o.icon} ${o.name}</b><div class="cc0922Tiny">${o.desc}</div><button class="purple" onclick="window.cc0922StartHell('${k}')">簽下誓約</button></div>`}).join("");
+  openModal(`<div class="row"><div class="cc0922HellTitle">🔥 下獄迷宮</div><button onclick="window.cc0922CloseHell()">關閉</button></div><div class="small">Lv250 開啟。一條命、一座迷宮、不回血、不復活。你用什麼職業踏進下獄，就必須用那條路走到結束。</div>${permHtml()}<hr><b>選擇下獄誓約</b><div class="cc0922HellGrid">${oathCards}</div>`);
+ }
+ function showMismatch(r){
+  openModal(`<div class="row"><div class="cc0922HellTitle">🔥 下獄誓約斷裂</div><button onclick="window.cc0922CloseHell()">關閉</button></div><div class="card notice cc0922Warn"><b>你已更換職業，原本的下獄誓約已經斷裂</b><div class="small">本次下獄原本鎖定職業為：<b>${esc(jobName(r.lockedJob))}</b><br>目前職業為：<b>${esc(jobName(curJob()))}</b><br>由於職業不同，本次下獄必須重新開始。</div></div>${runStatsHtml(r)}<div class="cc0922Choice"><button class="red" onclick="window.cc0922RestartHellFromMismatch()">重新開始下獄</button><button onclick="window.cc0922ReturnFromHellGate()">返回主城</button></div><div class="cc0922Tiny">你也可以先關閉視窗，切回原職業後再進入下獄，繼續原本進度。</div>`)
+ }
+ function makeRun(oath){
+  return{active:true,lockedJob:curJob(),oath:oath||"survival",depth:0,maxDepth:12,soulLamp:12,pursuit:0,pursuitMax:12,keys:0,curses:[],temp:blankTemp(),rewardBonus:1,bossWeak:0,doors:[],history:[],shield:0,trapImmune:0,curseImmune:0,nextEliteDown:0,defBuff:0,revealNext:0,lastRoom:""}
+ }
+ function startHell(oath){
+  if(isDungeon())return log("目前正在其他副本或下獄戰鬥中");
+  const h=hell();h.run=makeRun(oath);generateDoors(h.run);save(false);log("🔥 簽下【"+oathOf(h.run).name+"】，下獄鎖定職業：「"+jobName(h.run.lockedJob)+"」");showRunPanel();
+ }
+ function clearRun(){const h=hell();h.run=null;save(false)}
+ function restartFromMismatch(){clearRun();showGate()}
+ function returnFromGate(){closeModal();returnToOrigin("你暫時離開下獄入口，誓約仍在迷宮裡等你。")}
+ function roomWeights(r){
+  const o=oathOf(r);let w={combat:28,elite:12,trap:14,altar:10,supply:12,key:8,prisoner:7,treasury:4,exit:0,boss:0};
+  w.trap*=o.trap;w.elite*=o.elite;
+  if(r.depth>=4)w.exit=8;if(r.depth>=7)w.exit=14;if(r.depth>=r.maxDepth)w.boss=100;
+  if(r.keys>0)w.treasury+=4;if((r.curses||[]).some(c=>c[0]==="盲目詛咒"))w.trap*=1.15;
+  if(r.soulLamp<=0){w.trap*=1.45;w.elite*=1.25;w.supply*=.65;w.exit*=.75}
+  if(r.oath==="survival"){w.supply+=8;w.exit+=5}
+  if(r.oath==="greed"){w.treasury+=8;w.key+=4}
+  if(r.oath==="slaughter"){w.elite+=10;w.combat+=4}
+  return w;
+ }
+ function rollRoomType(r){const w=roomWeights(r),sum=Object.values(w).reduce((a,b)=>a+b,0);let x=Math.random()*sum;for(const k in w){x-=w[k];if(x<=0)return k}return"combat"}
+ function hintFor(type,r){
+  if((r.revealNext||0)>0)return "【看破】"+(HINTS[type]&&HINTS[type][0]||"門後很清楚");
+  let clarity=(r.soulLamp>=8?1:r.soulLamp>=4?.72:r.soulLamp>=1?.42:0)*oathOf(r).hint;
+  if((r.curses||[]).some(c=>c[0]==="盲目詛咒"))clarity*=.55;
+  if(clarity<=0)return "未知之門";
+  if(Math.random()>clarity)return choice(["只有黑暗貼在門後","門後的聲音被魂燈吞掉","提示被灰燼蓋住","什麼都像陷阱，也什麼都像出口"]);
+  return choice(HINTS[type]||["門後有東西"]);
+ }
+ function generateDoors(r=run()){
+  if(!r)return[];
+  const count=r.depth>=r.maxDepth?1:rint(2,3);r.doors=[];
+  for(let i=0;i<count;i++){let type=r.depth>=r.maxDepth?"boss":rollRoomType(r);r.doors.push({type,hint:hintFor(type,r)});}
+  r.revealNext=0;return r.doors;
+ }
+ function showRunPanel(extra=""){
+  const r=run();if(!r)return showGate();if(!r.doors||!r.doors.length)generateDoors(r);
+  const doors=(r.doors||[]).map((d,i)=>`<div class="cc0922HellDoor"><b>門 ${i+1}</b><div class="cc0922DoorHint small">${esc(d.hint)}</div><button class="purple" onclick="window.cc0922EnterHellDoor(${i})">推門進入</button></div>`).join("");
+  openModal(`<div class="row"><div class="cc0922HellTitle">🔥 下獄迷宮進行中</div><button onclick="window.cc0922CloseHell()">關閉</button></div><div class="small">不是找正確的路，而是在每一條危險的路前，都覺得自己有理由走進去。</div>${runStatsHtml(r)}${extra?`<div class="card notice">${extra}</div>`:""}<div class="cc0922HellGrid">${doors}</div><div class="cc0922Choice"><button onclick="window.cc0922LeaveHellSoft()">中途退出但不放棄</button><button class="red" onclick="window.cc0922AbandonHell()">主動放棄下獄</button></div>`)
+ }
+ function consumeStep(r){
+  r.depth++;r.soulLamp=Math.max(0,Math.floor(n(r.soulLamp,0))-1);r.pursuit=Math.max(0,Math.floor(n(r.pursuit,0))+1);r.history.push({depth:r.depth,at:Date.now()});
+  if((r.curses||[]).some(c=>c[0]==="獄火詛咒")&&r.depth%3===0){const d=playerMaxHp()*.06;dealPlayerDamage(d,{trueDamage:true,status:true,source:"獄火詛咒"});floatText("🔥獄火詛咒",true)}
+ }
+ function enterDoor(i){
+  const r=run();if(!r)return; if(r.lockedJob!==curJob()){showMismatch(r);return}
+  const d=(r.doors||[])[i];if(!d)return;consumeStep(r);
+  if(r.pursuit>=r.pursuitMax&&d.type!=="boss"){startFight("jailer");return}
+  handleRoom(d.type);
+ }
+ function handleRoom(type){
+  const r=run();if(!r)return; r.lastRoom=type;
+  if(["combat","elite","boss","jailer"].includes(type)){startFight(type);return}
+  if(type==="trap"){trapRoom();return}
+  if(type==="altar"){showAltar();return}
+  if(type==="supply"){showSupply();return}
+  if(type==="key"){r.keys++;r.temp.soulCoins+=Math.ceil(6*rewardMul(r));generateDoors(r);save(false);showRunPanel("🔑 鑰匙房：獲得下獄鑰匙 +1。鎖鏈沒有消失，只是暫時承認你。 ");return}
+  if(type==="prisoner"){showPrisoner();return}
+  if(type==="treasury"){showTreasury();return}
+  if(type==="exit"){showExit();return}
+ }
+ function rewardMul(r=run()){if(!r)return 1;let m=oathOf(r).reward*(1+n(r.rewardBonus,1)-1)*(1+n(r.depth,0)*.025);if((r.curses||[]).some(c=>c[0]==="貪婪詛咒"))m*=1.25;return m}
+ function addCurse(name=null){const r=run();if(!r)return;if(r.curseImmune>0){r.curseImmune--;floatText("抗咒印",true);log("🧿 抗咒印抵消了一次下獄詛咒");return}const c=name?CURSES.find(x=>x[0]===name):choice(CURSES);if(!r.curses.some(x=>x[0]===c[0]))r.curses.push(c);else r.pursuit=Math.min(r.pursuitMax,r.pursuit+1);log("☠️ 獲得下獄詛咒：「"+c[0]+"」");}
+ function trapRoom(){
+  const r=run(); if(!r)return;
+  if(r.trapImmune>0){r.trapImmune--;generateDoors(r);save(false);showRunPanel("🪤 陷阱房：陷阱免疫生效，這次迷宮咬空了。");return}
+  const traps=[
+   ["刺骨地刺",()=>dealPlayerDamage((p.hp||playerMaxHp())*.10,{trueDamage:true,status:true,source:"刺骨地刺"}),"扣除目前生命 10%"],
+   ["腐魂毒霧",()=>addCurse(),"獲得 1 層下獄詛咒"],
+   ["斷燈之風",()=>{r.soulLamp=Math.max(0,r.soulLamp-1)},"魂燈 -1"],
+   ["鎖魂鐵鏈",()=>{playerStatus().weak=Math.max(playerStatus().weak||0,8)},"下一場戰鬥玩家傷害降低"],
+   ["血牆壓迫",()=>{r.nextBloodWall=1},"下一場怪物攻擊提升"],
+   ["黑牢封印",()=>{for(const k in p.cd)p.cd[k]=Math.max(p.cd[k]||0,8)},"所有技能冷卻至少 8 秒"],
+   ["獄火爆燃",()=>dealPlayerDamage(playerMaxHp()*.12*(r.soulLamp<=0?1.35:1),{trueDamage:true,status:true,source:"獄火爆燃"}),"受到最大生命百分比傷害"],
+   ["無聲凝視",()=>{r.pursuit=Math.min(r.pursuitMax,r.pursuit+4)},"追獄值大幅上升"]
+  ];
+  const t=choice(traps);t[1]();floatText("🪤"+t[0],true);log("🪤 下獄陷阱：「"+t[0]+"」："+t[2]);
+  if(p.hp<=0){hellFail("死於陷阱",.12);return}
+  generateDoors(r);save(false);showRunPanel(`🪤 <b>${t[0]}</b><div class="small">${t[2]}</div>`)
+ }
+ function showAltar(){
+  const r=run();if(!r)return;
+  openModal(`<div class="row"><div class="cc0922HellTitle">🕯️ 祭壇房</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${runStatsHtml(r)}<div class="small">祭壇不問你想要什麼，只問你肯拿什麼來換。</div><div class="cc0922HellGrid">
+   <div class="cc0922HellDoor"><b>獻祭生命</b><div class="cc0922Tiny">失去目前生命20%，接下來獎勵與傷害上升。</div><button class="purple" onclick="window.cc0922Altar('life')">獻祭</button></div>
+   <div class="cc0922HellDoor"><b>獻祭防禦</b><div class="cc0922Tiny">防禦降低3層，下次精英獎勵翻倍。</div><button class="purple" onclick="window.cc0922Altar('def')">獻祭</button></div>
+   <div class="cc0922HellDoor"><b>獻祭鑰匙</b><div class="cc0922Tiny">消耗1把鑰匙，看見下一層所有門的真實內容。</div><button class="purple" ${r.keys>0?"":"disabled"} onclick="window.cc0922Altar('key')">獻祭</button></div>
+   <div class="cc0922HellDoor"><b>獻祭魂燈</b><div class="cc0922Tiny">魂燈-1，獲得一次陷阱免疫。</div><button class="purple" onclick="window.cc0922Altar('lamp')">獻祭</button></div>
+   <div class="cc0922HellDoor"><b>獻祭詛咒</b><div class="cc0922Tiny">增加1層詛咒，獎勵倍率上升。</div><button class="purple" onclick="window.cc0922Altar('curse')">獻祭</button></div>
+   <div class="cc0922HellDoor"><b>不獻祭</b><div class="cc0922Tiny">什麼都不給，祭壇也什麼都不說。</div><button onclick="window.cc0922AfterEvent('你離開祭壇，背後的火沒有熄。')">離開</button></div>
+  </div>`)
+ }
+ function altar(kind){const r=run();if(!r)return;let msg="";
+  if(kind==="life"){dealPlayerDamage((p.hp||playerMaxHp())*.20,{trueDamage:true,status:true,source:"獻祭生命"});r.rewardBonus+=.12;r.damageBuff=3;msg="獻祭生命：傷害提升，獎勵倍率上升。"}
+  if(kind==="def"){r.defBuff=Math.min(r.defBuff||0,-3);r.nextEliteDouble=1;msg="獻祭防禦：下一次精英獎勵翻倍。"}
+  if(kind==="key"&&r.keys>0){r.keys--;r.revealNext=1;msg="獻祭鑰匙：下一層門後內容被看破。"}
+  if(kind==="lamp"){r.soulLamp=Math.max(0,r.soulLamp-1);r.trapImmune++;msg="獻祭魂燈：獲得一次陷阱免疫。"}
+  if(kind==="curse"){addCurse();r.rewardBonus+=.20;msg="獻祭詛咒：獎勵倍率上升。"}
+  if(p.hp<=0){hellFail("獻祭過度",.15);return}afterEvent(msg)}
+ function showSupply(){
+  const r=run();const opts=["shield","cleanse","eye","pursuit","def","lamp","curseImmune","eliteDown"].sort(()=>Math.random()-.5).slice(0,3);
+  const name={shield:["魂盾","獲得一層護盾"],cleanse:["清魂火","清除負面狀態"],eye:["破門眼","看見下一層所有門真實內容"],pursuit:["鎮獄符","降低追獄值"],def:["鐵骨灰","防禦提升2層"],lamp:["靜魂燭","魂燈+1"],curseImmune:["抗咒印","下一次詛咒無效"],eliteDown:["斷鏈釘","下一次精英/獄卒攻擊降低"]};
+  openModal(`<div class="row"><div class="cc0922HellTitle">🕯️ 補給房</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${runStatsHtml(r)}<div class="small">下獄沒有回血，只有讓你多撐一口氣的東西。</div><div class="cc0922HellGrid">${opts.map(k=>`<div class="cc0922HellDoor"><b>${name[k][0]}</b><div class="cc0922Tiny">${name[k][1]}</div><button class="green" onclick="window.cc0922Supply('${k}')">取得</button></div>`).join("")}</div>`)
+ }
+ function supply(k){const r=run();if(!r)return;let msg="";
+  if(k==="shield"){r.shield+=Math.floor(playerMaxHp()*.30);msg="魂盾：獲得護盾 "+fmt(playerMaxHp()*.30)}
+  if(k==="cleanse"){clearPlayerStatus();msg="清魂火：負面狀態已清除。"}
+  if(k==="eye"){r.revealNext=1;msg="破門眼：下一層門後內容會被看破。"}
+  if(k==="pursuit"){r.pursuit=Math.max(0,r.pursuit-4);msg="鎮獄符：追獄值降低。"}
+  if(k==="def"){r.defBuff=Math.max(r.defBuff||0,2);msg="鐵骨灰：防禦提升2層。"}
+  if(k==="lamp"){r.soulLamp++;msg="靜魂燭：魂燈 +1。"}
+  if(k==="curseImmune"){r.curseImmune++;msg="抗咒印：下一次詛咒無效。"}
+  if(k==="eliteDown"){r.nextEliteDown++;msg="斷鏈釘：下一次精英/獄卒攻擊降低。"}
+  afterEvent(msg)}
+ function showPrisoner(){const r=run();openModal(`<div class="row"><div class="cc0922HellTitle">👻 囚徒事件</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${runStatsHtml(r)}<div class="small">門後的亡魂認得每一個想活著出去的人。</div><div class="cc0922HellGrid"><div class="cc0922HellDoor"><b>解開鎖鏈</b><div class="cc0922Tiny">獲得獄紋與亡魂幣，但可能引來詛咒。</div><button class="purple" onclick="window.cc0922Prisoner('free')">選擇</button></div><div class="cc0922HellDoor"><b>聽完遺言</b><div class="cc0922Tiny">降低追獄值，魂燈+1。</div><button class="green" onclick="window.cc0922Prisoner('listen')">選擇</button></div><div class="cc0922HellDoor"><b>奪走鑰匙</b><div class="cc0922Tiny">鑰匙+1，但獲得詛咒。</div><button class="red" onclick="window.cc0922Prisoner('rob')">選擇</button></div></div>`)}
+ function prisoner(k){const r=run();let msg="";if(k==="free"){r.temp.runes+=Math.ceil(4*rewardMul(r));r.temp.soulCoins+=Math.ceil(12*rewardMul(r));if(Math.random()<.45)addCurse();msg="你解開鎖鏈，亡魂把還沒爛完的名字交給你。"}if(k==="listen"){r.pursuit=Math.max(0,r.pursuit-3);r.soulLamp++;msg="你聽完遺言，迷宮短暫安靜下來。"}if(k==="rob"){r.keys++;addCurse();msg="你奪走鑰匙，囚徒在你背後笑。"}afterEvent(msg)}
+ function showTreasury(){const r=run();openModal(`<div class="row"><div class="cc0922HellTitle">🧰 寶庫房</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${runStatsHtml(r)}<div class="small">寶庫不是獎勵，是迷宮問你還有多貪。</div><div class="cc0922Choice"><button class="purple" ${r.keys>0?"":"disabled"} onclick="window.cc0922OpenTreasury()">消耗 1 鑰匙開啟寶庫</button><button onclick="window.cc0922AfterEvent('你放棄寶庫，鎖孔裡傳來失望的笑聲。')">離開</button></div>`)}
+ function openTreasury(){const r=run();if(!r||r.keys<=0)return;r.keys--;r.temp.materials+=Math.ceil(45*rewardMul(r));r.temp.artifactFragments+=Math.ceil(6*rewardMul(r));r.temp.soulCoins+=Math.ceil(24*rewardMul(r));r.temp.items+=1;if(Math.random()<.35)addCurse();afterEvent("寶庫開啟：大量下獄材料、神器碎片、亡魂幣與裝備進入臨時獎勵。")}
+ function showExit(){const r=run();openModal(`<div class="row"><div class="cc0922HellTitle">🚪 出口房</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${runStatsHtml(r)}<div class="small">出口就在前方。迷宮沒有攔你，它只是把更深處的獎勵放在你眼前。</div><div class="cc0922Choice"><button class="green" onclick="window.cc0922SettleHell('exit')">直接離開，安全結算</button><button class="purple" onclick="window.cc0922DeepenHell()">繼續深入，獎勵倍率提升</button><button class="purple" ${r.keys>0?"":"disabled"} onclick="window.cc0922DeepDoor()">消耗鑰匙開啟深層門</button><button class="purple" ${r.keys>0?"":"disabled"} onclick="window.cc0922OpenTreasury()">消耗鑰匙開寶庫</button></div>`)}
+ function deepen(){const r=run();r.rewardBonus+=.18;r.pursuit=Math.min(r.pursuitMax,r.pursuit+1);generateDoors(r);save(false);showRunPanel("你選擇繼續深入。獎勵倍率提升，但獄卒也記住你走路的聲音。")}
+ function deepDoor(){const r=run();if(r.keys<=0)return;r.keys--;r.rewardBonus+=.32;r.pursuit=Math.min(r.pursuitMax,r.pursuit+2);r.maxDepth+=2;generateDoors(r);save(false);showRunPanel("你用鑰匙打開深層門。迷宮往下多長出兩層。")}
+ function afterEvent(msg){const r=run();if(!r)return;generateDoors(r);save(false);showRunPanel(esc(msg))}
+ function startFight(type){
+  const r=run(); if(!r)return; closeModal();
+  dungeon={type:HELL_TYPE,running:true,timer:999999,kills:0,gain:0,roomType:type};
+  saveCurrentMapProgress();p.world.current="hell";syncStageFromCurrentMap();
+  fight=createHellEnemy(type,r);p.queue=0;hold=false;budget=0;resetCombo();clearPlayerStatus();
+  if(r.damageBuff>0)log("🕯️ 祭壇餘威：本房戰鬥傷害提升");
+  log((type==="boss"?"🚪 守門 Boss 房":type==="jailer"?"🚨 獄卒追殺":type==="elite"?"🩸 精英房":"⚔️ 戰鬥房")+" 開始。下獄內不回血、不復活。");
+  save(false);show("main");render();
+ }
+ function createHellEnemy(type,r){
+  const base=Math.max(50000,atk()*Math.max(18,asp()*8)+playerMaxHp()*.18+r.depth*35000),lampDanger=r.soulLamp<=0?1.35:r.soulLamp<=3?1.15:1;
+  const curseAtk=(r.curses||[]).some(c=>c[0]==="裂魂詛咒")?1.25:1;
+  const blood=r.nextBloodWall?1.35:1;r.nextBloodWall=0;
+  const down=r.nextEliteDown>0&&(type==="elite"||type==="jailer")?.65:1;if(down<1)r.nextEliteDown--;
+  let mul=type==="boss"?12:type==="jailer"?7:type==="elite"?4:1.65;
+  let atkMul=type==="boss"?.07:type==="jailer"?.055:type==="elite"?.038:.022;
+  if(type==="boss")mul*=Math.max(.35,1-r.bossWeak*.08);
+  const hp=Math.max(1,Math.floor(base*mul*lampDanger)),def=Math.floor((playerDef()+r.depth*1200)*(type==="boss"?.55:type==="elite"?.35:.18));
+  const mAtk=Math.max(1,Math.floor(playerMaxHp()*atkMul*lampDanger*curseAtk*blood*down));
+  const names={combat:["腐骨囚徒","斷燈獄犬","鐵鎖亡魂"],elite:["鎖魂看守","黑牢刑者","血牆典獄長"],jailer:["追獄值收稅員","鐵靴獄卒","你走太久了本人"],boss:["下獄守門 Boss","斷誓守門者","迷宮最後一盞燈"]};
+  const emojis={combat:"🧟",elite:"👹",jailer:"🚨",boss:"🔥"};
+  return enemy({mode:"dungeon",dungeonType:HELL_TYPE,hell:true,hellRoomType:type,type:type==="boss"?"boss":type==="elite"||type==="jailer"?"elite":"normal",name:choice(names[type]||names.combat),emoji:emojis[type]||"🧟",hp,def,reg:0,gold:0,xp:0,drop:0,timer:0,mAtk,armorBreak:Math.floor(playerDef()*(type==="boss"?.07:.03)),mAspd:type==="boss"?.95:type==="jailer"?1.1:type==="elite"?.9:.75,skill:type==="boss"?"hell_boss":type==="jailer"?"hell_jailer":null,skillCd:type==="boss"?18:14,statusRes:.75,targetKey:"hell"})
+ }
+ function tempRewardFor(type){const r=run();if(!r)return;const m=rewardMul(r)*(r.nextEliteDouble&&type==="elite"?2:1);if(type==="combat"){r.temp.materials+=Math.ceil(10*m);r.temp.soulCoins+=Math.ceil(4*m);r.temp.soul+=Math.ceil(2*m)}
+  if(type==="elite"){r.temp.materials+=Math.ceil(26*m);r.temp.artifactFragments+=Math.ceil(2*m);r.temp.soulCoins+=Math.ceil(10*m);r.temp.runes+=Math.ceil(2*m);r.temp.soul+=Math.ceil(6*m);if(Math.random()<.25*m)r.keys++;if(r.oath==="slaughter"){r.bossWeak++;log("🩸 殺戮誓約：擊殺精英，守門 Boss 被削弱。")}}
+  if(type==="jailer"){r.temp.materials+=Math.ceil(34*m);r.temp.soulCoins+=Math.ceil(18*m);r.temp.runes+=Math.ceil(4*m);r.keys++;r.pursuit=Math.floor(r.pursuitMax*.45);log("🚨 反殺獄卒：追獄值下降，鑰匙 +1。")}
+  if(type==="boss"){r.temp.materials+=Math.ceil(80*m);r.temp.artifactFragments+=Math.ceil(10*m);r.temp.soulCoins+=Math.ceil(40*m);r.temp.runes+=Math.ceil(10*m);r.temp.soul+=Math.ceil(20*m);r.temp.bossCores+=1;r.temp.items+=2}
+  if(type==="elite")r.nextEliteDouble=0;if(r.damageBuff>0)r.damageBuff--;
+ }
+ function hellKill(){
+  const r=run();if(!r){dungeon=null;returnToOrigin();return}
+  const type=(dungeon&&dungeon.roomType)||r.lastRoom||"combat";tempRewardFor(type);hell().bestDepth=Math.max(hell().bestDepth||0,r.depth||0);
+  dungeon=null;fight=null;
+  if(type==="boss"){settleHell("boss");return}
+  generateDoors(r);save(false);returnToOrigin();showRunPanel((type==="jailer"?"你反殺了獄卒，迷宮短暫閉嘴。":"房間清理完成，臨時獎勵已收入本次下獄背包。"));
+ }
+ function settleHell(kind="exit"){
+  const r=run();if(!r)return;const rate=kind==="death"?.25:kind==="jailerDeath"?.12:kind==="trapDeath"?.12:1;
+  const t=r.temp||blankTemp(),h=hell();
+  const add=(key,val)=>{h[key]=Math.floor(n(h[key],0)+Math.floor(n(val,0)*rate))};
+  add("materials",t.materials);add("artifactFragments",t.artifactFragments);add("soulCoins",t.soulCoins);add("runes",t.runes);add("bossCores",t.bossCores);
+  const soul=Math.floor(n(t.soul,0)*rate);if(soul>0)p.soul=(p.soul||0)+soul;
+  const itemCount=Math.floor(n(t.items,0)*rate);for(let i=0;i<itemCount;i++)processItemDrop(makeDropItem(Math.max(1,p.stage||1)+Math.floor((r.depth||0)/2),{type:kind==="boss"?"boss":"elite",drop:1}),"下獄帶出");
+  if(kind==="boss"){h.clears=Math.floor(n(h.clears,0))+1;h.lastResult="擊敗守門 Boss";log("🔥 擊敗下獄守門 Boss，完整通關獎勵已結算。")}
+  else if(kind==="exit"){h.lastResult="成功離開";log("🚪 成功離開下獄，本次臨時獎勵已全數帶出。")}
+  else{h.lastResult="下獄失敗";log("💀 下獄失敗，只保留部分基礎獎勵。")}
+  h.bestDepth=Math.max(h.bestDepth||0,r.depth||0);h.run=null;dungeon=null;returnToOrigin();save(false);closeModal();render();
+ }
+ function hellFail(reason="死亡",rate=.25){const r=run();if(r){log("💀 下獄失敗：「"+reason+"」。誓約解除。");}settleHell(reason==="被獄卒擊殺"?"jailerDeath":reason==="死於陷阱"?"trapDeath":"death")}
+ function abandonHell(){if(!run())return;log("🔥 主動放棄下獄，本次誓約解除。");hell().run=null;dungeon=null;returnToOrigin();save(false);closeModal();render()}
+ function leaveHellSoft(){const r=run();if(!r)return;dungeon=null;returnToOrigin("你中途退出下獄，但誓約沒有解除。切回「"+jobName(r.lockedJob)+"」可繼續。");closeModal();save(false);}
+ function returnToOrigin(msg=""){
+  try{saveCurrentMapProgress();p.world.current="origin";syncStageFromCurrentMap();clearPlayerStatus();p.hp=Math.max(1,Math.min(playerMaxHp(),p.hp||playerMaxHp()));if(!fight||isHellDungeon()||fight.hell){spawnMain()}else render();show("main");if(msg)log(msg)}catch(e){try{spawnMain();show("main")}catch(err){}}
+ }
+ function hellPlayerDeath(){hellFail("死亡",.25)}
+ function monsterSkillHell(m){const r=run();if(!m||!r)return false;if(m.skill==="hell_boss"){const real=dealPlayerDamage(playerMaxHp()*.12,{trueDamage:true,status:true,source:"守門壓迫",m});m.skillTimer=m.skillCd||18;floatText("🔥守門壓迫",true);log("🔥 守門 Boss 壓迫：最大生命百分比傷害。");return true}if(m.skill==="hell_jailer"){r.pursuit=Math.min(r.pursuitMax,r.pursuit+1);m.skillTimer=m.skillCd||14;dealPlayerDamage(playerMaxHp()*.06,{trueDamage:true,status:true,source:"獄卒鐵靴",m});floatText("🚨鐵靴追殺",true);return true}return false}
+ function showInfoPanel(){const h=hell();openModal(`<div class="row"><div class="cc0922HellTitle">🔥 下獄資源</div><button onclick="window.cc0922CloseHell()">關閉</button></div>${permHtml()}<div class="small">下獄規則：不回血、不復活、每次進門魂燈 -1、追獄值 +1。死亡只保留部分獎勵；活著離開才是把貪念帶回家。</div>`)}
+ function ensureHellSystems(){
+  if(!p)return;hell();ensureHellMapOpen();
+  if(p.hell.run&&p.hell.run.active){const r=p.hell.run;r.temp=Object.assign(blankTemp(),r.temp||{});r.curses=Array.isArray(r.curses)?r.curses:[];r.doors=Array.isArray(r.doors)?r.doors:[];r.pursuitMax=Math.max(8,Math.floor(n(r.pursuitMax,12)));r.maxDepth=Math.max(6,Math.floor(n(r.maxDepth,12)));if(!OATHS[r.oath])r.oath="survival";if(!r.lockedJob)r.lockedJob=curJob();}
+ }
+ const oldEnsure=typeof ensureNewSystems==="function"?ensureNewSystems:null;
+ if(oldEnsure)ensureNewSystems=function(){oldEnsure();ensureHellSystems()};
+ const oldCurrentMapName=typeof currentMapName==="function"?currentMapName:null;
+ if(oldCurrentMapName)currentMapName=function(){return currentMapId()==="hell"?"下獄":oldCurrentMapName()};
+ const oldCanEnterMap=typeof canEnterMap==="function"?canEnterMap:null;
+ if(oldCanEnterMap)canEnterMap=function(map){if(map&&map.id==="hell")return p.lv>=250;return oldCanEnterMap(map)};
+ const oldEnterWorldMap=typeof enterWorldMap==="function"?enterWorldMap:null;
+ if(oldEnterWorldMap)enterWorldMap=function(id){ensureHellSystems();if(id==="hell")return showGate();return oldEnterWorldMap(id)};
+ const oldRenderWorld=typeof renderWorld==="function"?renderWorld:null;
+ if(oldRenderWorld)renderWorld=function(){ensureHellMapOpen();const r=oldRenderWorld();try{const el=by("worldMapList");if(el&&!by("cc0922HellInfoBtn")){const h=hell();const card=document.createElement("div");card.className="mapCard open";card.innerHTML=`<div class="mapTitle"><div><b>🔥 下獄紀錄</b><div class="small">材料 ${Math.floor(h.materials)}｜亡魂幣 ${Math.floor(h.soulCoins)}｜獄紋 ${Math.floor(h.runes)}｜Boss核心 ${Math.floor(h.bossCores)}｜最深 ${Math.floor(h.bestDepth)} 層</div></div><button id="cc0922HellInfoBtn" onclick="window.cc0922ShowHellInfo()">查看</button></div>`;el.appendChild(card)}}catch(e){}return r};
+ const oldEffectivePlayerRegen=typeof effectivePlayerRegen==="function"?effectivePlayerRegen:null;
+ if(oldEffectivePlayerRegen)effectivePlayerRegen=function(){if(isHellDungeon())return 0;return oldEffectivePlayerRegen()};
+ const oldTickPlayer=typeof tickPlayer==="function"?tickPlayer:null;
+ if(oldTickPlayer)tickPlayer=function(dt){const before=p&&isHellDungeon()?n(p.hp,0):null;const r=oldTickPlayer(dt);if(before!=null&&p&&p.hp>before)p.hp=before;if(p&&p.hp<=0&&isHellDungeon())hellPlayerDeath();return r};
+ const oldCanTriggerUndying=typeof canTriggerUndying==="function"?canTriggerUndying:null;
+ if(oldCanTriggerUndying)canTriggerUndying=function(){if(isHellDungeon())return false;return oldCanTriggerUndying()};
+ const oldPlayerDeath=typeof playerDeath==="function"?playerDeath:null;
+ if(oldPlayerDeath)playerDeath=function(){if(isHellDungeon())return hellPlayerDeath();return oldPlayerDeath()};
+ const oldAbsorb=typeof absorbWithShields==="function"?absorbWithShields:null;
+ if(oldAbsorb)absorbWithShields=function(amount,trueDamage=false){let left=Math.max(0,amount);const r=run();if(r&&r.shield>0){const used=Math.min(r.shield,left);r.shield-=used;left-=used;if(used>0)floatText("🕯️魂盾-"+fmt(used))}return oldAbsorb(left,trueDamage)};
+ const oldEffectivePlayerDef=typeof effectivePlayerDef==="function"?effectivePlayerDef:null;
+ if(oldEffectivePlayerDef)effectivePlayerDef=function(){let v=oldEffectivePlayerDef();const r=run();if(r&&isHellDungeon()){if((r.curses||[]).some(c=>c[0]==="弱骨詛咒"))v*=.75;if(r.defBuff>0)v*=1.30;if(r.defBuff<0)v*=.70}return Math.max(0,Math.floor(v))};
+ const oldJobAtkBonus=typeof jobAtkBonus==="function"?jobAtkBonus:null;
+ if(oldJobAtkBonus)jobAtkBonus=function(){let v=oldJobAtkBonus();const r=run();if(r&&isHellDungeon()&&r.damageBuff>0)v+=.50;return v};
+ const oldMonsterUseSkill=typeof monsterUseSkill==="function"?monsterUseSkill:null;
+ if(oldMonsterUseSkill)monsterUseSkill=function(m){if(isHellDungeon()&&m&&m.hell)return monsterSkillHell(m);return oldMonsterUseSkill(m)};
+ const oldTickMonsterAI=typeof tickMonsterAI==="function"?tickMonsterAI:null;
+ if(oldTickMonsterAI)tickMonsterAI=function(dt){if(isHellDungeon()&&fight){const list=[fight];for(const m of list){if(!m||m.hp<=0)continue;if(m.attackTimer==null)m.attackTimer=monsterAttackInterval(m);m.attackTimer-=dt;let guard=0;while(m.attackTimer<=0&&guard<4){if(!monsterNormalAttack(m))return;m.attackTimer+=monsterAttackInterval(m);guard++;if(p.hp<=0)return}if(m.skill&&m.skillCd){if(m.skillTimer==null)m.skillTimer=m.skillCd;m.skillTimer-=dt;if(m.skillTimer<=0){monsterUseSkill(m);if(p.hp<=0)return}}}return}return oldTickMonsterAI(dt)};
+ const oldDungeonKill=typeof dungeonKill==="function"?dungeonKill:null;
+ if(oldDungeonKill)dungeonKill=function(){if(isHellDungeon())return hellKill();return oldDungeonKill()};
+ const oldEndDungeon=typeof endDungeon==="function"?endDungeon:null;
+ if(oldEndDungeon)endDungeon=function(){if(isHellDungeon())return hellFail("迷宮時間異常",.25);return oldEndDungeon()};
+ const oldRender=typeof render==="function"?render:null;
+ if(oldRender)render=function(){
+  ensureHellSystems();
+  const r=oldRender();
+  try{
+   document.title=VERSION_NAME;
+   document.querySelectorAll(".pill").forEach(el=>{
+    const txt=el.textContent||"";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22【下獄迷宮】職業誓約開門";
+   });
+   if(isHellDungeon()&&fight){
+    if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
+    if(by("timerBox"))by("timerBox").classList.add("hidden");
+    if(by("mainDungeonInfo")){
+     const rr=run();
+     const line=rr?("誓約："+oathOf(rr).name+"｜鎖定："+jobName(rr.lockedJob)+"｜層數 "+rr.depth+"/"+rr.maxDepth+"｜魂燈 "+rr.soulLamp+"｜追獄值 "+rr.pursuit+"/"+rr.pursuitMax+"｜鑰匙 "+rr.keys):"下獄戰鬥中";
+     by("mainDungeonInfo").classList.remove("hidden");
+     by("mainDungeonInfo").innerHTML='<b>🔥 下獄迷宮</b><div class="small">'+line+'<br>規則：不回血、不復活。<button onclick="window.cc0922LeaveHellSoft()">中途退出但不放棄</button></div>';
+    }
+    if(by("mapHud"))by("mapHud").textContent="下獄";
+   }
+  }catch(e){}
+  return r;
+ };
+ const oldRenderPlayerPanel=typeof renderPlayerPanel==="function"?renderPlayerPanel:null;
+ if(oldRenderPlayerPanel)renderPlayerPanel=function(){const r=oldRenderPlayerPanel();try{if(isHellDungeon()&&by("mapNow"))by("mapNow").textContent="下獄迷宮";if(isHellDungeon()&&by("playerRegen"))by("playerRegen").textContent="0"}catch(e){}return r};
+ window.cc0922CloseHell=closeModal;window.cc0922StartHell=startHell;window.cc0922EnterHellDoor=enterDoor;window.cc0922RestartHellFromMismatch=restartFromMismatch;window.cc0922ReturnFromHellGate=returnFromGate;window.cc0922LeaveHellSoft=leaveHellSoft;window.cc0922AbandonHell=abandonHell;window.cc0922Altar=altar;window.cc0922Supply=supply;window.cc0922Prisoner=prisoner;window.cc0922OpenTreasury=openTreasury;window.cc0922AfterEvent=afterEvent;window.cc0922SettleHell=settleHell;window.cc0922DeepenHell=deepen;window.cc0922DeepDoor=deepDoor;window.cc0922ShowHellInfo=showInfoPanel;window.cc0922HellGate=showGate;
+ setTimeout(()=>{try{ensureHellSystems();ensureHellMapOpen();document.title=VERSION_NAME}catch(e){}},0);
+ window.cc0922HellInfo=()=>({tag:TAG,active:!!run(),run:run(),perm:hell(),hellDungeon:isHellDungeon()});
+ console.log("傳承",TAG);
+})();
+
 </script>
 
 <script>
@@ -5959,7 +6285,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.21【天域開門】七女神免死修正";
+ const VERSION_NAME="傳承 Beta 0.9.22【下獄迷宮】職業誓約開門";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6029,7 +6355,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.21【天域開門】七女神免死修正"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22【下獄迷宮】職業誓約開門"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
