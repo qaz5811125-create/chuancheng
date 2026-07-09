@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-<title>傳承 Beta 0.9.22【下獄迷宮】職業誓約開門</title>
+<title>傳承 Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -346,7 +346,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22【下獄迷宮】職業誓約開門</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -5941,7 +5941,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
 /* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
 (function(){
  const TAG="0.9.22-hell-maze-oath-lock-v1";
- const VERSION_NAME="傳承 Beta 0.9.22【下獄迷宮】職業誓約開門";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -6238,7 +6238,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22【下獄迷宮】職業誓約開門";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6285,7 +6285,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.22【下獄迷宮】職業誓約開門";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6355,12 +6355,173 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22【下獄迷宮】職業誓約開門"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
  console.log("傳承",TAG);
 })();
 </script>
+
+
+<script>
+/* ===== Beta 0.9.22 Hotfix 1：下獄入口與攻速降溫 ===== */
+(function(){
+ const TAG="0.9.22-hotfix1-hell-entry-aspd-cooling";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】";
+ const ASPD_CAP=100;
+ const HIGH_ASPD=60;
+ const VERY_HIGH_ASPD=80;
+ const now=()=>performance&&performance.now?performance.now():Date.now();
+ function by(id){return document.getElementById(id)}
+ function safeNum(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
+ function rawAspd(){try{return window.__cc0922hfRawAsp?window.__cc0922hfRawAsp():ASPD_CAP}catch(e){return ASPD_CAP}}
+ function cappedAspd(){return Math.min(ASPD_CAP,Math.max(.2,rawAspd()))}
+ function isRealActiveDungeon(){
+  try{
+   if(typeof dungeon==="undefined"||!dungeon||!dungeon.running)return false;
+   if(dungeon.type==="hellMaze")return true;
+   if(typeof fight!=="undefined"&&fight&&(fight.mode==="dungeon"||fight.abyss||fight.hell))return true;
+   return false;
+  }catch(e){return false}
+ }
+ function isStaleDungeonFlag(){
+  try{return !!(typeof dungeon!=="undefined"&&dungeon&&dungeon.running&&!isRealActiveDungeon())}catch(e){return false}
+ }
+ function showHellNotice(title,body){
+  let m=by("cc0922HellModal");
+  if(!m){m=document.createElement("div");m.id="cc0922HellModal";m.className="cc0922HellModal";document.body.appendChild(m)}
+  m.innerHTML='<div class="cc0922HellCard"><div class="row"><div class="cc0922HellTitle">'+title+'</div><button onclick="window.cc0922CloseHell()">關閉</button></div><div class="card notice cc0922Warn"><div class="small">'+body+'</div></div></div>';
+  m.classList.remove("hidden");
+ }
+ function patchVersionText(){
+  try{
+   document.title=VERSION_NAME;
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 1【下獄入口與攻速降溫】"});
+  }catch(e){}
+ }
+ // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
+ if(typeof asp==="function"&&!window.__cc0922hfRawAsp){
+  window.__cc0922hfRawAsp=asp;
+  asp=function(){return cappedAspd()};
+ }
+ // 2) 下獄誓約入口保險：清除殘留 dungeon 旗標，並在點擊後強制刷新迷宮門畫面。
+ if(window.cc0922StartHell&&!window.__cc0922hfOldStartHell){
+  window.__cc0922hfOldStartHell=window.cc0922StartHell;
+  window.cc0922StartHell=function(oath){
+   try{
+    if(isStaleDungeonFlag()){
+     dungeon=null;
+     try{log("🔥 Hotfix：清除殘留副本旗標，下獄誓約入口已重新接通。")}catch(e){}
+    }
+    if(typeof dungeon!=="undefined"&&dungeon&&dungeon.running&&dungeon.type!=="hellMaze"&&isRealActiveDungeon()){
+     showHellNotice("🔥 下獄入口暫時封閉","目前正在其他副本或戰鬥流程中，請先結束後再簽下下獄誓約。這次提示會直接顯示在下獄畫面內，不會躲到背景訊息裡。");
+     return;
+    }
+    const before=window.cc0922HellInfo?window.cc0922HellInfo():null;
+    window.__cc0922hfOldStartHell(oath);
+    setTimeout(()=>{
+     try{
+      const info=window.cc0922HellInfo?window.cc0922HellInfo():null;
+      if(info&&info.active&&!info.hellDungeon&&window.cc0922HellGate)window.cc0922HellGate();
+      if((!info||!info.active)&&before&&!before.active&&!isRealActiveDungeon()){
+       showHellNotice("🔥 下獄入口異常","誓約按鈕已觸發，但迷宮沒有建立。本次 Hotfix 已加入保險提示，請回報這行文字。錯誤位置：cc0922StartHell fallback。");
+      }
+     }catch(e){}
+    },60);
+   }catch(err){
+    showHellNotice("🔥 下獄入口錯誤","簽下誓約時發生錯誤："+String(err&&err.message||err));
+   }
+  };
+ }
+ // 3) 關閉保險：避免下獄視窗把玩家鎖住。
+ if(window.cc0922CloseHell&&!window.__cc0922hfOldCloseHell){
+  window.__cc0922hfOldCloseHell=window.cc0922CloseHell;
+  window.cc0922CloseHell=function(){
+   try{window.__cc0922hfOldCloseHell()}catch(e){}
+   try{const m=by("cc0922HellModal");if(m)m.classList.add("hidden")}catch(e){}
+  };
+ }
+ // 4) 攻擊特效降溫：數值照算，畫面不要每下都噴 DOM。
+ if(typeof showHitEffect==="function"&&!window.__cc0922hfOldShowHitEffect){
+  window.__cc0922hfOldShowHitEffect=showHitEffect;
+  let lastFx=0;
+  showHitEffect=function(kind="normal"){
+   const a=cappedAspd(),t=now();
+   const minGap=a>=VERY_HIGH_ASPD?95:(a>=HIGH_ASPD?70:0);
+   if(minGap&&t-lastFx<minGap)return;
+   lastFx=t;
+   return window.__cc0922hfOldShowHitEffect(kind);
+  };
+ }
+ // 5) 音效降溫：高攻速時不要每下都 beep，手機 CPU 與喇叭一起下獄。
+ if(typeof sfx==="function"&&!window.__cc0922hfOldSfx){
+  window.__cc0922hfOldSfx=sfx;
+  let lastHit=0,lastOther=0;
+  sfx=function(k){
+   const a=cappedAspd(),t=now();
+   if(a>=HIGH_ASPD&&(k==="hit"||k==="boss"||k==="crit")){
+    const gap=a>=VERY_HIGH_ASPD?110:80;
+    if(t-lastHit<gap)return;
+    lastHit=t;
+   }else if(t-lastOther<35){return}else lastOther=t;
+   return window.__cc0922hfOldSfx(k);
+  };
+ }
+ // 6) 戰鬥 log 降溫：高攻速狀態堆疊文字不要把 log DOM 當沙包打。
+ if(typeof log==="function"&&!window.__cc0922hfOldLog){
+  window.__cc0922hfOldLog=log;
+  let lastMinor=0,minorSkipped=0,lastSummary=0;
+  const important=/擊敗|Boss|通關|死亡|失敗|下獄|誓約|獲得|升到|NEW|存檔|覺醒|鎖血|復活|核爆|入口|Hotfix/;
+  log=function(x){
+   try{
+    const a=cappedAspd(),t=now(),s=String(x||"");
+    if(a>=HIGH_ASPD&&!important.test(s)){
+     if(t-lastMinor<140){minorSkipped++;if(t-lastSummary>1200&&minorSkipped>0){lastSummary=t;const n=minorSkipped;minorSkipped=0;return window.__cc0922hfOldLog("⚙️ 高攻速降溫：已合併 "+n+" 條頻繁戰鬥訊息")}return}
+     lastMinor=t;
+    }
+   }catch(e){}
+   return window.__cc0922hfOldLog(x);
+  };
+ }
+ // 7) render 降溫 + 攻速顯示上限。
+ if(typeof render==="function"&&!window.__cc0922hfOldRender){
+  window.__cc0922hfOldRender=render;
+  let lastRender=0;
+  render=function(){
+   const a=cappedAspd(),t=now();
+   const busy=!!(typeof fight!=="undefined"&&fight&&typeof p!=="undefined"&&p&&(p.auto||p.queue>0));
+   const minGap=busy&&a>=VERY_HIGH_ASPD?85:(busy&&a>=HIGH_ASPD?65:0);
+   if(minGap&&t-lastRender<minGap)return;
+   lastRender=t;
+   const r=window.__cc0922hfOldRender();
+   try{
+    patchVersionText();
+    const raw=rawAspd(),el=by("aspd");
+    if(el){
+     if(raw>ASPD_CAP)el.textContent=ASPD_CAP.toFixed(2)+"（已達上限）";
+     else if(raw>=VERY_HIGH_ASPD)el.textContent=cappedAspd().toFixed(2)+"（降溫）";
+     else el.textContent=cappedAspd().toFixed(2);
+    }
+   }catch(e){}
+   return r;
+  };
+ }
+ // 8) 佇列保護：避免高攻速時手動/自動佇列膨脹太高。
+ if(typeof request==="function"&&!window.__cc0922hfOldRequest){
+  window.__cc0922hfOldRequest=request;
+  request=function(n=1){
+   const a=cappedAspd();
+   const limit=a>=VERY_HIGH_ASPD?120:160;
+   if(typeof p!=="undefined"&&p&&p.queue>limit)p.queue=limit;
+   return window.__cc0922hfOldRequest(n);
+  };
+ }
+ setTimeout(()=>{try{patchVersionText();if(typeof render==="function")render()}catch(e){}},0);
+ window.cc0922HotfixInfo=()=>({tag:TAG,aspdRaw:rawAspd(),aspdEffective:cappedAspd(),cap:ASPD_CAP,hellInfo:window.cc0922HellInfo?window.cc0922HellInfo():null});
+ console.log("傳承",TAG);
+})();
+</script>
+
 </body>
 </html>
