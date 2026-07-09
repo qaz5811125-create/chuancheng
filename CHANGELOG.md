@@ -1,3 +1,17 @@
+# CHANGELOG
+
+## Beta 0.9.22 Hotfix 5【下獄門資料接回】
+
+- 修正下獄入口建立 run 後，門資料未被面板讀取導致 `verify-no-doors` 的問題。
+- 新增最終入口 `cc0922Hotfix5StartHell`。
+- 覆蓋 `window.cc0922StartHell` 與 `window.cc0922HellGate`，避免舊入口與舊 fallback 重新接管。
+- 新增門資料同步：`p.hell.run.doors` / `p.hell.doors` / `p.hell.currentDoors`。
+- 新增進門前修復：若門資料斷線，重新隨機補門並重畫面板。
+- 地圖仍維持隨機，入口每次生成 2～3 扇門。
+- 保留攻速上限 100/秒與高攻速降溫保護。
+
+---
+
 # 《傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】》
 
 ## 修正內容

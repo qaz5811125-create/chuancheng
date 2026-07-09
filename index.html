@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】</title>
+<title>傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -349,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 4【下獄入口殘留清除】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 5【下獄門資料接回】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -5944,7 +5944,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
 /* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
 (function(){
  const TAG="0.9.22-hell-maze-oath-lock-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -6241,7 +6241,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6288,7 +6288,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6358,7 +6358,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 4【下獄入口殘留清除】"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
@@ -6371,7 +6371,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 1：下獄入口與攻速降溫 ===== */
 (function(){
  const TAG="0.9.22-hotfix1-hell-entry-aspd-cooling";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  const ASPD_CAP=100;
  const HIGH_ASPD=60;
  const VERY_HIGH_ASPD=80;
@@ -6400,7 +6400,7 @@ setTimeout(hidePwaSplash,2500);
  function patchVersionText(){
   try{
    document.title=VERSION_NAME;
-   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 4【下獄入口殘留清除】"});
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"});
   }catch(e){}
  }
  // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
@@ -6529,11 +6529,11 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 2：下獄迷宮建立修正 / 隨機門保險 ===== */
 (function(){
  const TAG="0.9.22-hotfix2-hell-maze-build-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 4【下獄入口殘留清除】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
  }
  function ensureNoticeStyle(){
   if(by("cc0922hf2Style"))return;
@@ -6620,7 +6620,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 3：下獄強制建迷宮 / 隨機門直建 ===== */
 (function(){
  const TAG="0.9.22-hotfix3-hell-force-run-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -6700,7 +6700,7 @@ setTimeout(hidePwaSplash,2500);
  }
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 4【下獄入口殘留清除】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6749,7 +6749,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 4：下獄入口殘留清除 / 最終接線 ===== */
 (function(){
  const TAG="0.9.22-hotfix4-hell-stale-dungeon-clean-start";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 4【下獄入口殘留清除】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6775,7 +6775,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 4【下獄入口殘留清除】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6897,6 +6897,198 @@ setTimeout(hidePwaSplash,2500);
  window.cc0922Hotfix4Info=function(){try{return{tag:TAG,run:activeRun(),dungeon:typeof dungeon!=="undefined"?dungeon:null,fight:typeof fight!=="undefined"&&fight?{name:fight.name,hp:fight.hp,mode:fight.mode,hell:!!fight.hell}:null}}catch(e){return{tag:TAG,error:String(e)}}};
  if(typeof render==="function"&&!window.__cc0922hf4OldRender){window.__cc0922hf4OldRender=render;render=function(){const r=window.__cc0922hf4OldRender();patchVersion();return r}}
  setTimeout(()=>{try{patchVersion()}catch(e){}},0);
+ console.log("傳承",TAG);
+})();
+</script>
+
+
+<script>
+/* ===== Beta 0.9.22 Hotfix 5：下獄門資料接回 / 最終門線 ===== */
+(function(){
+ const TAG="0.9.22-hotfix5-hell-doors-final-line";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const HELL_TYPE="hellMaze";
+ const by=id=>document.getElementById(id);
+ const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+ const rnd=a=>a[Math.floor(Math.random()*a.length)];
+ const rint=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
+ const OATHS={
+  survival:{icon:"🕯️",name:"活命誓約",hint:1,trap:.65,elite:.65,reward:.65,desc:"怪物數量降低、陷阱減少、獎勵降低。"},
+  greed:{icon:"💰",name:"貪婪誓約",hint:1,trap:1.35,elite:1.15,reward:1.45,desc:"寶箱、神器碎片、下獄材料增加，但精英怪與陷阱增加。"},
+  slaughter:{icon:"🩸",name:"殺戮誓約",hint:1,trap:1,elite:1.75,reward:1.15,desc:"精英怪出現率提升，擊殺精英可削弱守門 Boss。"},
+  blind:{icon:"🌑",name:"盲行誓約",hint:.45,trap:1.1,elite:1.1,reward:1.75,desc:"迷宮提示變少，但通關獎勵倍率提高。"}
+ };
+ const HINTS={
+  combat:["聽見低吼聲","門後有爪子刮牆","一陣熱氣從門縫吐出","門板在呼吸"],
+  elite:["門上有血跡","門後傳來厚重呼吸","地上有被拖行的痕跡","牆面被重物撞出裂痕"],
+  trap:["完全沒有聲音","門縫吹出冷風","腳邊的灰突然往門內流","門把冷得像骨頭"],
+  altar:["門上刻著符文","門後傳來低聲祈禱","門把像活物一樣發燙","火光沒有影子"],
+  supply:["門縫有微光","門內有微弱燭火","空氣裡有乾淨的灰味","像有人剛剛離開"],
+  key:["傳來鎖鏈聲","門後有鐵環拖地聲","鎖孔正在滲出黑光","鑰匙聲在牆裡走路"],
+  prisoner:["門後傳來哭聲","有人在門後敲三下","牆內傳來求救聲","有人叫錯了你的名字"],
+  treasury:["金屬碰撞聲","門縫有暗金色光","門上掛著三道銹鎖","錢幣聲像牙齒在抖"],
+  exit:["遠處吹來不是下獄的風","門縫外有正常的光","地上的灰往外流去","門後安靜得不像迷宮"],
+  boss:["門後傳來守門者的腳步","符文在門上睜眼","整座迷宮都在叫你停下","火光跪在門前"]
+ };
+ function patchVersion(){
+  try{document.title=VERSION_NAME}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+ }
+ function addStyle(){
+  try{if(typeof addStyle==="function"){} }catch(e){}
+  if(by("cc0922HellStyleFinal"))return;
+  const st=document.createElement("style");st.id="cc0922HellStyleFinal";st.textContent=`
+  .cc0922HellModal{position:fixed;inset:0;background:rgba(2,6,23,.76);z-index:9998;display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(3px)}
+  .cc0922HellModal.hidden{display:none!important}.cc0922HellCard{width:min(760px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,rgba(15,23,42,.98),rgba(30,12,12,.98));border:1px solid rgba(248,113,113,.38);border-radius:18px;padding:14px;box-shadow:0 22px 70px rgba(0,0,0,.55)}
+  .cc0922HellGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin-top:8px}.cc0922HellDoor{border:1px solid rgba(248,113,113,.26);border-radius:14px;padding:10px;background:rgba(15,23,42,.78)}
+  .cc0922HellDoor b{display:block;margin-bottom:4px}.cc0922HellStat{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px;margin:8px 0}.cc0922HellStat span{border:1px solid rgba(148,163,184,.22);border-radius:999px;padding:5px 8px;background:rgba(2,6,23,.42)}
+  .cc0922Warn{border-color:rgba(251,191,36,.55)!important;background:rgba(120,53,15,.35)!important}.cc0922Tiny{font-size:12px;color:#cbd5e1;line-height:1.55}.cc0922Choice button{margin:4px}.cc0922HellTitle{font-size:18px;font-weight:1000}.cc0922DoorHint{min-height:38px}`;
+  document.head.appendChild(st);
+ }
+ function notice(title,body){
+  addStyle();let m=by("cc0922HellModal");
+  if(!m){m=document.createElement("div");m.id="cc0922HellModal";m.className="cc0922HellModal";document.body.appendChild(m)}
+  m.innerHTML='<div class="cc0922HellCard"><div class="row"><div class="cc0922HellTitle">'+title+'</div><button onclick="window.cc0922CloseHell&&window.cc0922CloseHell()">關閉</button></div><div class="card notice cc0922Warn"><div class="small">'+body+'</div></div></div>';
+  m.classList.remove("hidden");
+ }
+ function blankTemp(){return{materials:0,artifactFragments:0,soulCoins:0,runes:0,soul:0,bossCores:0,items:0}}
+ function currentJob(){try{return currentJobKey()}catch(e){return (typeof p!=="undefined"&&p&&(p.job||p.currentJob))||"warrior"}}
+ function jobName(k){try{return (typeof JOBS!=="undefined"&&JOBS&&JOBS[k]?((JOBS[k].icon||"")+" "+JOBS[k].name):k)||"未知職業"}catch(e){return k||"未知職業"}}
+ function ensureHellRoot(){
+  if(typeof p==="undefined"||!p)return null;
+  const old=(p.hell&&typeof p.hell==="object")?p.hell:{};
+  p.hell=Object.assign({materials:0,artifactFragments:0,soulCoins:0,runes:0,bossCores:0,bestDepth:0,clears:0,run:null,lastResult:"",doors:[]},old);
+  return p.hell;
+ }
+ function activeRun(){const h=ensureHellRoot();return h&&h.run&&h.run.active?h.run:null}
+ function safeClearEntrance(){
+  try{
+   if(typeof dungeon!=="undefined"&&dungeon&&dungeon.running){
+    const validHell=dungeon.type===HELL_TYPE&&typeof fight!=="undefined"&&fight&&fight.hell&&Number(fight.hp||0)>0;
+    const validOther=dungeon.type!==HELL_TYPE&&typeof fight!=="undefined"&&fight&&Number(fight.hp||0)>0&&(fight.mode==="dungeon"||fight.abyss);
+    if(!validHell&&!validOther)dungeon=null;
+    if(validOther)return false;
+   }
+  }catch(e){}
+  try{if(typeof fight!=="undefined"&&fight&&Number(fight.hp||0)<=0)fight=null}catch(e){}
+  try{if(typeof p!=="undefined"&&p){p.queue=0;hold=false;budget=0}}catch(e){}
+  return true;
+ }
+ function makeRun(oath){
+  oath=OATHS[oath]?oath:"survival";
+  return{active:true,lockedJob:currentJob(),oath,depth:0,maxDepth:12,soulLamp:12,pursuit:0,pursuitMax:12,keys:0,curses:[],temp:blankTemp(),rewardBonus:1,bossWeak:0,doors:[],history:[],shield:0,trapImmune:0,curseImmune:0,nextEliteDown:0,defBuff:0,revealNext:0,lastRoom:"",cc0922hf5:true,createdAt:Date.now()};
+ }
+ function weights(r){
+  const o=OATHS[r.oath]||OATHS.survival;
+  const w={combat:28,elite:12,trap:14,altar:10,supply:12,key:8,prisoner:7,treasury:4,exit:0,boss:0};
+  w.trap*=o.trap;w.elite*=o.elite;
+  if(r.depth>=4)w.exit=8;if(r.depth>=7)w.exit=14;if(r.depth>=r.maxDepth)w.boss=100;
+  if(r.keys>0)w.treasury+=4;
+  try{if((r.curses||[]).some(c=>c[0]==="盲目詛咒"))w.trap*=1.15}catch(e){}
+  if(r.soulLamp<=0){w.trap*=1.45;w.elite*=1.25;w.supply*=.65;w.exit*=.75}
+  if(r.oath==="survival"){w.supply+=8;w.exit+=5}
+  if(r.oath==="greed"){w.treasury+=8;w.key+=4}
+  if(r.oath==="slaughter"){w.elite+=10;w.combat+=4}
+  return w;
+ }
+ function rollRoom(r){const w=weights(r),sum=Object.values(w).reduce((a,b)=>a+b,0);let x=Math.random()*sum;for(const k in w){x-=w[k];if(x<=0)return k}return "combat"}
+ function doorHint(type,r){
+  const o=OATHS[r.oath]||OATHS.survival;
+  let clarity=(r.soulLamp>=8?1:r.soulLamp>=4?.72:r.soulLamp>=1?.42:0)*o.hint;
+  try{if((r.curses||[]).some(c=>c[0]==="盲目詛咒"))clarity*=.55}catch(e){}
+  if(clarity<=0)return "未知之門";
+  if(Math.random()>clarity)return rnd(["只有黑暗貼在門後","門後的聲音被魂燈吞掉","提示被灰燼蓋住","什麼都像陷阱，也什麼都像出口"]);
+  return rnd(HINTS[type]||["門後有東西"]);
+ }
+ function makeDoor(r,i){
+  const type=r.depth>=r.maxDepth?"boss":rollRoom(r);
+  const label={combat:"戰鬥",elite:"精英",trap:"陷阱",altar:"祭壇",supply:"補給",key:"鑰匙",prisoner:"囚徒",treasury:"寶庫",exit:"出口",boss:"守門 Boss"}[type]||"未知";
+  const danger={combat:2,elite:4,trap:3,altar:2,supply:1,key:2,prisoner:2,treasury:3,exit:1,boss:5}[type]||2;
+  const reward={combat:2,elite:4,trap:1,altar:3,supply:1,key:3,prisoner:3,treasury:5,exit:4,boss:6}[type]||2;
+  return{id:"hf5-"+(Date.now())+"-"+i+"-"+Math.random().toString(36).slice(2),type,hint:doorHint(type,r),label,danger,reward,nonce:Math.random().toString(36).slice(2),cc0922hf5:true};
+ }
+ function forceDoors(r){
+  if(!r)return[];
+  const count=r.depth>=r.maxDepth?1:rint(2,3);
+  const arr=[];for(let i=0;i<count;i++)arr.push(makeDoor(r,i));
+  r.doors=arr;r.revealNext=0;
+  const h=ensureHellRoot();if(h){h.doors=arr;h.currentDoors=arr;h.run=r;}
+  window.__cc0922hf5Run=r;window.__cc0922hf5Doors=arr;
+  return arr;
+ }
+ function attachRun(r){
+  const h=ensureHellRoot();if(!h||!r)return null;
+  if(!Array.isArray(r.doors)||r.doors.length<1)forceDoors(r);
+  h.run=r;h.doors=r.doors;h.currentDoors=r.doors;
+  window.__cc0922hf5Run=r;window.__cc0922hf5Doors=r.doors;
+  return r;
+ }
+ function repairRun(oath){
+  const h=ensureHellRoot();if(!h)return null;
+  let r=(h.run&&h.run.active)?h.run:(window.__cc0922hf5Run&&window.__cc0922hf5Run.active?window.__cc0922hf5Run:makeRun(oath));
+  if(!r.oath||!OATHS[r.oath])r.oath=OATHS[oath]?oath:"survival";
+  if(!r.lockedJob)r.lockedJob=currentJob();
+  if(!r.temp)r.temp=blankTemp();
+  if(!Array.isArray(r.curses))r.curses=[];
+  if(!Array.isArray(r.history))r.history=[];
+  if(!Array.isArray(r.doors)||r.doors.length<1)forceDoors(r);
+  return attachRun(r);
+ }
+ function statsHtml(r){
+  const o=OATHS[r.oath]||OATHS.survival,cs=(r.curses||[]).map(c=>c[0]).join("、")||"無",t=r.temp||blankTemp();
+  return `<div class="cc0922HellStat"><span>誓約：${o.icon} ${o.name}</span><span>鎖定：${esc(jobName(r.lockedJob))}</span><span>層數：${r.depth}/${r.maxDepth}</span><span>魂燈：${r.soulLamp}</span><span>追獄值：${r.pursuit}/${r.pursuitMax}</span><span>鑰匙：${r.keys}</span></div><div class="cc0922Tiny">詛咒：${esc(cs)}<br>臨時獎勵：下獄材料 ${Math.floor(t.materials||0)}｜神器碎片 ${Math.floor(t.artifactFragments||0)}｜亡魂幣 ${Math.floor(t.soulCoins||0)}｜獄紋 ${Math.floor(t.runes||0)}｜傳承之魂 ${Math.floor(t.soul||0)}｜裝備 ${Math.floor(t.items||0)}</div>`;
+ }
+ function showRunPanel5(extra=""){
+  const r=repairRun();
+  if(!r){notice("🔥 下獄入口錯誤","Hotfix5 無法讀取玩家下獄資料。請重新整理後再試。<br>位置：cc0922Hotfix5 no-root");return}
+  const doors=(r.doors||[]).map((d,i)=>`<div class="cc0922HellDoor"><b>門 ${i+1}${d.label?"｜"+esc(d.label):""}</b><div class="cc0922DoorHint small">${esc(d.hint||"未知之門")}</div><div class="cc0922Tiny">危險 ${"★".repeat(Math.max(1,Math.min(5,d.danger||2)))}｜獎勵 ${"★".repeat(Math.max(1,Math.min(6,d.reward||2)))}</div><button class="purple" onclick="window.cc0922EnterHellDoor(${i})">推門進入</button></div>`).join("");
+  let m=by("cc0922HellModal");if(!m){m=document.createElement("div");m.id="cc0922HellModal";m.className="cc0922HellModal";document.body.appendChild(m)}
+  m.innerHTML=`<div class="cc0922HellCard"><div class="row"><div class="cc0922HellTitle">🔥 下獄迷宮進行中</div><button onclick="window.cc0922CloseHell&&window.cc0922CloseHell()">關閉</button></div><div class="small">不是找正確的路，而是在每一條危險的路前，都覺得自己有理由走進去。</div>${statsHtml(r)}${extra?`<div class="card notice">${extra}</div>`:""}<div class="cc0922HellGrid">${doors}</div><div class="cc0922Choice"><button onclick="window.cc0922LeaveHellSoft&&window.cc0922LeaveHellSoft()">中途退出但不放棄</button><button class="red" onclick="window.cc0922AbandonHell&&window.cc0922AbandonHell()">主動放棄下獄</button></div></div>`;
+  m.classList.remove("hidden");
+ }
+ function showGate5(){
+  patchVersion();addStyle();
+  if(typeof p!=="undefined"&&p&&Number(p.lv||0)<250){try{log("下獄需要 Lv250 才能進入")}catch(e){};return}
+  const r=activeRun();
+  if(r){if(r.lockedJob&&r.lockedJob!==currentJob()&&typeof window.cc0922HellGate==="function"&&window.__cc0922hf5OldGate){try{return window.__cc0922hf5OldGate()}catch(e){}}showRunPanel5();return}
+  const h=ensureHellRoot();
+  const perm=`<div class="cc0922Tiny">永久資源：下獄材料 ${Math.floor((h&&h.materials)||0)}｜神器碎片 ${Math.floor((h&&h.artifactFragments)||0)}｜亡魂幣 ${Math.floor((h&&h.soulCoins)||0)}｜獄紋 ${Math.floor((h&&h.runes)||0)}｜Boss核心 ${Math.floor((h&&h.bossCores)||0)}｜通關 ${Math.floor((h&&h.clears)||0)} 次｜最深 ${Math.floor((h&&h.bestDepth)||0)} 層</div>`;
+  const cards=Object.keys(OATHS).map(k=>{const o=OATHS[k];return `<div class="cc0922HellDoor"><b>${o.icon} ${o.name}</b><div class="cc0922Tiny">${esc(o.desc)}</div><button class="purple" onclick="window.cc0922StartHell('${k}')">簽下誓約</button></div>`}).join("");
+  let m=by("cc0922HellModal");if(!m){m=document.createElement("div");m.id="cc0922HellModal";m.className="cc0922HellModal";document.body.appendChild(m)}
+  m.innerHTML=`<div class="cc0922HellCard"><div class="row"><div class="cc0922HellTitle">🔥 下獄迷宮</div><button onclick="window.cc0922CloseHell&&window.cc0922CloseHell()">關閉</button></div><div class="small">Lv250 開啟。一條命、一座迷宮、不回血、不復活。你用什麼職業踏進下獄，就必須用那條路走到結束。</div>${perm}<hr><b>選擇下獄誓約</b><div class="cc0922HellGrid">${cards}</div></div>`;
+  m.classList.remove("hidden");
+ }
+ function start5(oath){
+  try{
+   patchVersion();addStyle();
+   if(typeof p==="undefined"||!p){notice("🔥 下獄入口錯誤","玩家資料尚未載入，無法建立下獄迷宮。<br>位置：cc0922Hotfix5 no-player");return}
+   if(Number(p.lv||0)<250){try{log("下獄需要 Lv250 才能進入")}catch(e){};return}
+   if(!safeClearEntrance()){notice("🔥 下獄入口暫時封閉","目前正在有效副本戰鬥中，請先結束後再簽下下獄誓約。<br>位置：cc0922Hotfix5 real-dungeon");return}
+   const h=ensureHellRoot();
+   if(h.run&&h.run.active&&h.run.lockedJob&&h.run.lockedJob!==currentJob()){showGate5();return}
+   const r=makeRun(oath);forceDoors(r);attachRun(r);
+   try{if(typeof saveCurrentMapProgress==="function")saveCurrentMapProgress()}catch(e){}
+   try{save(false)}catch(e){}
+   try{log("🔥 Hotfix5：簽下【"+(OATHS[r.oath]||OATHS.survival).name+"】，門資料已接回，隨機生成 "+r.doors.length+" 扇門。鎖定職業：「"+jobName(r.lockedJob)+"」")}catch(e){}
+   showRunPanel5("Hotfix5：門資料已同步接到 p.hell.run.doors / p.hell.doors。本次門路仍隨機生成。");
+   setTimeout(()=>{try{const rr=repairRun(oath);if(rr)showRunPanel5("Hotfix5：入口驗證完成，隨機門已就位。") }catch(e){}},120);
+  }catch(err){notice("🔥 下獄入口錯誤","Hotfix5 建立迷宮時發生錯誤："+esc(err&&err.message||err)+"<br>位置：cc0922Hotfix5 start-catch")}
+ }
+ if(!window.__cc0922hf5OldEnterDoor)window.__cc0922hf5OldEnterDoor=window.cc0922EnterHellDoor;
+ if(!window.__cc0922hf5OldGate)window.__cc0922hf5OldGate=window.cc0922HellGate;
+ if(!window.__cc0922hf5OldClose)window.__cc0922hf5OldClose=window.cc0922CloseHell;
+ window.cc0922CloseHell=function(){try{if(window.__cc0922hf5OldClose)window.__cc0922hf5OldClose()}catch(e){}try{const m=by("cc0922HellModal");if(m)m.classList.add("hidden")}catch(e){}};
+ window.cc0922StartHell=start5;
+ window.cc0922Hotfix5StartHell=start5;
+ window.cc0922HellGate=showGate5;
+ window.cc0922EnterHellDoor=function(i){
+  try{const r=repairRun();if(!r||!Array.isArray(r.doors)||!r.doors[i]){showRunPanel5("Hotfix5：門資料曾短暫斷線，已重新隨機補門。請重新選門。");return}}
+  catch(e){}
+  if(typeof window.__cc0922hf5OldEnterDoor==="function")return window.__cc0922hf5OldEnterDoor(i);
+ };
+ if(typeof render==="function"&&!window.__cc0922hf5OldRender){window.__cc0922hf5OldRender=render;render=function(){const r=window.__cc0922hf5OldRender();patchVersion();return r}}
+ setTimeout(()=>{try{patchVersion();addStyle()}catch(e){}},0);
+ window.cc0922Hotfix5Info=function(){try{return{tag:TAG,run:activeRun(),doors:(activeRun()&&activeRun().doors)||null,hell:p&&p.hell,dungeon:typeof dungeon!=="undefined"?dungeon:null}}catch(e){return{tag:TAG,error:String(e)}}};
  console.log("傳承",TAG);
 })();
 </script>
