@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】</title>
+<title>傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -349,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 5【下獄門資料接回】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 6【下獄狀態同步】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -5944,7 +5944,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
 /* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
 (function(){
  const TAG="0.9.22-hell-maze-oath-lock-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -6241,7 +6241,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6288,7 +6288,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6358,7 +6358,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
@@ -6371,7 +6371,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 1：下獄入口與攻速降溫 ===== */
 (function(){
  const TAG="0.9.22-hotfix1-hell-entry-aspd-cooling";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const ASPD_CAP=100;
  const HIGH_ASPD=60;
  const VERY_HIGH_ASPD=80;
@@ -6400,7 +6400,7 @@ setTimeout(hidePwaSplash,2500);
  function patchVersionText(){
   try{
    document.title=VERSION_NAME;
-   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"});
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"});
   }catch(e){}
  }
  // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
@@ -6529,11 +6529,11 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 2：下獄迷宮建立修正 / 隨機門保險 ===== */
 (function(){
  const TAG="0.9.22-hotfix2-hell-maze-build-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
  }
  function ensureNoticeStyle(){
   if(by("cc0922hf2Style"))return;
@@ -6620,7 +6620,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 3：下獄強制建迷宮 / 隨機門直建 ===== */
 (function(){
  const TAG="0.9.22-hotfix3-hell-force-run-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -6700,7 +6700,7 @@ setTimeout(hidePwaSplash,2500);
  }
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6749,7 +6749,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 4：下獄入口殘留清除 / 最終接線 ===== */
 (function(){
  const TAG="0.9.22-hotfix4-hell-stale-dungeon-clean-start";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6775,7 +6775,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6906,7 +6906,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 5：下獄門資料接回 / 最終門線 ===== */
 (function(){
  const TAG="0.9.22-hotfix5-hell-doors-final-line";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 5【下獄門資料接回】";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6932,7 +6932,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 5【下獄門資料接回】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
  }
  function addStyle(){
   try{if(typeof addStyle==="function"){} }catch(e){}
@@ -7089,6 +7089,140 @@ setTimeout(hidePwaSplash,2500);
  if(typeof render==="function"&&!window.__cc0922hf5OldRender){window.__cc0922hf5OldRender=render;render=function(){const r=window.__cc0922hf5OldRender();patchVersion();return r}}
  setTimeout(()=>{try{patchVersion();addStyle()}catch(e){}},0);
  window.cc0922Hotfix5Info=function(){try{return{tag:TAG,run:activeRun(),doors:(activeRun()&&activeRun().doors)||null,hell:p&&p.hell,dungeon:typeof dungeon!=="undefined"?dungeon:null}}catch(e){return{tag:TAG,error:String(e)}}};
+ console.log("傳承",TAG);
+})();
+</script>
+
+
+
+<script>
+/* ===== Beta 0.9.22 Hotfix 6：下獄狀態與畫面同步 / 最後一刀 ===== */
+(function(){
+ const TAG="0.9.22-hotfix6-hell-state-screen-sync";
+ const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const HELL_TYPE="hellMaze";
+ const by=id=>document.getElementById(id);
+ function patchVersion(){
+  try{document.title=VERSION_NAME}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+ }
+ function hellRoot(){
+  if(typeof p==="undefined"||!p)return null;
+  if(!p.hell||typeof p.hell!=="object")p.hell={};
+  p.hell=Object.assign({materials:0,artifactFragments:0,soulCoins:0,runes:0,bossCores:0,bestDepth:0,clears:0,run:null,lastResult:"",doors:[],currentDoors:[]},p.hell||{});
+  return p.hell;
+ }
+ function activeRun(){const h=hellRoot();return h&&h.run&&h.run.active?h.run:null}
+ function isHellFight(){try{return !!(typeof dungeon!=="undefined"&&dungeon&&dungeon.running&&dungeon.type===HELL_TYPE&&typeof fight!=="undefined"&&fight&&fight.hell)}catch(e){return false}}
+ function isModalOpen(){const m=by("cc0922HellModal");return !!(m&&!m.classList.contains("hidden"))}
+ function openRunPanel(extra=""){
+  const r=activeRun();
+  if(!r)return false;
+  try{
+   if(typeof window.cc0922HellGate==="function"){
+    window.cc0922HellGate();
+    return true;
+   }
+  }catch(e){}
+  return false;
+ }
+ function syncIdleLocation(){
+  const r=activeRun();
+  if(!r)return false;
+  if(isHellFight()){
+   try{if(p.world)p.world.current="hell"; if(typeof syncStageFromCurrentMap==="function")syncStageFromCurrentMap()}catch(e){}
+   return true;
+  }
+  // 下獄「迷宮節點」不是一般推關戰鬥，不能把主城戰鬥畫面偽裝成下獄所在地。
+  // 因此沒有下獄戰鬥時，把世界所在地退回起源，並以迷宮面板作為真正的下獄畫面。
+  try{
+   if(p&&p.world&&p.world.current==="hell"){
+    if(typeof saveCurrentMapProgress==="function")saveCurrentMapProgress();
+    p.world.current="origin";
+    if(typeof syncStageFromCurrentMap==="function")syncStageFromCurrentMap();
+   }
+  }catch(e){}
+  return true;
+ }
+ function continueHell(extra=""){
+  patchVersion();
+  const r=activeRun();
+  if(!r){
+   try{if(typeof window.cc0922HellGate==="function")window.cc0922HellGate()}catch(e){}
+   return;
+  }
+  if(isHellFight()){
+   try{if(typeof show==="function")show("main"); else if(typeof render==="function")render()}catch(e){}
+   return;
+  }
+  syncIdleLocation();
+  openRunPanel(extra||"Hotfix6：下獄狀態已同步，現在從迷宮面板繼續探索。");
+ }
+ function patchWorldButton(){
+  try{
+   const r=activeRun();
+   const el=by("worldMapList");
+   if(!el||!r)return;
+   const cards=[...el.querySelectorAll(".mapCard")];
+   for(const card of cards){
+    if(!(card.textContent||"").includes("下獄"))continue;
+    const btn=card.querySelector("button");
+    if(!btn)continue;
+    btn.disabled=false;
+    btn.removeAttribute("disabled");
+    btn.textContent=isHellFight()?"返回戰鬥":"繼續";
+    btn.onclick=()=>continueHell("從世界地圖返回下獄迷宮。");
+    const state=card.querySelector(".small:last-child");
+    if(state&&(state.textContent||"").includes("狀態："))state.textContent="狀態：誓約進行中｜解鎖 Lv250";
+   }
+  }catch(e){}
+ }
+ function patchMainHint(){
+  try{
+   const r=activeRun();
+   if(!r||isHellFight())return;
+   const box=by("mainDungeonInfo");
+   if(box){
+    box.classList.remove("hidden");
+    box.innerHTML='<b>🔥 下獄誓約進行中</b><div class="small">你目前有未完成的下獄迷宮。主畫面不是下獄戰鬥時，請從這裡返回迷宮節點。<br><button onclick="window.cc0922ContinueHell&&window.cc0922ContinueHell()">繼續下獄</button> <button class="red" onclick="window.cc0922AbandonHell&&window.cc0922AbandonHell()">放棄下獄</button></div>';
+   }
+   if(by("mapHud"))by("mapHud").textContent="起源 / 下獄誓約中";
+  }catch(e){}
+ }
+ const oldRenderWorld=typeof renderWorld==="function"?renderWorld:null;
+ if(oldRenderWorld&&!window.__cc0922hf6OldRenderWorld){
+  window.__cc0922hf6OldRenderWorld=oldRenderWorld;
+  renderWorld=function(){const out=window.__cc0922hf6OldRenderWorld();syncIdleLocation();patchWorldButton();return out};
+ }
+ const oldRender=typeof render==="function"?render:null;
+ if(oldRender&&!window.__cc0922hf6OldRender){
+  window.__cc0922hf6OldRender=oldRender;
+  render=function(){
+   syncIdleLocation();
+   const out=window.__cc0922hf6OldRender();
+   patchVersion();patchWorldButton();patchMainHint();
+   const r=activeRun();
+   if(r&&!isHellFight()&&!isModalOpen()&&window.__cc0922hf6AutoShown!==r.createdAt){
+    window.__cc0922hf6AutoShown=r.createdAt||Date.now();
+    setTimeout(()=>continueHell("Hotfix6：偵測到你仍在下獄誓約中，已同步回迷宮面板。"),30);
+   }
+   return out;
+  };
+ }
+ const oldEnter=typeof enterWorldMap==="function"?enterWorldMap:null;
+ if(oldEnter&&!window.__cc0922hf6OldEnterWorldMap){
+  window.__cc0922hf6OldEnterWorldMap=oldEnter;
+  enterWorldMap=function(id){if(id==="hell")return continueHell();return window.__cc0922hf6OldEnterWorldMap(id)};
+ }
+ if(!window.__cc0922hf6OldClose)window.__cc0922hf6OldClose=window.cc0922CloseHell;
+ window.cc0922CloseHell=function(){
+  try{if(window.__cc0922hf6OldClose)window.__cc0922hf6OldClose()}catch(e){}
+  try{const m=by("cc0922HellModal");if(m)m.classList.add("hidden")}catch(e){}
+  syncIdleLocation();patchWorldButton();patchMainHint();
+ };
+ window.cc0922ContinueHell=continueHell;
+ window.cc0922Hotfix6Info=function(){try{return{tag:TAG,run:activeRun(),isHellFight:isHellFight(),world:p&&p.world,view:typeof view!=="undefined"?view:null,modalOpen:isModalOpen()}}catch(e){return{tag:TAG,error:String(e)}}};
+ setTimeout(()=>{try{patchVersion();syncIdleLocation();patchWorldButton();patchMainHint();const r=activeRun();if(r&&!isHellFight())continueHell("Hotfix6：載入後偵測到未完成下獄，已返回迷宮面板。")}catch(e){}},80);
  console.log("傳承",TAG);
 })();
 </script>
