@@ -7227,5 +7227,125 @@ setTimeout(hidePwaSplash,2500);
 })();
 </script>
 
+
+
+<script>
+/* ===== Beta 0.9.23：弓箭手覺醒 / 逐日者 / 逐日記 ===== */
+(function(){
+ const TAG="0.9.23-sun-chaser-awakening";
+ const VERSION_NAME="傳承 Beta 0.9.23【逐日者覺醒】";
+ const DUNGEON="archerAwaken";
+ const TITLE_ID="sunInvisibleArrow";
+ const TITLE_NAME="一箭看不見";
+ const ARTIFACT_ID="houyiBow";
+ const AWAKEN_NAME="逐日者";
+ const BASE_ARCHER=Object.assign({},JOBS&&JOBS.archer?JOBS.archer:{});
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ function patchVersion(){
+  try{document.title=VERSION_NAME}catch(e){}
+  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.23【逐日者覺醒】'})}catch(e){}
+ }
+ function titleState923(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=="string")p.titles.equipped="";return p.titles}
+ function awakenState923(){
+  if(!p.awakening)p.awakening={};
+  const a=p.awakening;
+  a.archerCalamityTriggers=Math.max(0,Math.floor(n(a.archerCalamityTriggers,0)));
+  a.archerDungeonClears=Math.max(0,Math.floor(n(a.archerDungeonClears,0)));
+  a.archerAwakened=!!a.archerAwakened;
+  a.sunNormalCount=Math.max(0,Math.floor(n(a.sunNormalCount,0)));
+  a.sunNextCalamity=a.sunNextCalamity?1:0;
+  a.sunBlockStacks=Math.max(0,Math.floor(n(a.sunBlockStacks,0)));
+  return a;
+ }
+ function archerLv(){try{return Math.max(0,Math.floor(n(p.specialWeapons&&p.specialWeapons.bow,0)))}catch(e){return 0}}
+ function hasCalamityReq(){return awakenState923().archerCalamityTriggers>=50}
+ function hasLevelReq(){return archerLv()>=10}
+ function hasDungeonReq(){return awakenState923().archerDungeonClears>=1}
+ function isAwakened(){return !!(p&&awakenState923().archerAwakened)}
+ function isActiveSun(){return currentJobKey()==="archer"&&isAwakened()}
+ function canAwaken(){return hasCalamityReq()&&hasLevelReq()&&hasDungeonReq()}
+ function hasTitle(){return !!(p&&p.titles&&p.titles.unlocked&&p.titles.unlocked[TITLE_ID])}
+ function unlockTitle(){const t=titleState923();if(t.unlocked[TITLE_ID])return false;t.unlocked[TITLE_ID]=Date.now();log("🏷️ 解鎖紅色稱號：「"+TITLE_NAME+"」");return true}
+ function isHouyiBoss(t){return !!(t&&(t.cc0923Houyi||t.targetKey===DUNGEON||t.dungeonType===DUNGEON||t.name==="后羿"))}
+ function check(v){return v?"✅":"❌"}
+ function syncArcherJob(){
+  if(!JOBS.archer)return;
+  if(isAwakened())Object.assign(JOBS.archer,{icon:"🏹",name:AWAKEN_NAME,weapon:"bow",weaponName:"后羿的拖鞋",grade:"epicUp",desc:"弓箭手覺醒。普攻後下一下必定觸發天災一擊；普攻100次觸發天災驚變；普攻33%觸發逐日猜拳。專武：后羿的拖鞋，閃避率+60%。"});
+  else Object.assign(JOBS.archer,{icon:BASE_ARCHER.icon||"🏹",name:"弓箭手",weapon:"bow",weaponName:BASE_ARCHER.weaponName||"破碎之弓",grade:BASE_ARCHER.grade||"epicUp",unlockFrag:BASE_ARCHER.unlockFrag,unlockNeed:BASE_ARCHER.unlockNeed,lv:BASE_ARCHER.lv||250,desc:BASE_ARCHER.desc||"史詩↑職業，多段攻擊、破碎散射與天災一擊。"});
+ }
+ function addStyle(){
+  if(by('cc0923Style'))return;
+  const st=document.createElement('style');st.id='cc0923Style';
+  st.textContent=`
+  .cc0923Modal{position:fixed;inset:0;background:rgba(2,6,23,.72);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px}.cc0923Modal.hidden{display:none}.cc0923Card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,rgba(30,41,59,.98),rgba(15,23,42,.98));border:1px solid rgba(248,113,113,.55);border-radius:18px;padding:16px;box-shadow:0 18px 60px rgba(0,0,0,.45)}.cc0923Req{padding:4px 0}.cc0923Req.ok{color:#86efac}.cc0923Req.no{color:#fca5a5}.cc0923RedTitle,.cc0923RedTitleHud{color:#fecaca!important;text-shadow:0 0 12px rgba(239,68,68,.85);border-color:rgba(248,113,113,.75)!important}.cc0923SunBadge{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.5);color:#fecaca}`;
+  document.head.appendChild(st);
+ }
+ function openModal(html){addStyle();let m=by('cc0923Modal');if(!m){m=document.createElement('div');m.id='cc0923Modal';m.className='cc0923Modal hidden';document.body.appendChild(m)}m.innerHTML='<div class="cc0923Card">'+html+'</div>';m.classList.remove('hidden')}
+ function closeModal(){const m=by('cc0923Modal');if(m)m.classList.add('hidden')}
+ function reqLines(){const a=awakenState923();return `<div class="cc0923Req ${hasLevelReq()?"ok":"no"}">${check(hasLevelReq())} 弓箭手職業等級：Lv.${archerLv()} / Lv.10</div><div class="cc0923Req ${hasCalamityReq()?"ok":"no"}">${check(hasCalamityReq())} 觸發天災一擊：${Math.min(a.archerCalamityTriggers,50)} / 50</div><div class="cc0923Req ${hasDungeonReq()?"ok":"no"}">${check(hasDungeonReq())} 通關【逐日記】：${Math.min(a.archerDungeonClears,1)} / 1</div>`}
+ function showPanel(){ensureNewSystems();syncArcherJob();const a=awakenState923(),cur=currentJobKey();openModal(`<div class="row"><b>🏹 弓箭手覺醒</b><button onclick="window.cc0923CloseModal()">關閉</button></div><div class="small">新增覺醒職業：<b>弓箭手 → 逐日者</b>。核心玩法是把天災一擊拉進普攻節奏，讓弓箭變成追太陽的災厄。</div><hr><div class="row"><b>目前職業：${JOBS[cur]?JOBS[cur].name:cur}</b><span class="pill">${cur==="archer"?(a.archerAwakened?"逐日者":"弓箭手"):"需切換弓箭手"}</span></div><div class="card notice"><b>覺醒目標：逐日者</b><div class="small">覺醒狀態：${a.archerAwakened?"✅ 已覺醒":"未覺醒"}</div>${reqLines()}</div><div class="small"><b>覺醒被動</b><br>1. 普攻後下一下必定觸發天災一擊。<br>2. 普攻累積100次觸發天災驚變：玩家傷害 × 91000%。<br>3. 傳奇被動【逐日猜拳】：普攻33%觸發，觸發後隨機 ✌🏻✊🏻🖐🏻。</div><div class="small"><b>逐日猜拳</b><br>✌🏻：造成玩家傷害 × 10000。<br>✊🏻：吸收護盾 = 玩家目前護盾 × 1000%。<br>🖐🏻：格擋傷害一次，可堆疊。</div><div class="small"><b>專屬神器 / 專武</b><br>后羿的那拔弓：逐日者普攻可對場上所有怪物造成傷害。<br>后羿的拖鞋：閃避率 +60%。</div><button class="purple" onclick="window.cc0923AwakenArcher()" ${canAwaken()&&!a.archerAwakened?"":"disabled"}>覺醒：弓箭手 → 逐日者</button><div class="small">稱號：${hasTitle()?"✅ 【"+TITLE_NAME+"】":"未取得"}｜紅色稱號。</div>`)}
+ function showDungeonPanel(){ensureNewSystems();const a=awakenState923(),cur=currentJobKey(),can=cur==="archer"&&hasCalamityReq()&&hasLevelReq()&&!isDungeon()&&!a.archerAwakened;openModal(`<div class="row"><b>🌞 覺醒副本【逐日記】</b><button onclick="window.cc0923CloseModal()">關閉</button></div><div class="card notice"><b>Boss：后羿</b><div class="small">挑戰時間：120 秒<br>通關後完成副本條件，並獲得紅色稱號【${TITLE_NAME}】。</div></div><div class="small"><b>開啟條件</b>${reqLines().replace(/通關【逐日記】：[^<]+<\/div>/,'通關【逐日記】：通關後完成 / 1</div>')}</div><div class="small"><b>Boss 被動</b><br>【免疫天災一擊】<br>【每3秒回1%最大生命血量】<br>【攻擊提升】×700%</div><button class="purple" onclick="window.cc0923StartArcherAwakenDungeon()" ${can?"":"disabled"}>${isDungeon()?"副本進行中":(can?"開始挑戰":"條件不足 / 職業需為弓箭手 / 已覺醒則收納")}</button><div class="small">目前通關：${Math.min(a.archerDungeonClears,1)} / 1｜稱號：${hasTitle()?"✅ 【"+TITLE_NAME+"】":"未取得"}</div>`)}
+ function showArchive(){const a=awakenState923();openModal(`<div class="row"><b>📦 逐日者覺醒收納</b><button onclick="window.cc0923CloseModal()">關閉</button></div><div class="card"><b>🏹 逐日者</b><div class="small">狀態：${a.archerAwakened?"✅ 已覺醒":"未完成"}<br>副本：【逐日記】${a.archerDungeonClears>=1?"已通關":"未完成"}<br>稱號：【${TITLE_NAME}】${hasTitle()?"已取得":"未取得"}<br>天災一擊：${a.archerCalamityTriggers} 次</div></div>`)}
+ function ensureDrawerButtons(){const panel=by('featureDrawer');if(!panel||panel.dataset.cc0923ArcherButtons==='1')return;panel.dataset.cc0923ArcherButtons='1';function b(text,fn){const x=document.createElement('button');x.textContent=text;x.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add('hidden');fn()});return x}panel.appendChild(b('🏹 逐日者覺醒',showPanel));panel.appendChild(b('🌞 逐日記',()=>isAwakened()?showArchive():showDungeonPanel()))}
+ function createHouyiBoss(){const hp=Math.max(1,Math.floor(atk()*85));const mAtk=Math.max(1,Math.floor(atk()*7));const defV=Math.max(0,Math.floor(playerDef()*8));const m=enemy({mode:'dungeon',dungeonType:DUNGEON,type:'boss',name:'后羿',emoji:'🌞',hp,def:defV,reg:0,gold:0,xp:0,drop:0,timer:120,mAtk:mAtk,armorBreak:0,mAspd:1.4,awakenBoss:true,targetKey:DUNGEON});m.cc0923Houyi=true;m.calamityImmune=true;const e=ensureEffectBag(m);e.cc0923HouyiRegen=3;return typeof finalizeMonster==='function'?finalizeMonster(m):m}
+ function startDungeon923(){ensureNewSystems();const a=awakenState923();if(isDungeon())return log('🌞 副本進行中，不能重複進入');if(currentJobKey()!=="archer")return log('🌞 【逐日記】需要目前職業為弓箭手');if(a.archerAwakened)return log('🌞 逐日者已覺醒，【逐日記】已收納');if(!hasLevelReq())return log('🌞 弓箭手職業等級不足：Lv.'+archerLv()+'/10');if(!hasCalamityReq())return log('🌞 天災一擊觸發次數不足：'+a.archerCalamityTriggers+'/50');closeModal();dungeon={type:DUNGEON,timer:120,kills:0,gain:0,running:true};fight=createHouyiBoss();p.queue=0;hold=false;budget=0;show('main');log('🌞 覺醒副本【逐日記】開始：120秒內擊敗后羿');save(false);render()}
+ function endRun(success){const a=awakenState923();dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();if(success){a.archerDungeonClears=Math.max(1,a.archerDungeonClears||0);unlockTitle();log('🌞 你通過了【逐日記】。后羿：你這箭，我看不見。')}else log('🌞 【逐日記】挑戰失敗');save(false);spawnMain()}
+ function awakenArcher(){ensureNewSystems();const a=awakenState923();if(a.archerAwakened)return log('🏹 弓箭手已覺醒為逐日者');if(!canAwaken())return log('🏹 逐日者覺醒條件尚未完成');a.archerAwakened=true;unlockTitle();syncArcherJob();save(false);log('🏹 覺醒成功：弓箭手 → 逐日者');floatText('弓箭手→逐日者！',true);render();showPanel()}
+ function targetsForSun(all=false){if(!fight)return[];try{return all&&fight.monsters&&Array.isArray(fight.monsters)?aliveMonsters().filter(x=>x&&x.hp>0):(activeMonster()&&activeMonster().hp>0?[activeMonster()]:[])}catch(e){return[]}}
+ function syncHpAfter(){try{if(fight&&fight.monsters)refreshTotalHp();else if(fight&&activeMonster())fight.hp=activeMonster().hp;settleFormationDeaths();if(fight&&fight.hp<=0)killEnemy()}catch(e){}}
+ function directSunDamage(amount,label,all=false){if(!fight||amount<=0)return;let hit=false;for(const t of targetsForSun(all)){if(!t||t.hp<=0)continue;const e=ensureEffectBag(t);if(e.invincible>0){floatText((t.emoji||'')+'無敵');continue}const d=Math.max(1,Math.floor(amount));t.hp-=d;hit=true;floatText((t.emoji||'')+label+' '+fmt(d),true)}if(hit)syncHpAfter()}
+ function houyiBowActive(){try{return isActiveSun()&&selectedArtifactKey()===ARTIFACT_ID}catch(e){return false}}
+ function recordCalamity(){if(!p||currentJobKey()!=="archer")return;const a=awakenState923();const before=a.archerCalamityTriggers;a.archerCalamityTriggers=Math.min(999999,a.archerCalamityTriggers+1);if(before<50&&a.archerCalamityTriggers>=50)log('🏹 逐日者條件達成：天災一擊 50/50')}
+ const oldEnsure=ensureNewSystems;
+ ensureNewSystems=function(){oldEnsure();if(!p)return;awakenState923();titleState923();if(!p.specialWeapons)p.specialWeapons={};p.specialWeapons.bow=Math.max(0,Math.floor(n(p.specialWeapons.bow,0)));if(!p.artifacts)p.artifacts=defaultArtifacts();p.artifacts[ARTIFACT_ID]=Math.max(0,Math.floor(n(p.artifacts[ARTIFACT_ID],0)));if(ARTIFACTS&&!ARTIFACTS[ARTIFACT_ID])ARTIFACTS[ARTIFACT_ID]={icon:'🏹',name:'后羿的那拔弓',unlock:0,up:false,desc:'逐日者專屬神器。普攻可對場上所有怪物造成傷害。'};syncArcherJob()};
+ ensureNewSystems();
+ const oldArtifactUnlocked=artifactUnlocked;
+ artifactUnlocked=function(key){if(key===ARTIFACT_ID)return isAwakened();return oldArtifactUnlocked(key)};
+ const oldSelectedArtifactKey=selectedArtifactKey;
+ selectedArtifactKey=function(){const k=oldSelectedArtifactKey();if(k===ARTIFACT_ID&&!(isAwakened()&&currentJobKey()==="archer"))return 'none';return k};
+ const oldSetArtifact=setArtifact;
+ setArtifact=function(key){if(key===ARTIFACT_ID&&!(isAwakened()&&currentJobKey()==="archer"))return log('🏹 后羿的那拔弓為逐日者專屬，請先覺醒並切換逐日者');return oldSetArtifact(key)};
+ const oldArtifactPanel=artifactPanelHtml;
+ artifactPanelHtml=function(){ensureNewSystems();let h=oldArtifactPanel();try{if(isAwakened()&&currentJobKey()==='archer'&&!String(h).includes('后羿的那拔弓'))h+=`<div class="small">🏹 逐日者專屬神器已解鎖：后羿的那拔弓。</div>`}catch(e){}return h};
+ const oldArcherPlan=archerAttackPlan;
+ archerAttackPlan=function(normal,first){let plan=oldArcherPlan(normal,first);try{if(!normal||currentJobKey()!=="archer"||!plan)return plan;let hadCalamity=String(plan.tag||'').includes('天災一擊');if(isHouyiBoss(first)&&hadCalamity){plan.mods=(plan.mods||[1]).map(x=>x/50);plan.tag=String(plan.tag||'').replace('🏹天災一擊 ','🌞后羿免疫天災 ');plan.big=false;hadCalamity=false;floatText('🌞后羿免疫天災',true)}else if(hadCalamity)recordCalamity();if(isActiveSun()){const a=awakenState923();const forced=a.sunNextCalamity>0&&!isHouyiBoss(first);if(forced&&!hadCalamity){plan.mods=(plan.mods||[1]).map(x=>x*50);plan.tag='🏹逐日天災 '+String(plan.tag||'');plan.big=true;hadCalamity=true;recordCalamity()}a.sunNextCalamity=forced?0:1;if(houyiBowActive()&&fight&&fight.monsters&&Array.isArray(fight.monsters)){plan.targets=aliveMonsters().filter(x=>x&&x.hp>0);plan.tag='🏹那拔全場 '+String(plan.tag||'')}}}catch(e){}return plan};
+ const oldDamage=damage;
+ damage=function(mult=1,label='',opt={}){const normal=!label&&!(opt&&opt.skill)&&!(opt&&opt.forceSingle);const activeBefore=isActiveSun()&&normal;const r=oldDamage(mult,label,opt);try{if(activeBefore&&fight){const a=awakenState923();a.sunNormalCount=Math.max(0,Math.floor(n(a.sunNormalCount,0)))+1;if(a.sunNormalCount>=100){a.sunNormalCount=0;directSunDamage(atk()*910,'🌞天災驚變',houyiBowActive());log('🌞 天災驚變觸發：玩家傷害 ×91000%')}if(Math.random()<.33){const roll=Math.floor(Math.random()*3);if(roll===0){directSunDamage(atk()*10000,'✌🏻逐日剪刀',houyiBowActive());log('✌🏻 逐日猜拳：剪刀，造成玩家傷害 ×10000')}else if(roll===1){const st=playerStatus();const base=Math.max(0,n(st.bloodShield,0)+n(p.artifacts&&p.artifacts.shield,0));const gain=Math.floor(base*10);st.bloodShield=Math.max(0,n(st.bloodShield,0))+gain;st.bloodShieldTime=Math.max(n(st.bloodShieldTime,0),30);floatText('✊🏻護盾吸收+'+fmt(gain),true);log('✊🏻 逐日猜拳：石頭，吸收目前護盾 ×1000%')}else{a.sunBlockStacks=Math.min(9999,Math.floor(n(a.sunBlockStacks,0))+1);floatText('🖐🏻格擋+1',true);log('🖐🏻 逐日猜拳：布，格擋次數 +1，目前 '+a.sunBlockStacks)}}save(false)}}catch(e){}return r};
+ const oldAbsorb=absorbWithShields;
+ absorbWithShields=function(amount,trueDamage=false){try{if(isActiveSun()){const a=awakenState923();if(a.sunBlockStacks>0&&amount>0){a.sunBlockStacks--;floatText('🖐🏻逐日格擋',true);return 0}}}catch(e){}return oldAbsorb(amount,trueDamage)};
+ const oldDeal=dealPlayerDamage;
+ dealPlayerDamage=function(raw,opt={}){try{if(isActiveSun()&&!(opt&&opt.status)&&Math.random()<.60){floatText('🩴后羿的拖鞋閃避',true);return 0}}catch(e){}return oldDeal(raw,opt)};
+ const oldDungeonKill=dungeonKill;
+ dungeonKill=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(true);return}return oldDungeonKill()};
+ const oldEndDungeon=endDungeon;
+ endDungeon=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldEndDungeon()};
+ const oldPlayerDeath=playerDeath;
+ playerDeath=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endRun(false);return}return oldPlayerDeath()};
+ const oldTickMonsterAI=tickMonsterAI;
+ tickMonsterAI=function(dt){try{if(dungeon&&dungeon.type===DUNGEON&&fight){const m=activeMonster()||fight;if(m&&m.hp>0&&isHouyiBoss(m)){const e=ensureEffectBag(m);e.cc0923HouyiRegen=(e.cc0923HouyiRegen==null?3:e.cc0923HouyiRegen)-dt;if(e.cc0923HouyiRegen<=0){const heal=Math.max(1,Math.floor((m.max||m.hp||1)*.01));m.hp=Math.min(m.max||m.hp,m.hp+heal);e.cc0923HouyiRegen=3;floatText('🌞后羿回血+'+fmt(heal));if(fight.monsters)refreshTotalHp();else fight.hp=m.hp}}}}catch(e){}return oldTickMonsterAI(dt)};
+ const oldStatus=statusHtml;
+ statusHtml=function(){let h=oldStatus();try{if(fight){let add='';for(const m of (fight.monsters?aliveMonsters():[activeMonster()]).filter(Boolean)){if(isHouyiBoss(m))add+=`<span class='badge burn'>🌞 后羿｜免疫天災一擊｜3秒回1%｜攻擊×700%</span>`}if(isActiveSun()){const a=awakenState923();add+=`<span class='badge cc0923SunBadge'>🏹 逐日者｜普攻 ${a.sunNormalCount}/100｜格擋 ${a.sunBlockStacks}</span>`}if(add&&h==="<span class='small'>無狀態</span>")h='';h+=add}}catch(e){}return h};
+ const oldPlayerStatus=playerStatusHtml;
+ playerStatusHtml=function(){let h=oldPlayerStatus();try{if(isActiveSun()){const a=awakenState923();if(h==='玩家狀態：無')h='';h+=`<span class="badge cc0923SunBadge">🏹 覺醒：弓箭手 → 逐日者｜下一箭${a.sunNextCalamity?'天災':'蓄勢'}｜格擋 ${a.sunBlockStacks}</span>`}}catch(e){}return h};
+ const oldJobPanel=jobPanelHtml;
+ jobPanelHtml=function(){ensureNewSystems();let h=oldJobPanel();try{if(isAwakened()&&currentJobKey()==='archer')h+=`<div class="small">🏹 逐日者：普攻後下一下天災一擊；100次普攻天災驚變；33%逐日猜拳。<br>🩴 后羿的拖鞋：閃避率 +60%。</div>`}catch(e){}return h};
+ function renderTitleTools(){try{if(!p||!p.titles)return;const el=by('equippedTitleHud');if(el&&p.titles.equipped===TITLE_ID){el.textContent='【'+TITLE_NAME+'】';el.classList.remove('hidden');el.classList.add('cc0923RedTitleHud')}const box=by('equippedTitleBox');if(box&&hasTitle()&&!by('cc0923TitleBtn')){const list=box.querySelector('.titleEquipList')||box;const b=document.createElement('button');b.type='button';b.id='cc0923TitleBtn';b.className='titleChoice cc0923RedTitle'+(p.titles.equipped===TITLE_ID?' active':'');b.dataset.titleId=TITLE_ID;b.textContent='🏷️ '+TITLE_NAME;b.addEventListener('pointerdown',ev=>ev.stopPropagation());b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();titleState923().equipped=TITLE_ID;save(false);log('🏷️ 裝備稱號：「'+TITLE_NAME+'」');render()});list.appendChild(b)}}catch(e){}}
+ const oldRender=render;
+ render=function(){const out=oldRender();ensureNewSystems();patchVersion();ensureDrawerButtons();renderTitleTools();return out};
+ const oldSetTitle=window.cc097SetEquippedTitle;
+ window.cc097SetEquippedTitle=function(id){if(id===TITLE_ID){if(!hasTitle())return log('尚未解鎖此稱號');titleState923().equipped=TITLE_ID;save(false);log('🏷️ 裝備稱號：「'+TITLE_NAME+'」');render();return}return oldSetTitle?oldSetTitle(id):undefined};
+ window.cc0923ShowArcherAwakeningPanel=showPanel;
+ window.cc0923ShowArcherAwakenDungeonPanel=showDungeonPanel;
+ window.cc0923StartArcherAwakenDungeon=startDungeon923;
+ window.cc0923AwakenArcher=awakenArcher;
+ window.cc0923CloseModal=closeModal;
+ window.cc0923Info=()=>({tag:TAG,awakened:isAwakened(),calamity:awakenState923().archerCalamityTriggers,lv:archerLv(),dungeon:awakenState923().archerDungeonClears,title:hasTitle(),artifact:selectedArtifactKey(),blocks:awakenState923().sunBlockStacks});
+ setTimeout(()=>{try{ensureNewSystems();patchVersion();ensureDrawerButtons();renderTitleTools();if(typeof render==='function')render()}catch(e){}},0);
+ console.log('傳承',TAG);
+})();
+</script>
+
 </body>
 </html>
