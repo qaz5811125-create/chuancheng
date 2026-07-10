@@ -307,7 +307,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <button id="challengeBtn" class="big blue hidden">繼續挑戰 Boss</button>
 
 <div class="card"><div class="row"><b>能力點</b><span class="pill">倍率：<b id="pointMulNow">×1</b></span></div><div id="pointMulBox" class="multiBtns"></div>
-<button data-point="atk">攻擊倍率×1.08/點</button><button data-point="aspd">攻速+0.05/秒</button><button data-point="crit">暴擊+0.5%</button>
+<button data-point="atk">攻擊倍率壓縮成長</button><button data-point="aspd">攻速+0.05/秒</button><button data-point="crit">暴擊+0.5%</button>
 <button data-point="pen">破甲+0.5%</button><button data-point="execute">💀秒殺率+0.0001%</button><button data-point="gold">金幣+2%</button><button data-point="drop">掉寶+0.5%</button><button data-point="hp" class="green">血量+250</button><button data-point="def" class="blue">防禦+25</button><button data-point="regen" class="green">回血+25/秒</button>
 </div>
 
@@ -5944,7 +5944,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
 /* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
 (function(){
  const TAG="0.9.22-hell-maze-oath-lock-v1";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -6288,7 +6288,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6371,7 +6371,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 1：下獄入口與攻速降溫 ===== */
 (function(){
  const TAG="0.9.22-hotfix1-hell-entry-aspd-cooling";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const ASPD_CAP=100;
  const HIGH_ASPD=60;
  const VERY_HIGH_ASPD=80;
@@ -6529,7 +6529,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 2：下獄迷宮建立修正 / 隨機門保險 ===== */
 (function(){
  const TAG="0.9.22-hotfix2-hell-maze-build-random";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
@@ -6620,7 +6620,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 3：下獄強制建迷宮 / 隨機門直建 ===== */
 (function(){
  const TAG="0.9.22-hotfix3-hell-force-run-random";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -6749,7 +6749,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 4：下獄入口殘留清除 / 最終接線 ===== */
 (function(){
  const TAG="0.9.22-hotfix4-hell-stale-dungeon-clean-start";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6906,7 +6906,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 5：下獄門資料接回 / 最終門線 ===== */
 (function(){
  const TAG="0.9.22-hotfix5-hell-doors-final-line";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -7099,7 +7099,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 6：下獄狀態與畫面同步 / 最後一刀 ===== */
 (function(){
  const TAG="0.9.22-hotfix6-hell-state-screen-sync";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  function patchVersion(){
@@ -7349,11 +7349,11 @@ setTimeout(hidePwaSplash,2500);
 
 
 <script>
-/* ===== Beta 0.9.23 Hotfix 1：能力點重置 / 攻擊倍率化 / 覺醒面板整理 ===== */
+/* ===== Beta 0.9.23 Hotfix 2：能力點倍率降載 / 戰鐮試煉調整 / 輪迴之門 ===== */
 (function(){
- const TAG="0.9.23-hotfix1-stat-reset-awakening-cleanup";
- const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
- const ATK_POINT_RATE=1.08;
+ const TAG="0.9.23-hotfix2-reincarnation-gate";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】";
+ const ATK_POINT_RATE=Math.pow(10,1/700);
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
  const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
@@ -7361,7 +7361,7 @@ setTimeout(hidePwaSplash,2500);
  const ZERO_SPENT={atk:0,aspd:0,crit:0,pen:0,execute:0,gold:0,drop:0,hp:0,def:0,regen:0};
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】'})}catch(e){}
+  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】'})}catch(e){}
  }
  function addStyle(){
   if(by('cc0923hf1Style'))return;
@@ -7446,13 +7446,13 @@ setTimeout(hidePwaSplash,2500);
  function patchAbilityPanel(){
   try{
    const atkBtn=document.querySelector('[data-point="atk"]');
-   if(atkBtn)atkBtn.textContent='攻擊倍率×1.08/點';
+   if(atkBtn)atkBtn.textContent='攻擊倍率壓縮成長';
    const card=atkBtn?atkBtn.closest('.card'):null;
    if(!card)return;
    let box=by('cc0923hf1PointResetBox');
    if(!box){box=document.createElement('div');box.id='cc0923hf1PointResetBox';box.className='cc0923hf1Box';card.appendChild(box)}
    const atkLv=spent().atk||0,mul=atkPointMultiplier();
-   box.innerHTML=`<b>🔥 攻擊能力點倍率化</b><div class="cc0923hf1Mini">攻擊強化 Lv.${atkLv}｜目前攻擊倍率：×${fmt(mul)}｜每點：×1.08<br>已投入能力點：${totalSpent()}｜可用能力點：${Math.floor(n(p.points,0))}</div><button class="red" onclick="window.cc0923hf1ResetAbilityPoints()">重置能力點</button>`;
+   box.innerHTML=`<b>🔥 攻擊能力點倍率化</b><div class="cc0923hf1Mini">攻擊強化 Lv.${atkLv}｜目前攻擊倍率：×${fmt(mul)}｜公式：10^(等級/700)<br>已投入能力點：${totalSpent()}｜可用能力點：${Math.floor(n(p.points,0))}</div><button class="red" onclick="window.cc0923hf1ResetAbilityPoints()">重置能力點</button>`;
   }catch(e){}
  }
  function awakening(){if(!p.awakening)p.awakening={};return p.awakening}
@@ -7527,6 +7527,79 @@ setTimeout(hidePwaSplash,2500);
  window.cc0923hf1CloseArchive=closeArchive;
  window.cc0923hf1Info=function(){try{return{tag:TAG,spent:spent(),atkMul:atkPointMultiplier(),points:p&&p.points,awakening:p&&p.awakening,title:p&&p.titles&&p.titles.equipped}}catch(e){return{tag:TAG,error:String(e)}}};
  setTimeout(()=>{try{migratePointSystem();patchVersion();addStyle();patchAbilityPanel();patchAwakeningButtons();patchSunTitleRed();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},60);
+ console.log('傳承',TAG);
+})();
+</script>
+
+
+<script>
+/* ===== Beta 0.9.23 Hotfix 2：能力點倍率降載 / 戰鐮試煉調整 / 輪迴之門 ===== */
+(function(){
+ const TAG='0.9.23-hotfix2-reaper-gate-v1';
+ const VERSION_NAME='傳承 Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】';
+ const DUNGEON='reaperAwaken';
+ const MOON_TITLE_ID='reincarnationMoon';
+ const MOON_TITLE_NAME='輪迴月圓';
+ const NEED_AWAKEN_COUNT=9;
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ function awakening(){if(!p.awakening||typeof p.awakening!=='object')p.awakening={};return p.awakening}
+ function titleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};if(typeof p.titles.equipped!=='string')p.titles.equipped='';return p.titles}
+ function reincarnationState(){if(!p.reincarnation||typeof p.reincarnation!=='object')p.reincarnation={};if(!p.reincarnation.carryTitles)p.reincarnation.carryTitles={};return p.reincarnation}
+ function curJob(){try{return currentJobKey()}catch(e){return p&&p.job||'warrior'}}
+ function swLv(job='reaper'){try{return specialWeaponLevel(job)}catch(e){const w=job==='reaper'?'scythe':null;return w&&p&&p.specialWeapons?Math.floor(n(p.specialWeapons[w],0)):0}}
+ function safeDungeon(){try{return isDungeon()}catch(e){return !!dungeon}}
+ function reaperKillReq(){const a=awakening();a.reaperKills=Math.max(0,Math.floor(n(a.reaperKills,0)));return a.reaperKills>=1000}
+ function reaperLvReq(){return swLv('reaper')>=10}
+ function reaperDungeonReq(){const a=awakening();a.reaperDungeonClears=Math.max(0,Math.floor(n(a.reaperDungeonClears,0)));return a.reaperDungeonClears>=1}
+ function awakenedCountNoReaper(){const a=awakening();let c=0;for(const k of Object.keys(a)){if(k==='reaperAwakened')continue;if(/Awakened$/.test(k)&&a[k])c++}return c}
+ function nineReq(){return awakenedCountNoReaper()>=NEED_AWAKEN_COUNT}
+ function canReaperAwaken(){const a=awakening();return !a.reaperAwakened&&reaperKillReq()&&reaperLvReq()&&reaperDungeonReq()&&nineReq()}
+ function check(v){return v?'✅':'❌'}
+ function unlockMoonTitle(backfill=false){const t=titleState(),r=reincarnationState();let changed=false;if(!t.unlocked[MOON_TITLE_ID]){t.unlocked[MOON_TITLE_ID]=Date.now();changed=true}r.carryTitles[MOON_TITLE_ID]=MOON_TITLE_NAME;r.gateUnlocked=true;r.firstPartEndKey='reaperAwakened';r.secondPartReady=true;if(changed&&!backfill)try{log('🏷️ 解鎖稱號：「'+MOON_TITLE_NAME+'」｜此稱號可帶入第二部【輪迴】')}catch(e){}return changed}
+ function backfillExisting(){try{const a=awakening();if(a.reaperAwakened){const changed=unlockMoonTitle(true);if(changed&&!p.cc0923hf2MoonBackfilled){p.cc0923hf2MoonBackfilled=1;log('🌕 已補發戰鐮覺醒稱號【'+MOON_TITLE_NAME+'】，並解鎖輪迴之門。')}}}catch(e){}}
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.23 Hotfix 2【能力點倍率降載與輪迴之門】'})}catch(e){}}
+ function addStyle(){if(by('cc0923hf2Style'))return;const st=document.createElement('style');st.id='cc0923hf2Style';st.textContent=`
+ .cc0923hf2Modal{position:fixed;inset:0;z-index:145000;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+ .cc0923hf2Modal.hidden{display:none!important}.cc0923hf2Card{width:min(640px,94vw);max-height:84vh;overflow:auto;background:radial-gradient(circle at 50% 0%,rgba(251,191,36,.16),rgba(15,23,42,.98) 42%,#020617 100%);border:1px solid rgba(250,204,21,.45);border-radius:22px;padding:16px;box-shadow:0 28px 100px rgba(0,0,0,.72)}
+ .cc0923hf2Req{padding:6px 8px;margin:5px 0;border-radius:10px;background:rgba(15,23,42,.72)}.cc0923hf2Req.ok{border:1px solid rgba(34,197,94,.45);color:#bbf7d0}.cc0923hf2Req.no{border:1px solid rgba(248,113,113,.35);color:#fecaca}
+ .cc0923hf2GateBtn{background:linear-gradient(90deg,#450a0a,#7f1d1d,#b45309)!important;color:#fff7ed!important;border-color:#fde68a!important;box-shadow:0 0 0 2px rgba(250,204,21,.2),0 0 18px rgba(180,83,9,.55)!important;text-align:center!important;font-weight:900!important}
+ .titleChoice.cc0923MoonTitle,.titleChoice.cc0923MoonTitle.active,#cc0923MoonTitleBtn,#cc0923MoonTitleBtn.active{background:linear-gradient(90deg,#111827,#581c87,#7f1d1d)!important;color:#fff!important;border-color:#fef3c7!important;box-shadow:0 0 0 2px rgba(250,204,21,.28),0 0 20px rgba(168,85,247,.55)!important;text-shadow:0 0 12px rgba(250,204,21,.5)!important}
+ .cc0923MoonHud{color:#fef3c7!important;text-shadow:0 0 12px rgba(250,204,21,.9),0 0 26px rgba(168,85,247,.9)!important}
+ .cc0923hf2Black{position:fixed;inset:0;z-index:150000;background:#000;display:flex;align-items:center;justify-content:center;text-align:center;color:#e5e7eb;padding:24px}.cc0923hf2Black.hidden{display:none!important}.cc0923hf2BlackInner{max-width:680px}.cc0923hf2Moon{font-size:56px;filter:drop-shadow(0 0 24px rgba(250,204,21,.75))}.cc0923hf2Line{font-size:22px;line-height:1.9;letter-spacing:.08em}.cc0923hf2Sub{font-size:13px;color:#94a3b8;margin-top:18px;line-height:1.7}
+ `;document.head.appendChild(st)}
+ function atkPointMultiplier2(){try{const s=p.statPointSpent||{},lv=Math.max(0,Math.floor(n(s.atk,0)));const v=Math.pow(10,lv/700);return Number.isFinite(v)?Math.min(v,1e300):1e300}catch(e){return 1}}
+ function patchAbilityPanel2(){try{const atkBtn=document.querySelector('[data-point="atk"]');if(atkBtn)atkBtn.textContent='攻擊倍率壓縮成長';const box=by('cc0923hf1PointResetBox');if(box){const s=p.statPointSpent||{},atkLv=Math.max(0,Math.floor(n(s.atk,0)));let total=0;for(const k of ['atk','aspd','crit','pen','execute','gold','drop','hp','def','regen'])total+=Math.max(0,Math.floor(n(s[k],0)));box.innerHTML=`<b>🔥 攻擊能力點倍率降載</b><div class="cc0923hf1Mini">攻擊強化 Lv.${atkLv}｜目前攻擊倍率：×${fmt(atkPointMultiplier2())}｜公式：10^(等級/700)<br>已投入能力點：${total}｜可用能力點：${Math.floor(n(p.points,0))}</div><button class="red" onclick="window.cc0923hf1ResetAbilityPoints()">重置能力點</button>`}}catch(e){}}
+ function patchAtkFormula(){try{if(window.__cc0923hf2AtkPatched)return;window.__cc0923hf2AtkPatched=1;const fallback=typeof atk==='function'?atk:null;atk=function(){try{const base=(n(p.baseAtk,0)+equipAtk());return base*atkPointMultiplier2()*(1+comboDamageBonus()+jobAtkBonus()+artifactDamageBonus()+((typeof heroDamageBonus==='function')?heroDamageBonus():0))}catch(e){return fallback?fallback():1}}}catch(e){}}
+ function reqLines(){const a=awakening(),c=awakenedCountNoReaper();return `
+ <div class="cc0923hf2Req ${reaperKillReq()?'ok':'no'}">${check(reaperKillReq())} 使用戰鐮擊敗怪物：${Math.min(a.reaperKills||0,1000)} / 1000</div>
+ <div class="cc0923hf2Req ${reaperLvReq()?'ok':'no'}">${check(reaperLvReq())} 戰鐮等級：Lv.${swLv('reaper')} / Lv.10</div>
+ <div class="cc0923hf2Req ${reaperDungeonReq()?'ok':'no'}">${check(reaperDungeonReq())} 戰鐮覺醒副本：${Math.min(a.reaperDungeonClears||0,1)} / 1</div>
+ <div class="cc0923hf2Req ${nineReq()?'ok':'no'}">${check(nineReq())} 覺醒滿 9 個職業：${Math.min(c,NEED_AWAKEN_COUNT)} / ${NEED_AWAKEN_COUNT}</div>`}
+ function modal(html){addStyle();let m=by('cc0923hf2Modal');if(!m){m=document.createElement('div');m.id='cc0923hf2Modal';m.className='cc0923hf2Modal hidden';document.body.appendChild(m)}m.innerHTML='<div class="cc0923hf2Card">'+html+'</div>';m.classList.remove('hidden')}
+ function closeModal2(){const m=by('cc0923hf2Modal');if(m)m.classList.add('hidden')}
+ function showAwakeningPanel2(){const a=awakening();modal(`<div class="row"><b>🌑 職業覺醒：戰鐮 → 收割者</b><button onclick="window.cc0923hf2CloseModal()">關閉</button></div><div class="small">戰鐮覺醒已升格為第一部終局條件。必須先完成其他 9 個職業覺醒，才可斬開輪迴。</div><div class="card notice"><b>戰鐮覺醒目標：收割者</b><div class="small">覺醒狀態：${a.reaperAwakened?'✅ 已覺醒':'未覺醒'}</div>${reqLines()}</div><div class="small"><b>覺醒成功獎勵</b><br>1. 覺醒為【收割者】<br>2. 獲得稱號【${MOON_TITLE_NAME}】<br>3. 解鎖收納最下方【輪迴之門】<br>4. 稱號【${MOON_TITLE_NAME}】可帶入第二部【輪迴】</div><div class="small"><b>收割者效果</b><br>戰鐮職業本體與專武成長 +40%，目標恐懼 300 層以上時解鎖死兆。</div><button class="purple" onclick="window.cc099AwakenReaper()" ${canReaperAwaken()?'':'disabled'}>覺醒：戰鐮 → 收割者</button>${a.reaperAwakened?'<button class="cc0923hf2GateBtn" onclick="window.cc0923hf2ShowGate()">🌕 開啟輪迴之門</button>':''}`)}
+ function showDungeonPanel2(){const a=awakening(),can=curJob()==='reaper'&&reaperKillReq()&&reaperLvReq()&&nineReq()&&!safeDungeon()&&!a.reaperAwakened;modal(`<div class="row"><b>💀 覺醒副本：收割試煉</b><button onclick="window.cc0923hf2CloseModal()">關閉</button></div><div class="card notice"><b>Boss：收割試煉者</b><div class="small">挑戰時間：120 秒<br>Hotfix 2 已降低難度：Boss 不再吃玩家攻擊 ×8。</div></div><div class="small"><b>開啟條件</b>${reqLines().replace(/戰鐮覺醒副本：[^<]+<\/div>/,'戰鐮覺醒副本：通關後完成 / 1</div>')}</div><div class="small"><b>Boss 調整後數值</b><br>血量：玩家最大生命 ×18<br>攻擊：玩家最大生命 ×18%<br>防禦：玩家防禦 ×3<br>回血：最大生命 0.2%/秒<br>攻速：1.2/秒</div><button class="purple" onclick="window.cc099StartReaperAwakenDungeon()" ${can?'':'disabled'}>${safeDungeon()?'副本進行中':(a.reaperAwakened?'已覺醒 / 已收納':(can?'開始挑戰':'條件不足 / 職業需為戰鐮 / 需覺醒滿9職業'))}</button><div class="small">目前通關：${Math.min(a.reaperDungeonClears||0,1)} / 1</div>`)}
+ function createReaperAwakenBoss2(){const hp=Math.max(1,Math.floor(playerMaxHp()*18));const atkV=Math.max(1,Math.floor(playerMaxHp()*0.18));const defV=Math.max(0,Math.floor(playerDef()*3));const m=enemy({mode:'dungeon',dungeonType:DUNGEON,type:'boss',name:'收割試煉者',emoji:'💀',hp,def:defV,reg:Math.floor(hp*.002),gold:0,xp:0,drop:0,timer:120,mAtk:atkV,armorBreak:0,mAspd:1.2,awakenBoss:true,targetKey:'reaperAwaken'});return finalizeMonster(m)}
+ function startReaperAwakenDungeon2(){ensureNewSystems();const a=awakening();if(safeDungeon())return log('副本進行中，不能重複進入');if(curJob()!=='reaper')return log('💀 戰鐮覺醒副本需要目前職業為戰鐮');if(a.reaperAwakened)return log('💀 戰鐮已覺醒為收割者，【收割試煉】已收納');if(!reaperKillReq())return log('💀 戰鐮擊殺數不足：'+(a.reaperKills||0)+'/1000');if(!reaperLvReq())return log('💀 戰鐮等級不足：Lv.'+swLv('reaper')+'/10');if(!nineReq())return log('🌕 戰鐮覺醒是輪迴終局，需要先覺醒滿 9 個職業：'+awakenedCountNoReaper()+'/9');closeModal2();try{if(window.cc099CloseModal)window.cc099CloseModal()}catch(e){}dungeon={type:DUNGEON,timer:120,kills:0,gain:0,running:true};fight=createReaperAwakenBoss2();p.queue=0;hold=false;budget=0;show('main');log('💀 收割試煉開始：120秒內擊敗收割試煉者');save(false);render()}
+ function endReaperRun2(success){window.cc099CutsceneActive=true;const a=awakening();if(success){a.reaperDungeonClears=Math.max(1,a.reaperDungeonClears||0);save(false)}const text=success?'你已通過收割試煉。若九條命運已醒，便可斬開輪迴。':'收割者沒有等到月圓。';let ov=by('cc0923hf2TrialScene');if(!ov){ov=document.createElement('div');ov.id='cc0923hf2TrialScene';document.body.appendChild(ov)}ov.className='cc0923hf2Modal';ov.innerHTML=`<div class="cc0923hf2Card"><div class="cc0923hf2Moon">💀</div><div class="small">收割試煉者</div><div style="font-size:20px;font-weight:900;line-height:1.7;margin:12px 0">「${text}」</div><button onclick="window.cc0923hf2CloseTrial(${success?1:0})">確認</button></div>`}
+ function closeTrial(success){const ov=by('cc0923hf2TrialScene');if(ov)ov.classList.add('hidden');window.cc099CutsceneActive=false;dungeon=null;fight=null;p.queue=0;hold=false;budget=0;p.hp=playerMaxHp();clearPlayerStatus();save(false);spawnMain();if(success)log('💀 你通過了收割試煉。戰鐮覺醒副本完成，仍需滿足 9 個職業覺醒才可成為收割者。');else log('💀 收割試煉挑戰失敗')}
+ function awakenReaper2(){ensureNewSystems();const a=awakening();if(a.reaperAwakened)return log('💀 戰鐮已覺醒為收割者');if(!reaperKillReq())return log('💀 戰鐮擊殺數不足：'+(a.reaperKills||0)+'/1000');if(!reaperLvReq())return log('💀 戰鐮等級不足：Lv.'+swLv('reaper')+'/10');if(!reaperDungeonReq())return log('💀 尚未通關戰鐮覺醒副本');if(!nineReq())return log('🌕 戰鐮覺醒需要已覺醒滿 9 個職業：目前 '+awakenedCountNoReaper()+'/9');a.reaperAwakened=true;unlockMoonTitle(false);save(false);log('🌕 覺醒成功：戰鐮 → 收割者。輪迴之門已開啟。');floatText('輪迴月圓！',true);render();showGate(true)}
+ function gateUnlocked(){const a=awakening(),r=reincarnationState(),t=titleState();return !!(r.gateUnlocked||(a.reaperAwakened&&t.unlocked[MOON_TITLE_ID]))}
+ function showGate(auto=false){if(!gateUnlocked()){return log('🌕 輪迴之門尚未開啟：需要完成戰鐮覺醒並獲得【'+MOON_TITLE_NAME+'】')}modal(`<div class="row"><b>🌕 輪迴之門</b><button onclick="window.cc0923hf2CloseModal()">關閉</button></div><div class="card notice"><b>你已看過九條命運。</b><div class="small">你已成為收割者。<br>稱號【${MOON_TITLE_NAME}】已被刻入輪迴紀錄，可帶入第二部【輪迴】。</div></div><div class="small" style="line-height:1.8">傳承，從未斬斷。<br>你的輪迴，現在開始。</div><button class="cc0923hf2GateBtn" onclick="window.cc0923hf2EnterReincarnation()">🌕 踏入輪迴</button>${auto?'<div class="small">戰鐮覺醒成功後，輪迴之門已自動開啟。</div>':''}`)}
+ function enterReincarnation(){closeModal2();let ov=by('cc0923hf2Black');if(!ov){ov=document.createElement('div');ov.id='cc0923hf2Black';document.body.appendChild(ov)}ov.className='cc0923hf2Black';ov.innerHTML=`<div class="cc0923hf2BlackInner"><div class="cc0923hf2Moon">🌕</div><div class="cc0923hf2Line">傳承，從未斬斷。<br><br>你的輪迴，現在開始。</div><div class="cc0923hf2Sub">第二部【輪迴】尚未開啟。<br>稱號【${MOON_TITLE_NAME}】已被刻入輪迴紀錄。</div><button onclick="document.getElementById('cc0923hf2Black').classList.add('hidden')">返回傳承</button></div>`;reincarnationState().enteredPreviewAt=Date.now();save(false)}
+ function renderMoonTitleTools(){try{const t=titleState();if(t.unlocked[MOON_TITLE_ID]){const box=by('equippedTitleBox');if(box&&!by('cc0923MoonTitleBtn')){const list=box.querySelector('.titleEquipList')||box;const b=document.createElement('button');b.type='button';b.id='cc0923MoonTitleBtn';b.className='titleChoice cc0923MoonTitle'+(t.equipped===MOON_TITLE_ID?' active':'');b.dataset.titleId=MOON_TITLE_ID;b.textContent='🏷️ '+MOON_TITLE_NAME+'｜可帶入輪迴';b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();window.cc097SetEquippedTitle(MOON_TITLE_ID)});list.appendChild(b)}const btn=by('cc0923MoonTitleBtn');if(btn){btn.classList.add('cc0923MoonTitle');btn.classList.toggle('active',t.equipped===MOON_TITLE_ID)}const hud=by('equippedTitleHud');if(hud&&t.equipped===MOON_TITLE_ID){hud.textContent='【'+MOON_TITLE_NAME+'】';hud.classList.remove('hidden');hud.classList.add('cc0923MoonHud')}}}catch(e){}}
+ function patchDrawer(){try{const panel=by('featureDrawer');if(!panel)return;let b=by('cc0923hf2GateBtn');if(gateUnlocked()){if(!b){b=document.createElement('button');b.id='cc0923hf2GateBtn';b.className='cc0923hf2GateBtn';b.textContent='🌕 輪迴之門';b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add('hidden');showGate(false)})}panel.appendChild(b)}else if(b){b.remove()}if(!panel.dataset.cc0923hf2Capture){panel.dataset.cc0923hf2Capture='1';panel.addEventListener('click',ev=>{const btn=ev.target&&ev.target.closest?ev.target.closest('button'):null;if(!btn)return;const txt=btn.textContent||'';if(txt.includes('職業覺醒')&&!txt.includes('已完成')){ev.preventDefault();ev.stopImmediatePropagation();panel.classList.add('hidden');showAwakeningPanel2()}else if(txt.includes('覺醒副本')&&!txt.includes('已完成')){ev.preventDefault();ev.stopImmediatePropagation();panel.classList.add('hidden');showDungeonPanel2()}},true)}}catch(e){}}
+ const oldSet=window.cc097SetEquippedTitle;window.cc097SetEquippedTitle=function(id){if(id===MOON_TITLE_ID){const t=titleState();if(!t.unlocked[MOON_TITLE_ID])return log('尚未解鎖此稱號');t.equipped=MOON_TITLE_ID;save(false);log('🏷️ 裝備稱號：「'+MOON_TITLE_NAME+'」');render();return}return oldSet?oldSet(id):undefined};
+ const oldStart=window.cc099StartReaperAwakenDungeon;window.cc099StartReaperAwakenDungeon=startReaperAwakenDungeon2;
+ const oldAwaken=window.cc099AwakenReaper;window.cc099AwakenReaper=awakenReaper2;
+ window.cc099ShowAwakeningPanel=showAwakeningPanel2;window.cc099ShowAwakenDungeonPanel=showDungeonPanel2;window.cc0923hf2ShowGate=showGate;window.cc0923hf2EnterReincarnation=enterReincarnation;window.cc0923hf2CloseModal=closeModal2;window.cc0923hf2CloseTrial=closeTrial;window.cc0923hf2Info=function(){return{tag:TAG,atkMultiplier:atkPointMultiplier2(),awakenedCountNoReaper:awakenedCountNoReaper(),moonTitle:!!titleState().unlocked[MOON_TITLE_ID],gate:gateUnlocked(),reincarnation:p.reincarnation}};
+ const oldDK=typeof dungeonKill==='function'?dungeonKill:null;if(oldDK&&!window.__cc0923hf2DungeonKill){window.__cc0923hf2DungeonKill=oldDK;dungeonKill=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endReaperRun2(true);return}return window.__cc0923hf2DungeonKill()}}
+ const oldEnd=typeof endDungeon==='function'?endDungeon:null;if(oldEnd&&!window.__cc0923hf2EndDungeon){window.__cc0923hf2EndDungeon=oldEnd;endDungeon=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endReaperRun2(false);return}return window.__cc0923hf2EndDungeon()}}
+ const oldDeath=typeof playerDeath==='function'?playerDeath:null;if(oldDeath&&!window.__cc0923hf2Death){window.__cc0923hf2Death=oldDeath;playerDeath=function(){if(dungeon&&dungeon.type===DUNGEON){dungeon.running=false;endReaperRun2(false);return}return window.__cc0923hf2Death()}}
+ const oldRender=typeof render==='function'?render:null;if(oldRender&&!window.__cc0923hf2Render){window.__cc0923hf2Render=oldRender;render=function(){patchAtkFormula();backfillExisting();const r=window.__cc0923hf2Render();patchVersion();addStyle();patchAbilityPanel2();patchDrawer();renderMoonTitleTools();return r}}
+ setTimeout(()=>{try{patchAtkFormula();backfillExisting();patchVersion();addStyle();patchAbilityPanel2();patchDrawer();renderMoonTitleTools();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},90);
  console.log('傳承',TAG);
 })();
 </script>
