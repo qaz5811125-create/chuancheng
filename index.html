@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】</title>
+<title>傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -307,7 +307,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 <button id="challengeBtn" class="big blue hidden">繼續挑戰 Boss</button>
 
 <div class="card"><div class="row"><b>能力點</b><span class="pill">倍率：<b id="pointMulNow">×1</b></span></div><div id="pointMulBox" class="multiBtns"></div>
-<button data-point="atk">攻擊+2</button><button data-point="aspd">攻速+0.05/秒</button><button data-point="crit">暴擊+0.5%</button>
+<button data-point="atk">攻擊倍率×1.08/點</button><button data-point="aspd">攻速+0.05/秒</button><button data-point="crit">暴擊+0.5%</button>
 <button data-point="pen">破甲+0.5%</button><button data-point="execute">💀秒殺率+0.0001%</button><button data-point="gold">金幣+2%</button><button data-point="drop">掉寶+0.5%</button><button data-point="hp" class="green">血量+250</button><button data-point="def" class="blue">防禦+25</button><button data-point="regen" class="green">回血+25/秒</button>
 </div>
 
@@ -349,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.22 Hotfix 6【下獄狀態同步】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -5944,7 +5944,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
 /* ===== Beta 0.9.22：下獄迷宮 / 職業鎖定 / 誓約節點玩法 ===== */
 (function(){
  const TAG="0.9.22-hell-maze-oath-lock-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
@@ -6241,7 +6241,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6288,7 +6288,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.21：七女神免死熱修 / 禁止無限復活 ===== */
 (function(){
  const TAG="0.9.21-sky-goddess-undying-hotfix-v1";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  function by(id){return document.getElementById(id)}
  function num(v,d=0){v=Number(v);return Number.isFinite(v)?v:d}
  function isSkyFight(){return !!(typeof fight!=="undefined"&&fight&&fight.cc0921Sky&&fight.monsters)}
@@ -6358,7 +6358,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
@@ -6371,7 +6371,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 1：下獄入口與攻速降溫 ===== */
 (function(){
  const TAG="0.9.22-hotfix1-hell-entry-aspd-cooling";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const ASPD_CAP=100;
  const HIGH_ASPD=60;
  const VERY_HIGH_ASPD=80;
@@ -6400,7 +6400,7 @@ setTimeout(hidePwaSplash,2500);
  function patchVersionText(){
   try{
    document.title=VERSION_NAME;
-   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"});
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"});
   }catch(e){}
  }
  // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
@@ -6529,11 +6529,11 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 2：下獄迷宮建立修正 / 隨機門保險 ===== */
 (function(){
  const TAG="0.9.22-hotfix2-hell-maze-build-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  function ensureNoticeStyle(){
   if(by("cc0922hf2Style"))return;
@@ -6620,7 +6620,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 3：下獄強制建迷宮 / 隨機門直建 ===== */
 (function(){
  const TAG="0.9.22-hotfix3-hell-force-run-random";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const rnd=a=>a[Math.floor(Math.random()*a.length)];
@@ -6700,7 +6700,7 @@ setTimeout(hidePwaSplash,2500);
  }
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6749,7 +6749,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 4：下獄入口殘留清除 / 最終接線 ===== */
 (function(){
  const TAG="0.9.22-hotfix4-hell-stale-dungeon-clean-start";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6775,7 +6775,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6906,7 +6906,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 5：下獄門資料接回 / 最終門線 ===== */
 (function(){
  const TAG="0.9.22-hotfix5-hell-doors-final-line";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  const esc=s=>String(s==null?"":s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
@@ -6932,7 +6932,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  function addStyle(){
   try{if(typeof addStyle==="function"){} }catch(e){}
@@ -7099,12 +7099,12 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.22 Hotfix 6：下獄狀態與畫面同步 / 最後一刀 ===== */
 (function(){
  const TAG="0.9.22-hotfix6-hell-state-screen-sync";
- const VERSION_NAME="傳承 Beta 0.9.22 Hotfix 6【下獄狀態同步】";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
  const HELL_TYPE="hellMaze";
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.22 Hotfix 6【下獄狀態同步】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】"})}catch(e){}
  }
  function hellRoot(){
   if(typeof p==="undefined"||!p)return null;
@@ -7343,6 +7343,190 @@ setTimeout(hidePwaSplash,2500);
  window.cc0923CloseModal=closeModal;
  window.cc0923Info=()=>({tag:TAG,awakened:isAwakened(),calamity:awakenState923().archerCalamityTriggers,lv:archerLv(),dungeon:awakenState923().archerDungeonClears,title:hasTitle(),artifact:selectedArtifactKey(),blocks:awakenState923().sunBlockStacks});
  setTimeout(()=>{try{ensureNewSystems();patchVersion();ensureDrawerButtons();renderTitleTools();if(typeof render==='function')render()}catch(e){}},0);
+ console.log('傳承',TAG);
+})();
+</script>
+
+
+<script>
+/* ===== Beta 0.9.23 Hotfix 1：能力點重置 / 攻擊倍率化 / 覺醒面板整理 ===== */
+(function(){
+ const TAG="0.9.23-hotfix1-stat-reset-awakening-cleanup";
+ const VERSION_NAME="傳承 Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】";
+ const ATK_POINT_RATE=1.08;
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ const POINT_KEYS=["atk","aspd","crit","pen","execute","gold","drop","hp","def","regen"];
+ const ZERO_SPENT={atk:0,aspd:0,crit:0,pen:0,execute:0,gold:0,drop:0,hp:0,def:0,regen:0};
+ function patchVersion(){
+  try{document.title=VERSION_NAME}catch(e){}
+  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.23 Hotfix 1【能力點重置與覺醒面板整理】'})}catch(e){}
+ }
+ function addStyle(){
+  if(by('cc0923hf1Style'))return;
+  const st=document.createElement('style');st.id='cc0923hf1Style';
+  st.textContent=`
+  .cc0923hf1Box{margin-top:10px;padding:10px;border:1px solid rgba(248,113,113,.42);background:rgba(127,29,29,.16);border-radius:14px}
+  .cc0923hf1Box b{color:#fecaca}.cc0923hf1Mini{font-size:12px;color:#cbd5e1;margin-top:4px;line-height:1.55}
+  .cc0923hf1ArchiveCard{margin:8px 0;padding:10px;border:1px solid rgba(148,163,184,.25);border-radius:14px;background:rgba(15,23,42,.72)}
+  .titleChoice.cc0923RedTitle,.titleChoice.cc0923RedTitle.active,#cc0923TitleBtn,#cc0923TitleBtn.active{background:linear-gradient(90deg,#7f1d1d,#dc2626,#ef4444)!important;color:#fff!important;border-color:#fecaca!important;box-shadow:0 0 0 2px rgba(248,113,113,.28),0 0 18px rgba(239,68,68,.55)!important;text-shadow:0 0 10px rgba(255,255,255,.25)!important}
+  .cc0923RedTitleHud{color:#fecaca!important;text-shadow:0 0 12px rgba(239,68,68,.9),0 0 24px rgba(127,29,29,.9)!important}
+  `;
+  document.head.appendChild(st);
+ }
+ function spent(){
+  if(!p.statPointSpent||typeof p.statPointSpent!=='object')p.statPointSpent={};
+  for(const k of POINT_KEYS)p.statPointSpent[k]=Math.max(0,Math.floor(n(p.statPointSpent[k],0)));
+  return p.statPointSpent;
+ }
+ function legacyPointCounts(){
+  const b=p.bonus||{};
+  return {
+   atk:Math.max(0,Math.round(n(b.atk,0)/2)),
+   aspd:Math.max(0,Math.round(n(b.aspd,0)/.05)),
+   crit:Math.max(0,Math.round(n(b.crit,0)/.005)),
+   pen:Math.max(0,Math.round(n(b.pen,0)/.005)),
+   execute:Math.max(0,Math.round(n(b.execute,0)/.000001)),
+   gold:Math.max(0,Math.round(n(b.gold,0)/.02)),
+   drop:Math.max(0,Math.round(n(b.drop,0)/.005)),
+   hp:Math.max(0,Math.round(n(b.hp,0)/250)),
+   def:Math.max(0,Math.round(n(b.def,0)/25)),
+   regen:Math.max(0,Math.round(n(b.regen,0)/25))
+  };
+ }
+ function migratePointSystem(){
+  if(!p)return;
+  if(!p.bonus)p.bonus={};
+  const spt=spent();
+  if(!p.cc0923hf1PointMigrated){
+   const old=legacyPointCounts();
+   for(const k of POINT_KEYS)spt[k]=Math.max(spt[k]||0,old[k]||0);
+   // 攻擊能力點改成倍率後，舊的 +2 固定攻擊歸零，避免同一批點數雙重計算。
+   p.bonus.atk=0;
+   p.cc0923hf1PointMigrated=1;
+   try{log('🔥 能力點攻擊已轉換為倍率系統：舊攻擊點數 '+(old.atk||0)+' 點已保留，可用重置鍵重新分配。')}catch(e){}
+   try{save(false)}catch(e){}
+  }
+  // 其他欄位若缺，補 0。
+  for(const k of ['atk','aspd','crit','pen','execute','gold','drop','hp','def','regen']){if(p.bonus[k]==null)p.bonus[k]=0}
+ }
+ function atkPointMultiplier(){
+  try{migratePointSystem();const lv=spent().atk||0;const v=Math.pow(ATK_POINT_RATE,lv);return Number.isFinite(v)?Math.min(v,1e300):1e300}catch(e){return 1}
+ }
+ function totalSpent(){const s=spent();return POINT_KEYS.reduce((a,k)=>a+Math.max(0,Math.floor(n(s[k],0))),0)}
+ function resetAbilityPoints(){
+  migratePointSystem();
+  const total=totalSpent();
+  if(total<=0)return log('目前沒有已投入的能力點可以重置');
+  const ok=confirm('是否重置所有能力點？\n\n重置後，已投入的攻擊、攻速、暴擊、破甲、秒殺率、金幣、掉寶、生命、防禦、回血等能力點會全部歸零，並全數返還為可用能力點。\n\n此操作不會影響等級、職業等級、覺醒、裝備、神器、天域、下獄與副本進度。');
+  if(!ok)return;
+  p.points=Math.max(0,Math.floor(n(p.points,0)))+total;
+  p.statPointSpent=Object.assign({},ZERO_SPENT);
+  p.bonus.atk=0;p.bonus.aspd=0;p.bonus.crit=0;p.bonus.pen=0;p.bonus.execute=0;p.bonus.gold=0;p.bonus.drop=0;p.bonus.hp=0;p.bonus.def=0;p.bonus.regen=0;
+  try{p.hp=Math.min(playerMaxHp(),p.hp||playerMaxHp())}catch(e){}
+  log('🔄 能力點已重置，返還 '+total+' 點。');
+  save(false);render();
+ }
+ function applyPointHotfix(k){
+  migratePointSystem();const s=spent();
+  if(!POINT_KEYS.includes(k))return;
+  s[k]=Math.max(0,Math.floor(n(s[k],0)))+1;
+  if(k==='atk')return;
+  if(k==='aspd')p.bonus.aspd+=.05;
+  if(k==='crit')p.bonus.crit+=.005;
+  if(k==='pen')p.bonus.pen+=.005;
+  if(k==='execute')p.bonus.execute=(p.bonus.execute||0)+.000001;
+  if(k==='gold')p.bonus.gold+=.02;
+  if(k==='drop')p.bonus.drop+=.005;
+  if(k==='hp'){p.bonus.hp=(p.bonus.hp||0)+250;p.hp=Math.min(playerMaxHp(),(p.hp||playerMaxHp())+250)}
+  if(k==='def')p.bonus.def=(p.bonus.def||0)+25;
+  if(k==='regen')p.bonus.regen=(p.bonus.regen||0)+25;
+ }
+ function patchAbilityPanel(){
+  try{
+   const atkBtn=document.querySelector('[data-point="atk"]');
+   if(atkBtn)atkBtn.textContent='攻擊倍率×1.08/點';
+   const card=atkBtn?atkBtn.closest('.card'):null;
+   if(!card)return;
+   let box=by('cc0923hf1PointResetBox');
+   if(!box){box=document.createElement('div');box.id='cc0923hf1PointResetBox';box.className='cc0923hf1Box';card.appendChild(box)}
+   const atkLv=spent().atk||0,mul=atkPointMultiplier();
+   box.innerHTML=`<b>🔥 攻擊能力點倍率化</b><div class="cc0923hf1Mini">攻擊強化 Lv.${atkLv}｜目前攻擊倍率：×${fmt(mul)}｜每點：×1.08<br>已投入能力點：${totalSpent()}｜可用能力點：${Math.floor(n(p.points,0))}</div><button class="red" onclick="window.cc0923hf1ResetAbilityPoints()">重置能力點</button>`;
+  }catch(e){}
+ }
+ function awakening(){if(!p.awakening)p.awakening={};return p.awakening}
+ function titleState(){if(!p.titles)p.titles={unlocked:{}};if(!p.titles.unlocked)p.titles.unlocked={};return p.titles}
+ function isDone(key){const a=awakening();return !!a[key]}
+ function showAwakenArchive(){
+  addStyle();const a=awakening(),t=titleState();
+  const rows=[
+   ['🔫 終幕槍神','槍手','【槍手的自覺】','狙神非你莫屬','gunnerAwakened'],
+   ['🔥 【我回來了】魔戰神','狂戰士','【魔神甦醒】','魔神•凱','berserkerAwakened'],
+   ['🌑 收割者','戰鐮','【戰鐮覺醒副本】','收割者','reaperAwakened'],
+   ['⚡ 【天之王•神兵】','巨神兵','【天空之王】','天神','colossusAwakened'],
+   ['🧤 通天盜','盜賊','【我比你會偷】','增益不錯我拿走了','thiefAwakened'],
+   ['☯️ 天師 / 獄使','技能師','【世界之王？】','世界之王？','skillmasterAwakened'],
+   ['🏹 逐日者','弓箭手','【逐日記】','一箭看不見','archerAwakened']
+  ];
+  let html=`<div class="row"><b>📦 已完成覺醒總覽</b><button onclick="window.cc0923hf1CloseArchive()">關閉</button></div><div class="small">已覺醒職業會收起覺醒條件與副本入口，只保留畢業紀錄。沒覺醒的職業仍會顯示原本任務。</div>`;
+  for(const [name,base,dun,title,key] of rows){
+   const done=!!a[key];
+   html+=`<div class="cc0923hf1ArchiveCard"><b>${name}</b><div class="small">原職業：${base}<br>狀態：${done?'✅ 已覺醒':'未完成'}<br>覺醒副本：${dun}${done?' 已收納':' 未完成'}<br>稱號：【${title}】${done?' 已取得 / 已登錄':' 未取得'}</div></div>`;
+  }
+  let m=by('cc0923hf1ArchiveModal');
+  if(!m){m=document.createElement('div');m.id='cc0923hf1ArchiveModal';m.className='cc0923Modal hidden';document.body.appendChild(m)}
+  m.innerHTML='<div class="cc0923Card">'+html+'</div>';m.classList.remove('hidden');
+ }
+ function closeArchive(){const m=by('cc0923hf1ArchiveModal');if(m)m.classList.add('hidden')}
+ function patchAwakeningButtons(){
+  try{
+   const panel=by('featureDrawer');if(!panel)return;const a=awakening();
+   const hideRules=[
+    [a.gunnerAwakened,['槍手覺醒','槍手副本']],
+    [a.berserkerAwakened,['魔戰神覺醒','魔神甦醒']],
+    [a.reaperAwakened,['職業覺醒','覺醒副本']],
+    [a.colossusAwakened,['天之王覺醒','天空之王']],
+    [a.thiefAwakened,['通天盜覺醒','我比你會偷']],
+    [a.skillmasterAwakened,['技能師覺醒','世界之王？']],
+    [a.archerAwakened,['逐日者覺醒','逐日記']]
+   ];
+   [...panel.querySelectorAll('button')].forEach(btn=>{
+    const txt=btn.textContent||'';let hide=false;
+    for(const [done,keys] of hideRules){if(done&&keys.some(k=>txt.includes(k)))hide=true}
+    if(txt.includes('已完成覺醒')||txt.includes('已完成覺醒總覽'))hide=false;
+    btn.style.display=hide?'none':'';
+   });
+   if(!by('cc0923hf1ArchiveBtn')){
+    const b=document.createElement('button');b.id='cc0923hf1ArchiveBtn';b.textContent='📦 已完成覺醒總覽';
+    b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add('hidden');showAwakenArchive()});
+    panel.appendChild(b);
+   }
+  }catch(e){}
+ }
+ function patchSunTitleRed(){
+  try{
+   const id='sunInvisibleArrow';const t=titleState();
+   const btn=document.querySelector('[data-title-id="'+id+'"]');
+   if(btn){btn.classList.add('cc0923RedTitle');if(t.equipped===id)btn.classList.add('active');else btn.classList.remove('active')}
+   const hud=by('equippedTitleHud');
+   if(hud&&t.equipped===id){hud.classList.remove('hidden');hud.textContent='【一箭看不見】';hud.classList.add('cc0923RedTitleHud')}
+  }catch(e){}
+ }
+ // 覆蓋攻擊能力點計算與套點流程。
+ const oldEnsure=typeof ensureNewSystems==='function'?ensureNewSystems:null;
+ if(oldEnsure&&!window.__cc0923hf1OldEnsure){window.__cc0923hf1OldEnsure=oldEnsure;ensureNewSystems=function(){window.__cc0923hf1OldEnsure();migratePointSystem()}}
+ const oldApply=typeof applyPoint==='function'?applyPoint:null;
+ if(oldApply&&!window.__cc0923hf1OldApply){window.__cc0923hf1OldApply=oldApply;applyPoint=function(k){return applyPointHotfix(k)}}
+ const oldAtk=typeof atk==='function'?atk:null;
+ if(oldAtk&&!window.__cc0923hf1OldAtk){window.__cc0923hf1OldAtk=oldAtk;atk=function(){try{migratePointSystem();const base=(p.baseAtk||0)+equipAtk();return base*atkPointMultiplier()*(1+comboDamageBonus()+jobAtkBonus()+artifactDamageBonus())}catch(e){return window.__cc0923hf1OldAtk()}}}
+ const oldRender=typeof render==='function'?render:null;
+ if(oldRender&&!window.__cc0923hf1OldRender){window.__cc0923hf1OldRender=oldRender;render=function(){migratePointSystem();const out=window.__cc0923hf1OldRender();patchVersion();addStyle();patchAbilityPanel();patchAwakeningButtons();patchSunTitleRed();return out}}
+ window.cc0923hf1ResetAbilityPoints=resetAbilityPoints;
+ window.cc0923hf1ShowAwakenArchive=showAwakenArchive;
+ window.cc0923hf1CloseArchive=closeArchive;
+ window.cc0923hf1Info=function(){try{return{tag:TAG,spent:spent(),atkMul:atkPointMultiplier(),points:p&&p.points,awakening:p&&p.awakening,title:p&&p.titles&&p.titles.equipped}}catch(e){return{tag:TAG,error:String(e)}}};
+ setTimeout(()=>{try{migratePointSystem();patchVersion();addStyle();patchAbilityPanel();patchAwakeningButtons();patchSunTitleRed();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},60);
  console.log('傳承',TAG);
 })();
 </script>
