@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>傳承 Beta 0.9.24 Hotfix 2【輪迴入口接線修正】</title>
+<title>傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -349,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.24 Hotfix 2【輪迴入口接線修正】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -6241,7 +6241,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6359,7 +6359,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
@@ -6401,7 +6401,7 @@ setTimeout(hidePwaSplash,2500);
  function patchVersionText(){
   try{
    document.title=VERSION_NAME;
-   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"});
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"});
   }catch(e){}
  }
  // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
@@ -6534,7 +6534,7 @@ setTimeout(hidePwaSplash,2500);
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  function ensureNoticeStyle(){
   if(by("cc0922hf2Style"))return;
@@ -6701,7 +6701,7 @@ setTimeout(hidePwaSplash,2500);
  }
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6776,7 +6776,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6933,7 +6933,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  function addStyle(){
   try{if(typeof addStyle==="function"){} }catch(e){}
@@ -7105,7 +7105,7 @@ setTimeout(hidePwaSplash,2500);
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 2【輪迴入口接線修正】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
  }
  function hellRoot(){
   if(typeof p==="undefined"||!p)return null;
@@ -7611,7 +7611,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.24：終局覺醒與輪迴雛形 ===== */
 (function(){
  const TAG='0.9.24-final-awaken-reincarnation-prototype';
- const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 2【輪迴入口接線修正】';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
  const by=id=>document.getElementById(id);
  const num=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
  const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(num(v,0)).toLocaleString();
@@ -7640,7 +7640,7 @@ setTimeout(hidePwaSplash,2500);
  ];
  const R_SLOTS=[['weapon','武器'],['head','頭盔'],['ring1','戒指1'],['ring2','戒指2'],['necklace','項鍊'],['shoes','鞋子']];
  const PROF_BOSSES=['skillmaster','reaper','berserker','gunner','archer','lancer','mage','assassin','colossus','thief'];
- function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 2【輪迴入口接線修正】'})}catch(e){}}
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}}
  function addStyle(){if(by('cc0924Style'))return;const st=document.createElement('style');st.id='cc0924Style';st.textContent=`
  .cc0924Modal{position:fixed;inset:0;z-index:160000;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
  .cc0924Modal.hidden{display:none!important}.cc0924Card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(192,132,252,.36);border-radius:22px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.62)}
@@ -7857,12 +7857,12 @@ var modal = window.modal = function(html){
 };
 (function(){
  const TAG='0.9.24-hotfix2-reincarnation-entry-bridge';
- const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 2【輪迴入口接線修正】';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
  const by=id=>document.getElementById(id);
  function hide(id){try{const el=by(id);if(el)el.classList.add('hidden')}catch(e){}}
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 2【輪迴入口接線修正】'})}catch(e){}
+  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}
  }
  function legacyGateUnlocked(){try{return !!(p&&p.reincarnation&&(p.reincarnation.gateUnlocked||(p.awakening&&p.awakening.reaperAwakened)))}catch(e){return false}}
  function closeAllReincarnationOverlays(){hide('cc0923hf2Modal');hide('cc0923hf2Black');hide('cc0924Modal')}
@@ -7907,6 +7907,76 @@ var modal = window.modal = function(html){
  if(oldRender&&!window.__cc0924hf2Render){window.__cc0924hf2Render=oldRender;render=function(){const r=window.__cc0924hf2Render();patchVersion();patchButtons();return r}}
  setTimeout(()=>{try{patchVersion();patchButtons();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},220);
  window.cc0924hf2Info=()=>({tag:TAG,gate:legacyGateUnlocked(),hasReincRenderer:typeof window.cc0924RenderReinc==='function',reincarnation:p&&p.reincarnation});
+ console.log('傳承',TAG);
+})();
+</script>
+
+<script>
+/* ===== Beta 0.9.24 Hotfix 3：輪迴資料隔離與收納重構 ===== */
+(function(){
+ const TAG='0.9.24-hotfix3-reincarnation-isolation-storage';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
+ const by=id=>document.getElementById(id);
+ const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
+ const JOBS_R={skillmaster:['☯️','技能師','技能師（未覺醒）'],reaper:['🌑','戰鐮','戰鐮（未覺醒）'],berserker:['🔥','狂戰士','狂戰士（未覺醒）'],gunner:['🔫','槍手','槍手（未覺醒）'],archer:['🏹','弓箭手','弓箭手（未覺醒）']};
+ const SLOTS=[['weapon','武器','⚔️'],['head','頭盔','🎩'],['ring1','戒指1','💍'],['ring2','戒指2','💍'],['necklace','項鍊','📿'],['shoes','鞋子','👟']];
+ const TIERS=[['普通階','普通'],['精良階','精良'],['稀有階','稀有'],['史詩階','史詩'],['傳說階','傳說'],['神話階','神話'],['遠古階','遠古']];
+ const STATS={atk:'攻擊',hp:'血量',def:'防禦',regen:'回血',aspd:'攻速',crit:'暴擊'};
+ function RS(){if(!p.reincarnation||typeof p.reincarnation!=='object')p.reincarnation={};return p.reincarnation}
+ function RR(){const r=RS();return r&&r.run&&r.run.active?r.run:null}
+ function active(){return !!RR()}
+ function jobLabel(k,full=false){const j=JOBS_R[k];return j?(full?j[2]:j[0]+' '+j[1]):String(k||'未選職業')}
+ function mapName(rr){const maps=['下獄','海域','沙漠','森林','主城','天域'];return maps[Math.max(0,Math.min(5,Math.floor(n(rr&&rr.map,0))))]||'下獄'}
+ function stageText(rr){const mapNo=Math.max(1,Math.floor(n(rr&&rr.map,0))+1);return mapNo+'-'+Math.max(1,Math.min(30,Math.floor(n(rr&&rr.stage,1))))}
+ function tierName(rr){const rank=Math.max(0,Math.min(6,Math.floor(n(rr&&rr.rank,0))));const names=['亡靈 / 普通階','骨頭 / 精良階','骨頭將士 / 稀有階','亡靈總帥 / 史詩階','煉獄之神 / 傳說階','輪迴者 / 神話階','真•輪迴者 / 遠古階'];return names[rank]||names[0]}
+ function ensureInv(rr=RR()){if(!rr)return[];if(!Array.isArray(rr.inventory))rr.inventory=[];if(!rr.equip||typeof rr.equip!=='object')rr.equip={};for(const [s] of SLOTS)if(!(s in rr.equip))rr.equip[s]=null;return rr.inventory}
+ function eqStat(rr,stat){let v=0;if(!rr||!rr.equip)return 0;for(const it of Object.values(rr.equip)){if(!it)continue;if(it.stat===stat)v+=n(it.value,0);if(it.subStat===stat)v+=n(it.subValue,0)}return v}
+ function rStats(rr=RR()){if(!rr)return{atk:1,hp:1,def:0,regen:0,aspd:1,crit:.05,pen:0,execute:.000001};let s={atk:n(rr.atk,50)*(1+n(rr.skill&&rr.skill.atk,0)*.08),hp:n(rr.maxHp||rr.hp,1000)*(1+n(rr.skill&&rr.skill.hp,0)*.08),def:n(rr.def,0)*(1+n(rr.skill&&rr.skill.def,0)*.08),regen:n(rr.regen,0)*(1+n(rr.skill&&rr.skill.regen,0)*.08),aspd:1,crit:.05,pen:0,execute:.000001};s.atk+=eqStat(rr,'atk');s.hp+=eqStat(rr,'hp');s.def+=eqStat(rr,'def');s.regen+=eqStat(rr,'regen');s.aspd+=eqStat(rr,'aspd')/100;s.crit+=eqStat(rr,'crit')/100;if(rr.rank>=6){for(const k of ['atk','hp','def','regen'])s[k]*=.95}s.hp=Math.max(1,Math.floor(s.hp));s.atk=Math.max(1,Math.floor(s.atk));s.def=Math.max(0,Math.floor(s.def));s.regen=Math.max(0,Math.floor(s.regen));s.aspd=Math.max(.25,s.aspd+(rr.job==='archer'?.5:0)+(rr.job==='gunner'?-.55:0));s.crit=Math.max(0,Math.min(.95,s.crit));return s}
+ function rPower(rr=RR()){const s=rStats(rr);return Math.floor(s.atk*2+s.hp*.2+s.def*1.2+s.regen+s.aspd*80+s.crit*500)}
+ function makeItem(){const rr=RR();if(!rr)return null;const slot=SLOTS[Math.floor(Math.random()*SLOTS.length)][0];const tier=Math.max(0,Math.min(6,Math.floor(n(rr.rank,0))+(Math.random()<.12+n(rr.skill&&rr.skill.rare,0)*.01?1:0)));const pools={weapon:['atk','aspd','crit'],head:['hp','def'],ring1:['atk','def','hp','crit'],ring2:['atk','def','hp','regen'],necklace:['atk','hp','regen'],shoes:['regen','def','aspd']};const pool=pools[slot]||['atk'];const stat=pool[Math.floor(Math.random()*pool.length)];const subPool=['atk','hp','def','regen','aspd','crit'].filter(x=>x!==stat);const subStat=subPool[Math.floor(Math.random()*subPool.length)];const base=(tier+1)*(n(rr.map,0)+1)*(n(rr.stage,1)+6);const mul=stat==='hp'?18:stat==='atk'?2.6:stat==='def'?2.2:stat==='aspd'?8:stat==='crit'?5:1.4;const value=Math.max(1,Math.floor(base*mul*(.75+Math.random()*.75)));const subValue=Math.max(1,Math.floor(base*(subStat==='hp'?8:subStat==='atk'?1.2:subStat==='def'?1:subStat==='aspd'?4:subStat==='crit'?2.5:.7)));const names={weapon:'輪迴武器',head:'亡靈頭盔',ring1:'骨戒',ring2:'骨戒',necklace:'月屑項鍊',shoes:'往上爬的鞋'};const aff=['寶箱掉落率 +1%','小Boss傷害 +3%','瀕死時多撐一口氣','隨機事件比較不討厭','下獄壓迫抗性 +1%'][Math.floor(Math.random()*5)];return {id:'r'+Date.now().toString(36)+Math.random().toString(36).slice(2,7),slot,tier,stat,value,subStat,subValue,affix:aff,name:TIERS[tier][1]+'・'+(names[slot]||'輪迴裝備'),power:value*(stat==='hp'?.08:stat==='aspd'?6:stat==='crit'?8:1)+subValue*.35}}
+ function statLine(it){if(!it)return'增加？？？ / 附加屬性';const a=(STATS[it.stat]||it.stat)+' +'+fmt(it.value),b=(STATS[it.subStat]||it.subStat)+' +'+fmt(it.subValue);return '增加'+a+' / 附加屬性：'+it.affix+'｜'+b}
+ function equipLine(slot,label){const rr=RR(),it=rr&&rr.equip&&rr.equip[slot];if(!it)return `<b>裝備（${label}）</b><div class="small">增加？？？ / 附加屬性</div><button class="blue" onclick="window.cc0924hf3ChangeEquip('${slot}')">更換</button>`;return `<b>裝備（${label}）</b><div class="small">${it.name}｜${TIERS[it.tier]&&TIERS[it.tier][0]||'普通階'}<br>${statLine(it)}</div><button class="blue" onclick="window.cc0924hf3ChangeEquip('${slot}')">更換</button><button onclick="window.cc0924hf3Unequip('${slot}')">卸下</button>`}
+ function showEquipPicker(slot){const rr=RR();if(!rr)return log('尚未進入輪迴');const label=(SLOTS.find(x=>x[0]===slot)||[slot,slot])[1];const inv=ensureInv(rr).filter(it=>it&&it.slot===slot);let h=`<div class="row"><b>🧰 更換${label}</b><button onclick="window.cc0924hf3Close()">關閉</button></div>`;h+=`<div class="card notice"><b>目前裝備</b><div class="small">${equipLine(slot,label).replace(/<button[\s\S]*$/,'')}</div></div>`;if(!inv.length)h+=`<div class="card small">本世尚未抽到可替換的${label}。</div>`;for(const it of inv){h+=`<div class="card"><b>${it.name}</b><div class="small">${TIERS[it.tier]&&TIERS[it.tier][0]||'普通階'}｜${statLine(it)}<br>戰力評分：${fmt(it.power)}</div><button class="purple" onclick="window.cc0924hf3Equip('${slot}','${it.id}')">裝備這件</button></div>`}window.modal(h)}
+ function equip(slot,id){const rr=RR();if(!rr)return;const inv=ensureInv(rr);const idx=inv.findIndex(x=>x&&x.id===id);if(idx<0)return log('找不到這件輪迴裝備');if(!rr.equip)rr.equip={};const it=inv.splice(idx,1)[0];const old=rr.equip[slot];if(old)inv.push(old);rr.equip[slot]=it;log('🧰 輪迴裝備更換：'+it.name);save(false);render();showEquipPicker(slot)}
+ function unequip(slot){const rr=RR();if(!rr||!rr.equip||!rr.equip[slot])return;ensureInv(rr).push(rr.equip[slot]);log('🧰 已卸下 '+rr.equip[slot].name);rr.equip[slot]=null;save(false);render();showEquipPicker(slot)}
+ function openChests(num){const rr=RR();if(!rr)return;num=Math.floor(n(num,1));if(num<=0)return;if(n(rr.chests,0)<num)return log('寶箱不足');const inv=ensureInv(rr);rr.chests-=num;let sp=0,items=0;for(let i=0;i<num;i++){if(Math.random()<.45){const g=[1,1,2,3,5][Math.floor(Math.random()*5)];rr.skillPoints+=g;sp+=g}else{const it=makeItem();if(it){items++;if(!rr.equip[it.slot]){rr.equip[it.slot]=it;log('🎁 自動裝上空槽：'+it.name)}else inv.push(it)}}}log('🎁 開啟輪迴寶箱 ×'+num+'：技能點 +'+sp+'，裝備 '+items+' 件。裝備已放入本世輪迴背包。');save(false);render();showPanel()}
+ function upgradeSkill(k,num){const rr=RR();if(!rr)return;num=Math.floor(n(num,1));if(n(rr.skillPoints,0)<num)return log('技能點不足');if(!rr.skill)rr.skill={};rr.skillPoints-=num;rr.skill[k]=n(rr.skill[k],0)+num;log('🌕 輪迴能力 '+k+' 升級 ×'+num);save(false);render();showPanel()}
+ function showPanel(){const rr=RR();if(!rr)return;const st=rStats(rr),inv=ensureInv(rr);let h=`<div class="row"><b>🌕 輪迴收納</b><button onclick="window.cc0924hf3Close()">關閉</button></div>`;h+=`<div class="card notice"><b>第 ${n(RS().proto&&RS().proto.totalDeaths,0)+1} 世｜${jobLabel(rr.job,true)}</b><div class="small">地圖：輪迴・${mapName(rr)} ${stageText(rr)}<br>階段：${tierName(rr)}<br>寶箱：${n(rr.chests,0)}｜技能點：${n(rr.skillPoints,0)}｜輪迴資源：${n(rr.fate,0)}<br>繼承狀態：${RS().inheritOpen?'可繼承':'繼承冷卻中'}｜死亡次數：${n(RS().proto&&RS().proto.totalDeaths,0)}</div></div>`;
+ h+=`<div class="card"><b>📊 本世能力</b><div class="small">血量 ${fmt(p.hp||rr.hp)}/${fmt(st.hp)}｜攻擊 ${fmt(st.atk)}｜防禦 ${fmt(st.def)}｜回血 ${rr.map===0?'0':fmt(st.regen)}/秒｜攻速 ${st.aspd.toFixed(2)}/秒｜暴擊 ${(st.crit*100).toFixed(1)}%</div></div>`;
+ h+=`<div class="card"><b>🎁 輪迴寶箱</b><div class="small">小怪1-3｜精英3-4｜小Boss5｜Boss10。本世背包：${inv.length} 件。</div>${[1,2,3,5,10].map(x=>`<button onclick="window.cc0924hf1OpenChests(${x})" ${n(rr.chests,0)>=x?'':'disabled'}>開啟 ×${x}</button>`).join('')}</div>`;
+ h+=`<div class="card"><b>✨ 輪迴技能點</b><div class="small">攻擊${n(rr.skill&&rr.skill.atk,0)}｜生命${n(rr.skill&&rr.skill.hp,0)}｜防禦${n(rr.skill&&rr.skill.def,0)}｜回血${n(rr.skill&&rr.skill.regen,0)}｜稀有${n(rr.skill&&rr.skill.rare,0)}</div>${['atk','hp','def','regen','rare'].map(k=>`<div class="small">${k}：${[1,2,3,5,10].map(x=>`<button onclick="window.cc0924hf1UpgradeSkill('${k}',${x})" ${n(rr.skillPoints,0)>=x?'':'disabled'}>×${x}</button>`).join('')}</div>`).join('')}</div>`;
+ h+=`<div class="card"><b>🧰 輪迴裝備欄</b><div class="small">只顯示本世抽到 / 繼承進來的裝備。第一部裝備不會出現在這裡。</div>${SLOTS.map(([s,l,ic])=>`<div class="cc0924hf3EquipLine">${ic} ${equipLine(s,l)}</div>`).join('')}</div>`;
+ h+=`<div class="card"><b>🗺️ 輪迴地圖</b><div class="small">下獄 → 海域 → 沙漠 → 森林 → 主城 → 天域。打完 1-30 不會自動換圖，需手動選擇。</div>${['下獄','海域','沙漠','森林','主城','天域'].map((m,i)=>`<button onclick="window.cc0924hf1SelectMap(${i})" ${n(rr.rank,0)>=i?'':'disabled'}>${i===n(rr.map,0)?'目前：':''}${m}</button>`).join('')}</div>`;
+ window.modal(h)}
+ function customHudHtml(){const rr=RR();if(!rr)return'';const st=rStats(rr),mp=mapName(rr);return `<div id="cc0924hf3Hud" class="card hud cc0924hf3Hud"><div>輪迴關卡<br><b>${stageText(rr)}</b></div><div>輪迴戰力<br><b>${fmt(rPower(rr))}</b></div><div>Lv<br><b>${n(rr.level,1)}</b></div><div>技能點<br><b>${n(rr.skillPoints,0)}</b></div><div>寶箱<br><b>${n(rr.chests,0)}</b></div><div>職業<br><b>${jobLabel(rr.job,true)}</b></div><div>攻擊<br><b>${fmt(st.atk)}</b></div><div>攻速<br><b>${st.aspd.toFixed(2)}/秒</b></div><div>暴擊<br><b>${(st.crit*100).toFixed(1)}%</b></div><div>防禦<br><b>${fmt(st.def)}</b></div><div>回血<br><b>${rr.map===0?'0':fmt(st.regen)}/秒</b></div><div>階段<br><b>${tierName(rr)}</b></div><div>地圖<br><b>輪迴・${mp}</b></div><div>繼承<br><b>${RS().inheritOpen?'可繼承':'冷卻中'}</b></div><div>背包<br><b>${ensureInv(rr).length}件</b></div></div>`}
+ function setDisplay(el,show){if(!el)return;el.style.display=show?'':'none'}
+ function closestCard(sel){const el=typeof sel==='string'?document.querySelector(sel):sel;return el&&el.closest?el.closest('.card'):null}
+ function patchMainUi(){const is=active();const selectors=[closestCard('[data-point]'),closestCard('[data-up]'),closestCard(by('equipBox')),closestCard(by('autoDismantleSelect')),closestCard(by('bagBox')),by('artifactPanel'),by('supportPanel'),by('titlePanel')];selectors.forEach(el=>setDisplay(el,!is));setDisplay(document.querySelector('.card.hud'),!is);setDisplay(document.querySelector('.card.tabs'),!is);if(is){const hud=document.querySelector('.card.hud');let box=by('cc0924hf3Hud');if(!box&&hud){hud.insertAdjacentHTML('afterend',customHudHtml());box=by('cc0924hf3Hud')}else if(box)box.outerHTML=customHudHtml();const jp=by('jobPanel');if(jp){const rr=RR();jp.style.display='';jp.innerHTML=`<div class="row"><b>⚔️ 輪迴職業</b><span class="pill">${jobLabel(rr.job,true)}</span></div><div class="small">一條命一個職業。這一世只使用未覺醒職業，不套用第一部覺醒。死亡後才會重新選職業。</div>`}let rc=by('cc0924hf3EquipCard');if(!rc){const at=by('autoBtn');if(at)at.insertAdjacentHTML('afterend','<div id="cc0924hf3EquipCard" class="card"></div>');rc=by('cc0924hf3EquipCard')}if(rc)rc.innerHTML=`<div class="row"><b>🧰 輪迴裝備欄</b><span class="pill">武器｜頭盔｜戒指1｜戒指2｜項鍊｜鞋子</span></div><div class="small">第一部裝備已隔離。這裡只使用輪迴寶箱 / 繼承取得的裝備。</div>${SLOTS.map(([s,l,ic])=>`<div class="cc0924hf3EquipLine">${ic} ${equipLine(s,l)}</div>`).join('')}<button class="purple" onclick="window.cc0924hf1Panel()">打開輪迴收納 / 開箱 / 地圖</button>`}else{const box=by('cc0924hf3Hud');if(box)box.remove();const rc=by('cc0924hf3EquipCard');if(rc)rc.remove();const jp=by('jobPanel');if(jp)jp.style.display='';}}
+ function patchDrawer(){const panel=by('featureDrawer');if(!panel)return;if(active()){[...panel.querySelectorAll('button')].forEach(b=>{if(!b.dataset.cc0924hf3){b.dataset.cc0924hf3Hidden='1';b.style.display='none'}});function ensure(id,text,fn,cls='cc0924hf3Btn'){let b=by(id);if(!b){b=document.createElement('button');b.id=id;b.dataset.cc0924hf3='1';b.className=cls;b.textContent=text;b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add('hidden');fn()});panel.appendChild(b)}b.style.display=''}ensure('cc0924hf3PanelBtn','🌕 輪迴收納 / 開箱 / 地圖',showPanel);ensure('cc0924hf3DungeonBtn','🏰 輪迴副本',()=>window.cc0924hf1Dungeon&&window.cc0924hf1Dungeon());ensure('cc0924hf3EventBtn','🎲 隨機事件',()=>window.cc0924hf1Event&&window.cc0924hf1Event());}else{[...panel.querySelectorAll('button')].forEach(b=>{if(b.dataset.cc0924hf3Hidden){b.style.display='';delete b.dataset.cc0924hf3Hidden}if(b.dataset.cc0924hf3)b.style.display='none'});}}
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}}
+ function addStyle(){if(by('cc0924hf3Style'))return;const st=document.createElement('style');st.id='cc0924hf3Style';st.textContent=`.cc0924hf3Hud{border:1px solid rgba(96,165,250,.35)!important;background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(30,41,59,.86))!important}.cc0924hf3EquipLine{white-space:pre-wrap;border:1px dashed rgba(148,163,184,.35);border-radius:14px;padding:10px;margin:8px 0;background:rgba(15,23,42,.55)}.cc0924hf3EquipLine button{margin:6px 6px 0 0}.cc0924hf3Btn{background:#1d4ed8!important;color:#fff!important}`;document.head.appendChild(st)}
+ function maskAwaken(fn){if(!active())return fn();const aw=p.awakening;try{if(aw&&typeof aw==='object'){p.awakening=Object.assign({},aw);Object.keys(p.awakening).forEach(k=>{if(/Awakened$/.test(k))p.awakening[k]=false})}return fn()}finally{p.awakening=aw}}
+ const oldEquipStat=typeof equipStat==='function'?equipStat:null;if(oldEquipStat&&!window.__cc0924hf3EquipStat){window.__cc0924hf3EquipStat=oldEquipStat;equipStat=function(k){if(active())return 0;return window.__cc0924hf3EquipStat(k)}}
+ const oldArtifactDamage=typeof artifactDamageBonus==='function'?artifactDamageBonus:null;if(oldArtifactDamage&&!window.__cc0924hf3ArtDmg){window.__cc0924hf3ArtDmg=oldArtifactDamage;artifactDamageBonus=function(){if(active())return 0;return window.__cc0924hf3ArtDmg()}}
+ const oldArtifactAspd=typeof artifactAspdBonus==='function'?artifactAspdBonus:null;if(oldArtifactAspd&&!window.__cc0924hf3ArtAspd){window.__cc0924hf3ArtAspd=oldArtifactAspd;artifactAspdBonus=function(){if(active())return 0;return window.__cc0924hf3ArtAspd()}}
+ const oldSelectedArtifact=typeof selectedArtifactKey==='function'?selectedArtifactKey:null;if(oldSelectedArtifact&&!window.__cc0924hf3SelArt){window.__cc0924hf3SelArt=oldSelectedArtifact;selectedArtifactKey=function(){if(active())return'none';return window.__cc0924hf3SelArt()}}
+ const oldSWLv=typeof specialWeaponLevel==='function'?specialWeaponLevel:null;if(oldSWLv&&!window.__cc0924hf3SWLv){window.__cc0924hf3SWLv=oldSWLv;specialWeaponLevel=function(job){if(active())return 0;return window.__cc0924hf3SWLv(job)}}
+ const oldAtk=typeof atk==='function'?atk:null;if(oldAtk&&!window.__cc0924hf3Atk){window.__cc0924hf3Atk=oldAtk;atk=function(){if(active())return rStats().atk;return window.__cc0924hf3Atk()}}
+ const oldHp=typeof playerMaxHp==='function'?playerMaxHp:null;if(oldHp&&!window.__cc0924hf3Hp){window.__cc0924hf3Hp=oldHp;playerMaxHp=function(){if(active())return rStats().hp;return window.__cc0924hf3Hp()}}
+ const oldDef=typeof rawPlayerDef==='function'?rawPlayerDef:null;if(oldDef&&!window.__cc0924hf3Def){window.__cc0924hf3Def=oldDef;rawPlayerDef=function(){if(active())return rStats().def;return window.__cc0924hf3Def()}}
+ const oldRegen=typeof playerRegen==='function'?playerRegen:null;if(oldRegen&&!window.__cc0924hf3Regen){window.__cc0924hf3Regen=oldRegen;playerRegen=function(){if(active())return RR().map===0?0:rStats().regen;return window.__cc0924hf3Regen()}}
+ const oldAsp=typeof asp==='function'?asp:null;if(oldAsp&&!window.__cc0924hf3Asp){window.__cc0924hf3Asp=oldAsp;asp=function(){if(active())return rStats().aspd;return window.__cc0924hf3Asp()}}
+ const oldCrit=typeof crit==='function'?crit:null;if(oldCrit&&!window.__cc0924hf3Crit){window.__cc0924hf3Crit=oldCrit;crit=function(){if(active())return rStats().crit;return window.__cc0924hf3Crit()}}
+ const oldPen=typeof pen==='function'?pen:null;if(oldPen&&!window.__cc0924hf3Pen){window.__cc0924hf3Pen=oldPen;pen=function(){if(active())return 0;return window.__cc0924hf3Pen()}}
+ const oldExecute=typeof executeRate==='function'?executeRate:null;if(oldExecute&&!window.__cc0924hf3Exe){window.__cc0924hf3Exe=oldExecute;executeRate=function(target){if(active())return .000001;return window.__cc0924hf3Exe(target)}}
+ const oldDamage=typeof damage==='function'?damage:null;if(oldDamage&&!window.__cc0924hf3Damage){window.__cc0924hf3Damage=oldDamage;damage=function(){if(active())return maskAwaken(()=>window.__cc0924hf3Damage.apply(this,arguments));return window.__cc0924hf3Damage.apply(this,arguments)}}
+ const oldAutoCast=typeof autoCastSkills==='function'?autoCastSkills:null;if(oldAutoCast&&!window.__cc0924hf3AutoCast){window.__cc0924hf3AutoCast=oldAutoCast;autoCastSkills=function(){if(active())return;return window.__cc0924hf3AutoCast()}}
+ const oldJobPanel=typeof jobPanelHtml==='function'?jobPanelHtml:null;if(oldJobPanel&&!window.__cc0924hf3JobPanel){window.__cc0924hf3JobPanel=oldJobPanel;jobPanelHtml=function(){if(active()){const rr=RR();return `<div class="row"><b>⚔️ 輪迴職業</b><span class="pill">${jobLabel(rr.job,true)}</span></div><div class="small">未覺醒職業。本世鎖定，死亡後才重新選職業。</div>`}return window.__cc0924hf3JobPanel()}}
+ const oldRender=typeof render==='function'?render:null;if(oldRender&&!window.__cc0924hf3Render){window.__cc0924hf3Render=oldRender;render=function(){addStyle();const r=window.__cc0924hf3Render();patchVersion();patchMainUi();patchDrawer();return r}}
+ window.cc0924hf1OpenChests=openChests;window.cc0924hf1UpgradeSkill=upgradeSkill;window.cc0924hf1Panel=showPanel;window.cc0924hf3Panel=showPanel;window.cc0924hf3ChangeEquip=showEquipPicker;window.cc0924hf3Equip=equip;window.cc0924hf3Unequip=unequip;window.cc0924hf3Close=function(){['cc0924Modal','cc0923hf2Modal','cc0923Modal','modal'].forEach(id=>{const m=by(id);if(m)m.classList.add('hidden')})};
+ setTimeout(()=>{try{addStyle();patchVersion();if(active())ensureInv();patchMainUi();patchDrawer();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},260);
+ window.cc0924hf3Info=()=>({tag:TAG,active:active(),run:RR(),inventory:RR()&&RR().inventory,stats:active()?rStats():null});
  console.log('傳承',TAG);
 })();
 </script>
