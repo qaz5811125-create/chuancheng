@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<title>傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】</title>
+<title>傳承 Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】</title>
 <meta name="theme-color" content="#0f172a">
 <meta name="application-name" content="傳承">
 <meta name="apple-mobile-web-app-title" content="傳承">
@@ -349,7 +349,7 @@ body.cc097NoGlobalHitFlash .flash{animation:none!important}
 
 <div class="card"><b>冒險日誌</b><div id="journal" class="small"></div></div>
 <button id="soundBtn" class="blue">音效：開</button><button id="volumeBtn" class="blue">音量：100%</button>
-<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
+<div class="saveLine"><button id="saveBtn">存檔</button><button id="backupBtn" class="blue">備份存檔</button><button id="importBtn" class="purple">匯入存檔</button><input id="importFile" type="file" accept="application/json"><span class="pill">Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】</span><span class="pill">Save Version：<span id="saveVer">0.4.0</span></span><span id="saveStatus" class="small">尚未存檔</span></div>
 <button id="resetBtn" class="red">重置</button>
 <div id="log" class="card log"></div>
 </div>
@@ -6241,7 +6241,7 @@ if(!load())p=newPlayer();ensureNewSystems();normalizeMapStages();syncStageFromCu
    document.title=VERSION_NAME;
    document.querySelectorAll(".pill").forEach(el=>{
     const txt=el.textContent||"";
-    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】";
+    if(txt.includes("Beta 0.9.")&&!txt.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】";
    });
    if(isHellDungeon()&&fight){
     if(by("enemyType"))by("enemyType").textContent=(dungeon.roomType==="boss"?"下獄守門Boss":dungeon.roomType==="jailer"?"獄卒追殺":dungeon.roomType==="elite"?"下獄精英":"下獄怪物")+"｜不回血｜不復活";
@@ -6359,7 +6359,7 @@ setTimeout(hidePwaSplash,2500);
  if(oldTick)tick=function(dt){hardenGoddesses();const r=oldTick(dt);hardenGoddesses();return r};
  const oldRender=typeof render==="function"?render:null;
  if(oldRender)render=function(){hardenGoddesses();const r=oldRender();patchVersionText0921Goddess();return r};
- function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+ function patchVersionText0921Goddess(){try{document.title=VERSION_NAME;document.querySelectorAll(".pill").forEach(el=>{if((el.textContent||"").includes("Beta 0.9."))el.textContent=(el.textContent||"").includes("Save Version")?el.textContent:"Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  setTimeout(()=>{try{hardenGoddesses();patchVersionText0921Goddess()}catch(e){}},0);
  window.cc0921GoddessHotfix=()=>{hardenGoddesses();return {tag:TAG,skyFight:isSkyFight(),goddesses:isSkyFight()?fight.monsters.filter(isSkyGoddess).map(m=>({name:m.name,id:m.cc0921GoddessId,hp:m.hp,max:m.max,immune:m.cc0921Data&&m.cc0921Data.deathImmuneLeft,finalDead:!!m.cc0921GoddessFinalDead,rewarded:!!m.rewarded})):[]}};
@@ -6401,7 +6401,7 @@ setTimeout(hidePwaSplash,2500);
  function patchVersionText(){
   try{
    document.title=VERSION_NAME;
-   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"});
+   document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"});
   }catch(e){}
  }
  // 1) 攻速硬上限：資料保留，實際攻擊頻率最高 100/秒。
@@ -6534,7 +6534,7 @@ setTimeout(hidePwaSplash,2500);
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  function ensureNoticeStyle(){
   if(by("cc0922hf2Style"))return;
@@ -6701,7 +6701,7 @@ setTimeout(hidePwaSplash,2500);
  }
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6776,7 +6776,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  function notice(title,body){
   let m=by("cc0922HellModal");
@@ -6933,7 +6933,7 @@ setTimeout(hidePwaSplash,2500);
  };
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  function addStyle(){
   try{if(typeof addStyle==="function"){} }catch(e){}
@@ -7105,7 +7105,7 @@ setTimeout(hidePwaSplash,2500);
  const by=id=>document.getElementById(id);
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】"})}catch(e){}
+  try{document.querySelectorAll(".pill").forEach(el=>{const t=el.textContent||"";if(t.includes("Beta 0.9.")&&!t.includes("Save Version"))el.textContent="Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】"})}catch(e){}
  }
  function hellRoot(){
   if(typeof p==="undefined"||!p)return null;
@@ -7611,7 +7611,7 @@ setTimeout(hidePwaSplash,2500);
 /* ===== Beta 0.9.24：終局覺醒與輪迴雛形 ===== */
 (function(){
  const TAG='0.9.24-final-awaken-reincarnation-prototype';
- const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】';
  const by=id=>document.getElementById(id);
  const num=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
  const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(num(v,0)).toLocaleString();
@@ -7640,7 +7640,7 @@ setTimeout(hidePwaSplash,2500);
  ];
  const R_SLOTS=[['weapon','武器'],['head','頭盔'],['ring1','戒指1'],['ring2','戒指2'],['necklace','項鍊'],['shoes','鞋子']];
  const PROF_BOSSES=['skillmaster','reaper','berserker','gunner','archer','lancer','mage','assassin','colossus','thief'];
- function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}}
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】'})}catch(e){}}
  function addStyle(){if(by('cc0924Style'))return;const st=document.createElement('style');st.id='cc0924Style';st.textContent=`
  .cc0924Modal{position:fixed;inset:0;z-index:160000;background:rgba(2,6,23,.78);display:flex;align-items:center;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
  .cc0924Modal.hidden{display:none!important}.cc0924Card{width:min(760px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(180deg,#111827,#020617);border:1px solid rgba(192,132,252,.36);border-radius:22px;padding:14px;box-shadow:0 24px 90px rgba(0,0,0,.62)}
@@ -7857,12 +7857,12 @@ var modal = window.modal = function(html){
 };
 (function(){
  const TAG='0.9.24-hotfix2-reincarnation-entry-bridge';
- const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】';
  const by=id=>document.getElementById(id);
  function hide(id){try{const el=by(id);if(el)el.classList.add('hidden')}catch(e){}}
  function patchVersion(){
   try{document.title=VERSION_NAME}catch(e){}
-  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}
+  try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】'})}catch(e){}
  }
  function legacyGateUnlocked(){try{return !!(p&&p.reincarnation&&(p.reincarnation.gateUnlocked||(p.awakening&&p.awakening.reaperAwakened)))}catch(e){return false}}
  function closeAllReincarnationOverlays(){hide('cc0923hf2Modal');hide('cc0923hf2Black');hide('cc0924Modal')}
@@ -7915,7 +7915,7 @@ var modal = window.modal = function(html){
 /* ===== Beta 0.9.24 Hotfix 3：輪迴資料隔離與收納重構 ===== */
 (function(){
  const TAG='0.9.24-hotfix3-reincarnation-isolation-storage';
- const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】';
  const by=id=>document.getElementById(id);
  const n=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
  const fmt=v=>window.formatShortNumber?window.formatShortNumber(v,2):Math.floor(n(v,0)).toLocaleString();
@@ -7954,7 +7954,7 @@ var modal = window.modal = function(html){
  function closestCard(sel){const el=typeof sel==='string'?document.querySelector(sel):sel;return el&&el.closest?el.closest('.card'):null}
  function patchMainUi(){const is=active();const selectors=[closestCard('[data-point]'),closestCard('[data-up]'),closestCard(by('equipBox')),closestCard(by('autoDismantleSelect')),closestCard(by('bagBox')),by('artifactPanel'),by('supportPanel'),by('titlePanel')];selectors.forEach(el=>setDisplay(el,!is));setDisplay(document.querySelector('.card.hud'),!is);setDisplay(document.querySelector('.card.tabs'),!is);if(is){const hud=document.querySelector('.card.hud');let box=by('cc0924hf3Hud');if(!box&&hud){hud.insertAdjacentHTML('afterend',customHudHtml());box=by('cc0924hf3Hud')}else if(box)box.outerHTML=customHudHtml();const jp=by('jobPanel');if(jp){const rr=RR();jp.style.display='';jp.innerHTML=`<div class="row"><b>⚔️ 輪迴職業</b><span class="pill">${jobLabel(rr.job,true)}</span></div><div class="small">一條命一個職業。這一世只使用未覺醒職業，不套用第一部覺醒。死亡後才會重新選職業。</div>`}let rc=by('cc0924hf3EquipCard');if(!rc){const at=by('autoBtn');if(at)at.insertAdjacentHTML('afterend','<div id="cc0924hf3EquipCard" class="card"></div>');rc=by('cc0924hf3EquipCard')}if(rc)rc.innerHTML=`<div class="row"><b>🧰 輪迴裝備欄</b><span class="pill">武器｜頭盔｜戒指1｜戒指2｜項鍊｜鞋子</span></div><div class="small">第一部裝備已隔離。這裡只使用輪迴寶箱 / 繼承取得的裝備。</div>${SLOTS.map(([s,l,ic])=>`<div class="cc0924hf3EquipLine">${ic} ${equipLine(s,l)}</div>`).join('')}<button class="purple" onclick="window.cc0924hf1Panel()">打開輪迴收納 / 開箱 / 地圖</button>`}else{const box=by('cc0924hf3Hud');if(box)box.remove();const rc=by('cc0924hf3EquipCard');if(rc)rc.remove();const jp=by('jobPanel');if(jp)jp.style.display='';}}
  function patchDrawer(){const panel=by('featureDrawer');if(!panel)return;if(active()){[...panel.querySelectorAll('button')].forEach(b=>{if(!b.dataset.cc0924hf3){b.dataset.cc0924hf3Hidden='1';b.style.display='none'}});function ensure(id,text,fn,cls='cc0924hf3Btn'){let b=by(id);if(!b){b=document.createElement('button');b.id=id;b.dataset.cc0924hf3='1';b.className=cls;b.textContent=text;b.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();panel.classList.add('hidden');fn()});panel.appendChild(b)}b.style.display=''}ensure('cc0924hf3PanelBtn','🌕 輪迴收納 / 開箱 / 地圖',showPanel);ensure('cc0924hf3DungeonBtn','🏰 輪迴副本',()=>window.cc0924hf1Dungeon&&window.cc0924hf1Dungeon());ensure('cc0924hf3EventBtn','🎲 隨機事件',()=>window.cc0924hf1Event&&window.cc0924hf1Event());}else{[...panel.querySelectorAll('button')].forEach(b=>{if(b.dataset.cc0924hf3Hidden){b.style.display='';delete b.dataset.cc0924hf3Hidden}if(b.dataset.cc0924hf3)b.style.display='none'});}}
- function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 3【輪迴資料隔離與收納重構】'})}catch(e){}}
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】'})}catch(e){}}
  function addStyle(){if(by('cc0924hf3Style'))return;const st=document.createElement('style');st.id='cc0924hf3Style';st.textContent=`.cc0924hf3Hud{border:1px solid rgba(96,165,250,.35)!important;background:linear-gradient(180deg,rgba(15,23,42,.92),rgba(30,41,59,.86))!important}.cc0924hf3EquipLine{white-space:pre-wrap;border:1px dashed rgba(148,163,184,.35);border-radius:14px;padding:10px;margin:8px 0;background:rgba(15,23,42,.55)}.cc0924hf3EquipLine button{margin:6px 6px 0 0}.cc0924hf3Btn{background:#1d4ed8!important;color:#fff!important}`;document.head.appendChild(st)}
  function maskAwaken(fn){if(!active())return fn();const aw=p.awakening;try{if(aw&&typeof aw==='object'){p.awakening=Object.assign({},aw);Object.keys(p.awakening).forEach(k=>{if(/Awakened$/.test(k))p.awakening[k]=false})}return fn()}finally{p.awakening=aw}}
  const oldEquipStat=typeof equipStat==='function'?equipStat:null;if(oldEquipStat&&!window.__cc0924hf3EquipStat){window.__cc0924hf3EquipStat=oldEquipStat;equipStat=function(k){if(active())return 0;return window.__cc0924hf3EquipStat(k)}}
@@ -7977,6 +7977,103 @@ var modal = window.modal = function(html){
  window.cc0924hf1OpenChests=openChests;window.cc0924hf1UpgradeSkill=upgradeSkill;window.cc0924hf1Panel=showPanel;window.cc0924hf3Panel=showPanel;window.cc0924hf3ChangeEquip=showEquipPicker;window.cc0924hf3Equip=equip;window.cc0924hf3Unequip=unequip;window.cc0924hf3Close=function(){['cc0924Modal','cc0923hf2Modal','cc0923Modal','modal'].forEach(id=>{const m=by(id);if(m)m.classList.add('hidden')})};
  setTimeout(()=>{try{addStyle();patchVersion();if(active())ensureInv();patchMainUi();patchDrawer();if(typeof save==='function')save(false);if(typeof render==='function')render()}catch(e){console.warn(TAG,e)}},260);
  window.cc0924hf3Info=()=>({tag:TAG,active:active(),run:RR(),inventory:RR()&&RR().inventory,stats:active()?rStats():null});
+ console.log('傳承',TAG);
+})();
+</script>
+
+
+<script>
+/* ===== Beta 0.9.24 Hotfix 4：輪迴戰鬥接線修正 ===== */
+(()=>{
+ const TAG='0.9.24-hotfix4-reincarnation-combat-wire';
+ const VERSION_NAME='傳承 Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】';
+ const by=id=>document.getElementById(id);
+ const num=(v,d=0)=>{v=Number(v);return Number.isFinite(v)?v:d};
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ function active(){try{const r=p&&p.reincarnation&&p.reincarnation.run;return !!(r&&r.active&&r.hf1Mode)}catch(e){return false}}
+ function RR(){try{return p.reincarnation.run}catch(e){return null}}
+ function fmt(v){try{return Math.floor(num(v,0)).toLocaleString()}catch(e){return String(Math.floor(num(v,0)))}}
+ function baseStats(job){return ({skillmaster:{atk:36,hp:760,def:0,regen:18,aspd:1,crit:.05},reaper:{atk:60,hp:980,def:32,regen:12,aspd:.9,crit:.07},berserker:{atk:72,hp:1100,def:24,regen:10,aspd:.85,crit:.06},gunner:{atk:68,hp:860,def:18,regen:8,aspd:.55,crit:.12},archer:{atk:62,hp:840,def:20,regen:10,aspd:1.5,crit:.09}})[job]||{atk:50,hp:900,def:20,regen:10,aspd:1,crit:.05}}
+ function eStat(rr,stat){let v=0;try{for(const it of Object.values((rr&&rr.equip)||{})){if(!it)continue;if(it.stat===stat)v+=num(it.value,0);if(it.subStat===stat)v+=num(it.subValue,0)}}catch(e){}return v}
+ function rStats4(rr=RR()){
+  if(!rr)return {atk:1,hp:1,def:0,regen:0,aspd:1,crit:.05};
+  const b=baseStats(rr.job);
+  const sk=rr.skill||{};
+  let st={
+   atk:num(rr.atk,b.atk)*(1+num(sk.atk,0)*.08)+eStat(rr,'atk'),
+   hp:num(rr.maxHp,b.hp)*(1+num(sk.hp,0)*.08)+eStat(rr,'hp'),
+   def:num(rr.def,b.def)*(1+num(sk.def,0)*.08)+eStat(rr,'def'),
+   regen:num(rr.regen,b.regen)*(1+num(sk.regen,0)*.08)+eStat(rr,'regen'),
+   aspd:num(b.aspd,1)+eStat(rr,'aspd')/100,
+   crit:num(b.crit,.05)+eStat(rr,'crit')/100
+  };
+  if(rr.job==='archer')st.aspd+=.25;
+  if(rr.job==='gunner')st.crit+=.05;
+  if(rr.job==='berserker'&&num(p.hp,0)<Math.max(1,st.hp)*.35)st.atk*=1.45;
+  if(num(rr.rank,0)>=6){st.atk*=.95;st.hp*=.95;st.def*=.95;st.regen*=.95;}
+  st.atk=Math.max(1,Math.floor(st.atk));st.hp=Math.max(1,Math.floor(st.hp));st.def=Math.max(0,Math.floor(st.def));st.regen=Math.max(0,Math.floor(st.regen));st.aspd=clamp(st.aspd,.2,100);st.crit=clamp(st.crit,0,.75);
+  return st;
+ }
+ function patchVersion(){try{document.title=VERSION_NAME}catch(e){}try{document.querySelectorAll('.pill').forEach(el=>{const t=el.textContent||'';if(t.includes('Beta 0.9.')&&!t.includes('Save Version'))el.textContent='Beta 0.9.24 Hotfix 4【輪迴戰鬥接線修正】'})}catch(e){}}
+ function target(){try{return (typeof activeMonster==='function'?activeMonster():null)||(fight&&Array.isArray(fight.monsters)&&fight.monsters.find(m=>m&&m.hp>0))||fight}catch(e){return fight}}
+ function totalHp(){try{if(fight&&Array.isArray(fight.monsters)){fight.hp=fight.monsters.reduce((a,m)=>a+Math.max(0,num(m&&m.hp,0)),0)}}catch(e){}}
+ function isDead(){if(!fight)return true;if(Array.isArray(fight.monsters))return !fight.monsters.some(m=>m&&m.hp>0);return num(fight.hp,0)<=0}
+ function addFx(text,big=false){try{floatText(text,big)}catch(e){} }
+ function doClassExtras(m,baseDmg,normal){
+  const rr=RR();if(!rr||!m||baseDmg<=0)return 0;let extra=0;
+  try{
+   if(rr.job==='skillmaster'&&normal){
+    const e=ensureEffectBag(m);const roll=Math.floor(Math.random()*3);
+    if(roll===0){e.burn=(num(e.burn,0)+1);addFx('🔥輪迴燃燒+1')}
+    if(roll===1){e.poison=(num(e.poison,0)+1);addFx('☠️輪迴中毒+1')}
+    if(roll===2){e.bleed=(num(e.bleed,0)+1);addFx('🩸輪迴撕裂+1')}
+   }
+   if(rr.job==='reaper'&&normal){
+    const e=ensureEffectBag(m);e.bleed=num(e.bleed,0)+2;const ex=Math.max(1,Math.floor(baseDmg*.22));m.hp-=ex;extra+=ex;addFx('💀收割+'+fmt(ex));
+   }
+   if(rr.job==='gunner'&&normal){
+    const ex=Math.max(1,Math.floor(baseDmg*.35));m.hp-=ex;extra+=ex;addFx('🔫追擊 '+fmt(ex));
+   }
+   if(rr.job==='archer'&&normal&&Math.random()<.18){
+    const ex=Math.max(1,Math.floor(baseDmg*1.2));m.hp-=ex;extra+=ex;addFx('🏹天災殘響 '+fmt(ex),true);
+   }
+  }catch(e){}
+  return extra;
+ }
+ function rDamage(mult=1,label='',opt={}){
+  if(!active())return false;
+  if(!fight||!fight.cc0924hf1){try{if(typeof window.cc0924hf1Info==='function'&&active()&&typeof spawnMain==='function')spawnMain()}catch(e){} if(!fight)return false;}
+  if(num(p.hp,0)<=0)return false;
+  try{if(typeof isPlayerStunned==='function'&&isPlayerStunned()){addFx('暈眩');return false}}catch(e){}
+  const rr=RR(),st=rStats4(rr),m=target();if(!m||num(m.hp,0)<=0)return false;
+  const c=Math.random()<st.crit;const armor=Math.max(0,num(m.def,0));
+  const raw=st.atk*num(mult,1)*(c?2:1);
+  const dmg=Math.max(1,Math.floor(raw-armor));
+  m.hp-=dmg;let total=dmg;
+  total+=doClassExtras(m,dmg,!label&&!opt.skill);
+  totalHp();
+  try{showHitEffect(c?'crit':'normal');sfx&&sfx(c?'crit':'hit')}catch(e){}
+  try{if(typeof addCombo==='function')addCombo()}catch(e){}
+  addFx((m.emoji||'')+(label||'')+(c?'💥':'')+fmt(dmg),c);
+  rr.damageDealt=num(rr.damageDealt,0)+total;
+  if(isDead()){
+   try{if(typeof killEnemy==='function')killEnemy();else if(typeof window.cc0924hf1Panel==='function')window.cc0924hf1Panel()}catch(e){console.warn(TAG,'kill route',e)}
+  }
+  return true;
+ }
+ const oldDamage=typeof damage==='function'?damage:null;if(oldDamage&&!window.__cc0924hf4Damage){window.__cc0924hf4Damage=oldDamage;damage=function(mult=1,label='',opt={}){if(active())return rDamage(mult,label,opt||{});return window.__cc0924hf4Damage.apply(this,arguments)}}
+ const oldReq=typeof request==='function'?request:null;if(oldReq&&!window.__cc0924hf4Request){window.__cc0924hf4Request=oldReq;request=function(n=1){if(active()){if(num(p.hp,0)<=0)return;p.queue=Math.min(160,num(p.queue,0)+Math.max(0,num(n,1)));return}return window.__cc0924hf4Request.apply(this,arguments)}}
+ const oldAtk=typeof atk==='function'?atk:null;if(oldAtk&&!window.__cc0924hf4Atk){window.__cc0924hf4Atk=oldAtk;atk=function(){if(active())return rStats4().atk;return window.__cc0924hf4Atk.apply(this,arguments)}}
+ const oldAsp=typeof asp==='function'?asp:null;if(oldAsp&&!window.__cc0924hf4Asp){window.__cc0924hf4Asp=oldAsp;asp=function(){if(active())return rStats4().aspd;return window.__cc0924hf4Asp.apply(this,arguments)}}
+ const oldCrit=typeof crit==='function'?crit:null;if(oldCrit&&!window.__cc0924hf4Crit){window.__cc0924hf4Crit=oldCrit;crit=function(){if(active())return rStats4().crit;return window.__cc0924hf4Crit.apply(this,arguments)}}
+ const oldHP=typeof playerMaxHp==='function'?playerMaxHp:null;if(oldHP&&!window.__cc0924hf4Hp){window.__cc0924hf4Hp=oldHP;playerMaxHp=function(){if(active())return rStats4().hp;return window.__cc0924hf4Hp.apply(this,arguments)}}
+ const oldDef=typeof rawPlayerDef==='function'?rawPlayerDef:null;if(oldDef&&!window.__cc0924hf4Def){window.__cc0924hf4Def=oldDef;rawPlayerDef=function(){if(active())return rStats4().def;return window.__cc0924hf4Def.apply(this,arguments)}}
+ const oldRegen=typeof playerRegen==='function'?playerRegen:null;if(oldRegen&&!window.__cc0924hf4Regen){window.__cc0924hf4Regen=oldRegen;playerRegen=function(){if(active()){const rr=RR();return rr&&rr.map===0?0:rStats4().regen}return window.__cc0924hf4Regen.apply(this,arguments)}}
+ const oldTick=typeof tick==='function'?tick:null;if(oldTick&&!window.__cc0924hf4Tick){window.__cc0924hf4Tick=oldTick;tick=function(dt){const before=active()?num(p.queue,0):0;const r=window.__cc0924hf4Tick.apply(this,arguments);try{if(active()){const rr=RR();if(rr)rr.hp=p.hp;patchVersion();if(p.auto&&num(p.queue,0)===before&&before===0){/* 保險：有些舊tick被攔截時仍補一點佇列 */request(num(dt,.016)*asp())}}}catch(e){}return r}}
+ const oldSpawn=typeof spawnMain==='function'?spawnMain:null;if(oldSpawn&&!window.__cc0924hf4Spawn){window.__cc0924hf4Spawn=oldSpawn;spawnMain=function(){const r=window.__cc0924hf4Spawn.apply(this,arguments);try{if(active()&&(!fight||!fight.cc0924hf1)&&typeof window.cc0924hf1Info==='function'){const rr=RR();if(rr&&typeof window.cc0924hf1Start==='function'){} }}catch(e){}return r}}
+ const oldRender=typeof render==='function'?render:null;if(oldRender&&!window.__cc0924hf4Render){window.__cc0924hf4Render=oldRender;render=function(){const r=window.__cc0924hf4Render.apply(this,arguments);try{patchVersion();if(active()){const rr=RR(),st=rStats4(rr);if(by('atk'))by('atk').textContent=fmt(st.atk);if(by('aspd'))by('aspd').textContent=st.aspd.toFixed(2);if(by('crit'))by('crit').textContent=(st.crit*100).toFixed(1);if(by('regen'))by('regen').textContent=rr&&rr.map===0?'0':fmt(st.regen);if(by('queue'))by('queue').textContent=Math.floor(num(p.queue,0));}}catch(e){}return r}}
+ setTimeout(()=>{try{patchVersion();if(active()){const rr=RR();if(rr){const st=rStats4(rr);if(num(p.hp,0)<=0)p.hp=st.hp;rr.hp=p.hp;} if(typeof render==='function')render();} if(typeof save==='function')save(false)}catch(e){console.warn(TAG,e)}},240);
+ window.cc0924hf4Info=()=>({tag:TAG,active:active(),stats:active()?rStats4():null,queue:p&&p.queue,fight:!!fight,cc0924hf1:fight&&fight.cc0924hf1});
  console.log('傳承',TAG);
 })();
 </script>
