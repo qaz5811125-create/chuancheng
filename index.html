@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>《傳承 第二版》長劍武器外觀框架 V0.3</title>
+  <title>《傳承 第二版》長劍握把定位修正 V0.3.2</title>
   <style>
     :root{
       --bg:#080b12;
@@ -60,11 +60,12 @@
     .heroSprite .cape{position:absolute; left:24px; top:55px; width:70px; height:96px; border-radius:18px 18px 35px 35px; background:linear-gradient(180deg,rgba(117,36,44,.9),rgba(41,15,23,.95)); z-index:1;}
     .heroSprite .arm{position:absolute; top:64px; width:22px; height:62px; border-radius:14px; background:linear-gradient(180deg,#ffe0b0,#a96b43); z-index:2;}
     .heroSprite .arm.left{left:18px; transform:rotate(13deg);}
-    .heroSprite .arm.right{right:13px; transform:rotate(-22deg);}
+    .heroSprite .arm.right{right:13px; transform:rotate(-22deg); z-index:8;}
     .heroSprite .leg{position:absolute; top:112px; width:25px; height:48px; border-radius:12px 12px 8px 8px; background:#121827; z-index:2;}
     .heroSprite .leg.left{left:33px;}.heroSprite .leg.right{right:32px;}
     .heroSprite .weapon{display:none;}
-    .heroSprite .weaponImg{position:absolute; right:-14px; top:22px; width:58px; height:136px; object-fit:contain; transform:rotate(-28deg); transform-origin:50% 85%; z-index:7; filter:drop-shadow(0 0 10px rgba(255,211,106,.35)); pointer-events:none;}
+    /* V0.3.2：武器改用「右手錨點」定位。transform-origin 對準劍柄，讓劍看起來是握在手上，而不是貼在背上。 */
+    .heroSprite .weaponImg{position:absolute; left:62px; top:0px; width:58px; height:136px; object-fit:contain; transform:rotate(-12deg); transform-origin:50% 85%; z-index:6; filter:drop-shadow(0 0 10px rgba(255,211,106,.35)); pointer-events:none;}
     .weaponNow{display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid rgba(255,211,106,.24); border-radius:14px; background:rgba(255,211,106,.07);}
     .weaponNow img{width:42px; height:70px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,211,106,.25));}
     .weaponGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:10px;}
@@ -117,7 +118,7 @@
     <div class="card stack">
       <div>
         <div class="title">《傳承 第二版》</div>
-        <div class="subtitle">長劍武器外觀框架 V0.3｜加入 SWS-0001～SWS-0010 長劍圖片、武器切換與裝備欄顯示。</div>
+        <div class="subtitle">長劍握把定位修正 V0.3.2｜武器握把對準玩家右手，保留長劍切換與裝備欄顯示。</div>
       </div>
       <div id="continueBox" class="card" style="display:none;background:rgba(255,211,106,.07)">
         <div class="between">
