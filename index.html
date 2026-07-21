@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>《傳承 第二版》長劍握把定位修正 V0.3.2</title>
+  <title>《傳承 第二版》武器個別握把校正 V0.3.3</title>
   <style>
     :root{
       --bg:#080b12;
@@ -64,8 +64,9 @@
     .heroSprite .leg{position:absolute; top:112px; width:25px; height:48px; border-radius:12px 12px 8px 8px; background:#121827; z-index:2;}
     .heroSprite .leg.left{left:33px;}.heroSprite .leg.right{right:32px;}
     .heroSprite .weapon{display:none;}
-    /* V0.3.2：武器改用「右手錨點」定位。transform-origin 對準劍柄，讓劍看起來是握在手上，而不是貼在背上。 */
-    .heroSprite .weaponImg{position:absolute; left:62px; top:0px; width:58px; height:136px; object-fit:contain; transform:rotate(-12deg); transform-origin:50% 85%; z-index:6; filter:drop-shadow(0 0 10px rgba(255,211,106,.35)); pointer-events:none;}
+    /* V0.3.3：武器改用「每把長劍個別握把校正」。
+       基準仍然綁在玩家右手，但每把劍可獨立調整 x/y/scale/rotate，避免特效大劍偏到身體上。 */
+    .heroSprite .weaponImg{position:absolute; left:62px; top:0px; width:58px; height:136px; object-fit:contain; transform:translate(var(--weapon-x,0px), var(--weapon-y,0px)) rotate(var(--weapon-rotate,-12deg)) scale(var(--weapon-scale,1)); transform-origin:50% 86%; z-index:6; filter:drop-shadow(0 0 10px rgba(255,211,106,.35)); pointer-events:none;}
     .weaponNow{display:flex; align-items:center; gap:12px; padding:10px 12px; border:1px solid rgba(255,211,106,.24); border-radius:14px; background:rgba(255,211,106,.07);}
     .weaponNow img{width:42px; height:70px; object-fit:contain; filter:drop-shadow(0 0 8px rgba(255,211,106,.25));}
     .weaponGrid{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:10px;}
@@ -245,7 +246,7 @@
   'use strict';
 
   const SAVE_KEY = 'chuancheng_v2_save';
-  const VERSION = '0.3.0';
+  const VERSION = '0.3.3';
 
   const WEAPONS = [
     { id:'SWS-0001', name:'舊木劍', img:'sws_0001.png' },
@@ -259,6 +260,22 @@
     { id:'SWS-0009', name:'王國守護劍', img:'sws_0009.png' },
     { id:'SWS-0010', name:'榮耀聖劍', img:'sws_0010.png' }
   ];
+
+  // V0.3.3：每把長劍的握把微調值。
+  // x/y 控制整把劍位移，scale 控制大小，rotate 控制角度。
+  // 之後新增武器時，只要補一筆校正，不用改角色本體。
+  const WEAPON_GRIP_FIX = {
+    'SWS-0001': { x: -2, y: 8,  scale: 0.94, rotate: -10 },
+    'SWS-0002': { x: -1, y: 7,  scale: 0.95, rotate: -10 },
+    'SWS-0003': { x: 0,  y: 6,  scale: 0.96, rotate: -11 },
+    'SWS-0004': { x: -1, y: 8,  scale: 0.95, rotate: -10 },
+    'SWS-0005': { x: 1,  y: 6,  scale: 0.96, rotate: -11 },
+    'SWS-0006': { x: 2,  y: 5,  scale: 0.97, rotate: -12 },
+    'SWS-0007': { x: 3,  y: 6,  scale: 0.94, rotate: -12 },
+    'SWS-0008': { x: 5,  y: 12, scale: 0.84, rotate: -10 },
+    'SWS-0009': { x: 7,  y: 15, scale: 0.80, rotate: -9  },
+    'SWS-0010': { x: 9,  y: 18, scale: 0.76, rotate: -8  }
+  };
   let state = null;
   let autoTimer = null;
 
@@ -307,6 +324,19 @@
   function weaponLabel(id) {
     const w = weaponById(id);
     return `${w.id} ${w.name}`;
+  }
+
+  function gripFixForWeapon(id) {
+    return WEAPON_GRIP_FIX[id] || { x: 0, y: 0, scale: 1, rotate: -12 };
+  }
+
+  function applyWeaponGrip(imgEl, weaponId) {
+    if (!imgEl) return;
+    const fix = gripFixForWeapon(weaponId);
+    imgEl.style.setProperty('--weapon-x', `${fix.x}px`);
+    imgEl.style.setProperty('--weapon-y', `${fix.y}px`);
+    imgEl.style.setProperty('--weapon-scale', fix.scale);
+    imgEl.style.setProperty('--weapon-rotate', `${fix.rotate}deg`);
   }
 
   function equipWeapon(id) {
@@ -409,6 +439,7 @@
     $('goldText').textContent = p.gold;
     $('currentWeaponImg').src = w.img;
     $('currentWeaponImg').alt = `${w.id} ${w.name}`;
+    applyWeaponGrip($('currentWeaponImg'), w.id);
     $('weaponNowText').textContent = `${w.id} ${w.name}`;
     renderBar('playerHpBar','playerHpText',p.hp,p.maxHp,'HP');
     renderBar('playerMpBar','playerMpText',p.mp,p.maxMp,'MP');
@@ -459,6 +490,7 @@
       <p>框架版本：${VERSION}</p>
       <p>存檔 key：${SAVE_KEY}</p>
       <p>畫面模式：CSS 角色 / 怪物測試 + 長劍武器圖片</p>
+      <p>武器定位：V0.3.3 每把長劍個別握把校正</p>
       <p>建立時間：${state.createdAt}</p>
       <p>更新時間：${state.updatedAt}</p>
     `;
